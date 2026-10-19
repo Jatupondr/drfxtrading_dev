@@ -1,0 +1,91 @@
+[
+  {
+    "name": "IB Partner",
+    "price": "ฟรี",
+    "priceUnit": "ตลอดชีพ / ทุก EA",
+    "accounts": "Unlimited",
+    "updates": "อัปเดตทุกเวอร์ชั่นฟรี",
+    "duration": "ตลอดชีพ",
+    "highlight": "ยอดนิยม",
+    "features": [
+      "เปิดบัญชีผ่าน IB Partner DRFX",
+      "ใช้ได้ทุก EA ในตระกูล DRFX",
+      "รับ update ทุกเวอร์ชั่นฟรี",
+      "Community support ผ่าน LINE OpenChat"
+    ],
+    "ctaLabel": "สมัคร IB",
+    "ctaAction": "contact",
+    "color": "#22c55e"
+  },
+  {
+    "name": "Standard",
+    "price": "$49",
+    "priceUnit": "ครั้งเดียว",
+    "accounts": "1 Account",
+    "updates": "อัปเดตทุกเวอร์ชั่นฟรี",
+    "duration": "30 วัน",
+    "highlight": null,
+    "features": [
+      "License 1 บัญชี MT5",
+      "ใช้ได้ทุก Broker",
+      "อัปเดต 1 ปีแรกฟรี",
+      "ไม่ต้องเปิด IB"
+    ],
+    "ctaLabel": "ซื้อ Standard",
+    "ctaAction": "contact",
+    "color": "#00f5ff"
+  },
+  {
+    "name": "Pro",
+    "price": "$299",
+    "priceUnit": "ครั้งเดียว",
+    "accounts": "3 Accounts",
+    "updates": "อัปเดตทุกเวอร์ชั่นฟรี",
+    "duration": "ตลอดชีพ",
+    "highlight": "แนะนำ",
+    "features": [
+      "License 3 บัญชี MT5",
+      "ใช้ได้ทุก Broker",
+      "Update ตลอดชีพ",
+      "Priority support"
+    ],
+    "ctaLabel": "ซื้อ Pro",
+    "ctaAction": "contact",
+    "color": "#a855f7"
+  },
+  {
+    "name": "Ultimate",
+    "price": "$499",
+    "priceUnit": "ครั้งเดียว",
+    "accounts": "Unlimited",
+    "updates": "อัปเดตทุกเวอร์ชั่นฟรี",
+    "duration": "ตลอดชีพ",
+    "highlight": null,
+    "features": [
+      "License บัญชีไม่จำกัด",
+      "ใช้ได้ทุก Broker",
+      "Update ตลอดชีพ",
+      "Set files ทั้งหมด",
+      "Priority support 24/7",
+      "Early access เวอร์ชั่นใหม่"
+    ],
+    "ctaLabel": "ซื้อ Ultimate",
+    "ctaAction": "contact",
+    "color": "#ff2d78"
+  },
+  {
+    "name": "7-Day Trial",
+    "price": "ฟรี",
+    "priceUnit": "ครั้งเดียว",
+    "accounts": "1 Account",
+    "updates": "-",
+    "duration": "7 วัน",
+    "highlight": "ทดลอง",
+    "features": [
+      "ทดลองใช้ฟรี 7 วัน ไม่มีเงื่อนไขใดๆ"
+    ],
+    "ctaLabel": "ทดลอง",
+    "ctaAction": "contact",
+    "color": "#00f5ff"
+  }
+]

@@ -1,0 +1,28 @@
+# Secrets — never commit (copy dashboard/.env.example -> dashboard/.env)
+.env
+*.env
+!.env.example
+
+# Runtime data / customer data
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+dashboard/data/catalog/backups/
+*.log
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# Admin password notes (local only)
+dashboard/ถ้าลืมรหัส — ต้องตั้งใหม่เท่านั้น.txt

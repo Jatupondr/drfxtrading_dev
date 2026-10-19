@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>วิธีการคัดลอกเทรด · DRFX BOT BUILDERS</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<style>
+:root{
+  --bg:#060b14;--bg2:#0a1628;--bg3:#0f2545;--bg4:#060e1e;
+  --border:#0f2545;--border2:#1e3a5f;
+  --text:#f1f5f9;--muted:#94a3b8;--dim:#475569;--faint:#334155;
+  --accent:#38bdf8;--purple:#a78bfa;--green:#22c55e;--amber:#f59e0b;--red:#f87171;
+  --mono:'JetBrains Mono',monospace;--sans:'Sarabun',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;line-height:1.7}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:50;background:rgba(6,11,20,.92);backdrop-filter:blur(14px);border-bottom:0.5px solid var(--border2)}
+.hdr-in{max-width:860px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-ic{width:30px;height:30px;background:rgba(167,139,250,.12);border:0.5px solid rgba(167,139,250,.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.brand-nm{font-size:15px;font-weight:700;line-height:1.3}
+.brand-sub{font-size:11px;color:var(--faint);font-family:var(--mono)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;border:0.5px solid var(--border2);border-radius:6px;color:var(--dim);font-size:13px;text-decoration:none;transition:all .2s}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.wrap{max-width:860px;margin:0 auto;padding:32px 20px 80px}
+
+/* HERO */
+.hero{margin-bottom:26px}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--purple);opacity:.75;margin-bottom:10px}
+.hero-title{font-size:clamp(23px,4vw,31px);font-weight:700;line-height:1.35;margin-bottom:12px}
+.hero-desc{font-size:15px;color:var(--muted);line-height:1.85}
+
+.acct-chip{display:inline-flex;align-items:center;gap:9px;padding:9px 15px;background:rgba(167,139,250,.08);border:0.5px solid rgba(167,139,250,.3);border-radius:7px;margin-top:18px}
+.acct-chip-lbl{font-size:11px;color:var(--faint);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.acct-chip-val{font-size:14px;font-weight:700;color:var(--purple)}
+
+/* CALLOUT */
+.callout{background:var(--bg2);border:0.5px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:15px 20px;margin:24px 0;font-size:14px;color:var(--muted);line-height:1.8}
+.callout strong{color:var(--accent);font-weight:600}
+
+/* SECTION TITLE */
+.sec-title{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--faint);text-transform:uppercase;margin:48px 0 20px;display:flex;align-items:center;gap:10px}
+.sec-title::after{content:'';flex:1;height:0.5px;background:var(--border)}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:38px}
+.step{display:flex;gap:18px;align-items:flex-start}
+.step-num{width:34px;height:34px;border-radius:50%;background:rgba(167,139,250,.14);border:0.5px solid rgba(167,139,250,.4);color:var(--purple);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);margin-top:2px}
+.step-body{flex:1;min-width:0}
+.step-title{font-size:17px;font-weight:700;margin-bottom:8px;line-height:1.5}
+.step-desc{font-size:14px;color:var(--muted);line-height:1.9}
+.step-desc strong{color:var(--text);font-weight:600}
+.step-desc code{background:var(--bg3);padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:13px;color:var(--accent)}
+
+/* FIELD LIST */
+.fields{background:var(--bg4);border:0.5px solid var(--border);border-radius:8px;padding:15px 19px;margin-top:13px}
+.fields-title{font-size:12px;color:var(--amber);font-weight:700;margin-bottom:11px;font-family:var(--mono);letter-spacing:.04em}
+.field-item{font-size:13.5px;color:var(--muted);padding-left:17px;position:relative;line-height:1.8;margin-bottom:7px}
+.field-item:last-child{margin-bottom:0}
+.field-item::before{content:'▸';position:absolute;left:0;color:var(--amber);opacity:.65}
+.field-item strong{color:var(--text);font-weight:600}
+
+/* IMAGES */
+.step-imgs{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.step-img{border:0.5px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg4);transition:border-color .2s;cursor:zoom-in}
+.step-img:hover{border-color:var(--border2)}
+.step-img img{width:100%;display:block}
+.step-img-cap{padding:8px 14px;font-size:12px;color:var(--faint);font-family:var(--mono);border-top:0.5px solid var(--border)}
+
+/* NOTE */
+.note{border-radius:7px;padding:13px 17px;margin-top:13px;font-size:13.5px;line-height:1.8}
+.note-info{background:rgba(56,189,248,.05);border:0.5px solid rgba(56,189,248,.2);color:var(--muted)}
+.note-info strong{color:var(--accent);font-weight:600}
+.note-warn{background:rgba(245,158,11,.05);border:0.5px solid rgba(245,158,11,.22);color:var(--muted)}
+.note-warn strong{color:var(--amber);font-weight:600}
+
+/* LOT TYPE CARDS */
+.lot-cards{display:flex;flex-direction:column;gap:14px}
+.lot-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:9px;overflow:hidden}
+.lot-card.rec{border-color:rgba(34,197,94,.35)}
+.lot-head{padding:14px 19px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.lot-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;font-family:var(--mono);letter-spacing:.05em}
+.lot-b-auto{background:rgba(56,189,248,.14);color:var(--accent)}
+.lot-b-mul{background:rgba(34,197,94,.14);color:var(--green)}
+.lot-b-fix{background:rgba(167,139,250,.14);color:var(--purple)}
+.lot-name{font-size:15px;font-weight:700}
+.lot-tag{font-size:12px;color:var(--faint);margin-left:auto;font-family:var(--mono)}
+.rec-pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;background:var(--green);color:#052e16;font-family:var(--mono)}
+.lot-body{padding:15px 19px;font-size:13.5px;color:var(--muted);line-height:1.9}
+.lot-body strong{color:var(--text);font-weight:600}
+.lot-body code{background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:12.5px;color:var(--accent)}
+.lot-pros{display:grid;grid-template-columns:1fr;gap:9px;margin-top:13px;padding-top:13px;border-top:0.5px solid var(--border)}
+@media(min-width:560px){.lot-pros{grid-template-columns:1fr 1fr}}
+.pro-box{font-size:12.5px;line-height:1.75}
+.pro-lbl{font-size:11px;font-weight:700;font-family:var(--mono);margin-bottom:4px;display:block}
+.pro-good .pro-lbl{color:var(--green)}
+.pro-bad .pro-lbl{color:var(--amber)}
+.pro-box span:not(.pro-lbl){color:var(--muted)}
+
+/* EXAMPLE TABLE */
+.ex-table{width:100%;border-collapse:collapse;margin-top:11px;font-size:13px}
+.ex-table th{text-align:left;padding:7px 10px;font-size:11px;color:var(--faint);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;border-bottom:0.5px solid var(--border)}
+.ex-table td{padding:8px 10px;border-bottom:0.5px solid rgba(15,37,69,.6);color:var(--muted);font-family:var(--mono);font-size:12.5px}
+.ex-table tr:last-child td{border-bottom:none}
+.ex-hl{color:var(--green);font-weight:600}
+
+/* WARNINGS LIST */
+.warn-list{display:flex;flex-direction:column;gap:11px}
+.warn-item{background:var(--bg2);border:0.5px solid var(--border);border-left:2px solid var(--amber);border-radius:0 7px 7px 0;padding:13px 18px;font-size:13.5px;color:var(--muted);line-height:1.85}
+.warn-item strong{color:var(--text);font-weight:600}
+.warn-item.risk{border-left-color:var(--red)}
+.warn-item.risk strong{color:var(--red)}
+.warn-item.fee{border-left-color:var(--green)}
+.warn-item.fee strong{color:var(--green)}
+.fee-rows{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.fee-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:var(--bg4);border:0.5px solid var(--border);border-radius:6px}
+.fee-row.ib{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}
+.fee-label{font-size:13.5px;color:var(--muted)}
+.fee-row.ib .fee-label{color:var(--text);font-weight:600}
+.fee-val{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--muted)}
+.fee-val.ib-val{color:var(--green);text-shadow:0 0 12px rgba(34,197,94,.4)}
+
+/* CTA */
+.cta{margin-top:48px;padding:30px 24px;background:var(--bg2);border:0.5px solid rgba(167,139,250,.3);border-radius:10px;text-align:center}
+.cta-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.cta-desc{font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.8}
+.cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 34px;background:rgba(167,139,250,.18);border:0.5px solid rgba(167,139,250,.5);border-radius:8px;color:var(--purple);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;font-family:var(--sans)}
+.cta-btn:hover{background:rgba(167,139,250,.3);border-color:var(--purple);transform:translateY(-2px);box-shadow:0 6px 24px rgba(167,139,250,.2)}
+.cta-btn.disabled{opacity:.4;pointer-events:none}
+.cta-note{font-size:12px;color:var(--faint);margin-top:13px;font-family:var(--mono)}
+
+/* HELP */
+.help{margin-top:36px;text-align:center;padding-top:28px;border-top:0.5px solid var(--border)}
+.help-title{font-size:14px;color:var(--muted);margin-bottom:14px}
+.help-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.help-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:7px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s}
+.help-line{background:rgba(6,199,85,.1);border:0.5px solid rgba(6,199,85,.3);color:#06C755}
+.help-line:hover{background:rgba(6,199,85,.2)}
+.help-tg{background:rgba(34,158,217,.1);border:0.5px solid rgba(34,158,217,.3);color:#229ED9}
+.help-tg:hover{background:rgba(34,158,217,.2)}
+
+/* ── IB SECTION ── */
+.ib-box{background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(34,197,94,.02));border:0.5px solid rgba(34,197,94,.3);border-radius:10px;padding:22px 24px;margin-top:20px}
+.ib-title{font-size:16px;font-weight:700;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:9px}
+.ib-desc{font-size:14px;color:var(--muted);line-height:1.85;margin-bottom:18px}
+.ib-btns{display:grid;grid-template-columns:1fr;gap:11px}
+@media(min-width:560px){.ib-btns{grid-template-columns:1fr 1fr}}
+.ib-btn{display:flex;align-items:center;gap:12px;padding:15px 18px;border-radius:8px;text-decoration:none;cursor:pointer;transition:all .2s;border:0.5px solid;font-family:var(--sans);text-align:left;background:var(--bg2)}
+.ib-btn-new{border-color:rgba(34,197,94,.4)}
+.ib-btn-new:hover{background:rgba(34,197,94,.1);border-color:var(--green);transform:translateY(-2px)}
+.ib-btn-move{border-color:rgba(56,189,248,.4)}
+.ib-btn-move:hover{background:rgba(56,189,248,.1);border-color:var(--accent);transform:translateY(-2px)}
+.ib-btn-ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.ib-btn-new .ib-btn-ic{background:rgba(34,197,94,.14)}
+.ib-btn-move .ib-btn-ic{background:rgba(56,189,248,.14)}
+.ib-btn-txt{flex:1;min-width:0}
+.ib-btn-t{font-size:14px;font-weight:700;margin-bottom:2px}
+.ib-btn-new .ib-btn-t{color:var(--green)}
+.ib-btn-move .ib-btn-t{color:var(--accent)}
+.ib-btn-s{font-size:12px;color:var(--faint);line-height:1.5}
+.ib-code{display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 16px;background:var(--bg4);border:0.5px dashed rgba(34,197,94,.35);border-radius:7px}
+.ib-code-lbl{font-size:12px;color:var(--faint);font-family:var(--mono)}
+.ib-code-val{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--green);letter-spacing:1px}
+.ib-code-btn{margin-left:auto;padding:5px 12px;background:rgba(34,197,94,.12);border:0.5px solid rgba(34,197,94,.3);border-radius:5px;color:var(--green);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .2s}
+.ib-code-btn:hover{background:rgba(34,197,94,.22)}
+
+/* ── TRANSFER MODAL ── */
+.tf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;padding:20px}
+.tf-overlay.show{opacity:1;pointer-events:all}
+.tf-popup{background:var(--bg2);border:0.5px solid rgba(56,189,248,.4);border-radius:10px;width:100%;max-width:580px;max-height:90vh;display:flex;flex-direction:column;transform:scale(.96);transition:transform .25s;overflow:hidden}
+.tf-overlay.show .tf-popup{transform:scale(1)}
+.tf-head{padding:18px 22px;border-bottom:0.5px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-shrink:0}
+.tf-title{font-size:16px;font-weight:700}
+.tf-sub{font-size:12px;color:var(--faint);margin-top:3px}
+.tf-close{width:28px;height:28px;border-radius:6px;border:0.5px solid var(--border2);background:transparent;color:var(--dim);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.tf-close:hover{border-color:var(--red);color:var(--red)}
+.tf-body{padding:20px 22px;overflow-y:auto;flex:1;min-height:0}
+.tf-field{margin-bottom:16px}
+.tf-field:last-child{margin-bottom:0}
+.tf-lbl{font-size:12px;color:var(--faint);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tf-copy{padding:4px 11px;background:rgba(56,189,248,.1);border:0.5px solid rgba(56,189,248,.28);border-radius:5px;color:var(--accent);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .2s}
+.tf-copy:hover{background:rgba(56,189,248,.2)}
+.tf-copy.done{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:var(--green)}
+.tf-val{background:var(--bg4);border:0.5px solid var(--border);border-radius:7px;padding:12px 15px;font-size:13.5px;color:var(--text);font-family:var(--mono);word-break:break-all;line-height:1.7}
+.tf-val.body-txt{font-family:var(--sans);font-size:13.5px;line-height:1.9;color:var(--muted);white-space:pre-wrap}
+.tf-warn{background:rgba(245,158,11,.07);border:0.5px solid rgba(245,158,11,.25);border-radius:7px;padding:13px 16px;margin-top:18px;font-size:13px;color:var(--muted);line-height:1.8}
+.tf-warn strong{color:var(--amber);font-weight:600}
+
+.ftr{text-align:center;padding:28px 20px;font-size:11px;color:var(--faint);font-family:var(--mono);border-top:0.5px solid var(--border);margin-top:40px}
+.ftr a{color:var(--accent);text-decoration:none}
+
+/* LIGHTBOX */
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:200;display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.lb.show{display:flex}
+.lb img{max-width:100%;max-height:92vh;border-radius:6px}
+.lb-close{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:6px;border:0.5px solid rgba(255,255,255,.15);background:rgba(0,0,0,.6);color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+
+@media(max-width:600px){
+  .step{gap:13px}.step-num{width:30px;height:30px;font-size:13px}
+  .step-title{font-size:16px}.wrap{padding:24px 16px 60px}
+  .lot-tag{margin-left:0;width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-in">
+    <div class="brand">
+      <div class="brand-ic">⚡</div>
+      <div>
+        <div class="brand-nm">DRFX BOT BUILDERS</div>
+        <div class="brand-sub">Copy Trade Guide</div>
+      </div>
+    </div>
+    <a class="back-btn" href="javascript:window.close()">✕ ปิดหน้านี้</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow">▸▸ VT MARKETS ◂◂</div>
+    <h1 class="hero-title">วิธีการคัดลอกเทรดโดยลิงก์ผู้แนะนำ</h1>
+    <p class="hero-desc">เอกสารนี้อธิบายลำดับขั้นตอนการสมัครติดตามผู้นำเทรด พร้อมรายการข้อมูลที่ต้องกรอกในแต่ละขั้น เพื่อให้ทำความเข้าใจได้ก่อนเริ่มดำเนินการจริง</p>
+    <div class="acct-chip" id="acctChip" style="display:none">
+      <span class="acct-chip-lbl">บัญชีผู้นำเทรด</span>
+      <span class="acct-chip-val" id="acctName">—</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    อ่านขั้นตอนด้านล่างให้ครบก่อน แล้วกดปุ่ม <strong>ไปขั้นตอนถัดไป</strong> ท้ายหน้า เพื่อเปิดหน้าสมัครของโบรกเกอร์ในแท็บใหม่
+  </div>
+
+  <div class="sec-title">ขั้นตอนการสมัคร</div>
+
+  <!-- ══════ แก้ขั้นตอนตรงนี้ ══════ -->
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">กดลิงก์ Copy Trade แล้วเข้าสู่ระบบด้วยบัญชีที่จะใช้ติดตาม</div>
+        <div class="step-desc">กดปุ่ม <strong>"คัดลอกเลย"</strong> ของผู้นำเทรดที่ต้องการ ระบบจะพาไปหน้า <strong>"สร้างการติดตาม"</strong> บนพอร์ทัล vtrade ของ VT Markets — แผงด้านขวาแสดงเงื่อนไขของผู้นำเทรด ทั้งส่วนแบ่งกำไร ค่าธรรมเนียมการจัดการ และยอดขั้นต่ำ ควรอ่านก่อนกรอก</div>
+        <div class="fields">
+          <div class="fields-title">ข้อมูลที่ต้องกรอกในขั้นนี้</div>
+          <div class="field-item"><strong>เซิร์ฟเวอร์</strong> — ของบัญชีที่จะใช้ติดตาม (เช่น พอร์ต MT5 Live 3 ให้เลือก <code>MT5 VT3</code>)</div>
+          <div class="field-item"><strong>บัญชีซื้อขาย</strong> — เลขพอร์ตของบัญชีที่จะใช้ติดตาม</div>
+          <div class="field-item"><strong>รหัสผ่าน</strong> — รหัสผ่านของบัญชีซื้อขายนั้น</div>
+        </div>
+        <div class="step-imgs">
+          <div class="step-img" onclick="zoom(this)">
+            <img src="guide/step1.png" alt="หน้าสร้างการติดตาม" loading="lazy" onerror="this.closest('.step-img').style.display='none'">
+            <div class="step-img-cap">หน้าสร้างการติดตาม — กดมุมขวาบนเพื่อเลือกภาษา</div>
+          </div>
+        </div>
+        <div class="note note-warn">
+          <strong>ระวัง:</strong> หน้านี้เป็นเว็บไซต์ของ VT Markets ไม่ใช่เว็บไซต์ของเรา และรหัสผ่านที่กรอกคือรหัสผ่านของ<strong>บัญชีเทรด</strong> ไม่ใช่รหัสผ่านที่ใช้เข้าเว็บไซต์นี้
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">กด "ตกลง" ที่หน้าต่างแจ้งรายละเอียด</div>
+        <div class="step-desc">หลังลงทะเบียน ระบบจะขึ้นหน้าต่างอธิบายเมนูที่เกี่ยวข้องกับการคัดลอก ได้แก่ ตัวกรองผู้ให้บริการ กลยุทธ์การติดตาม และการจัดการความเสี่ยง กดตกลงเพื่อไปต่อ</div>
+        <div class="step-imgs">
+          <div class="step-img" onclick="zoom(this)">
+            <img src="guide/step2.png" alt="หน้าต่างแจ้งรายละเอียด" loading="lazy" onerror="this.closest('.step-img').style.display='none'">
+            <div class="step-img-cap">อ่านรายละเอียดแล้วกดตกลง</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">กด "การดำเนินการ" เลือก "เปิดใช้งาน" แล้วยืนยันอีกครั้ง</div>
+        <div class="step-desc">การติดตามที่เพิ่งสร้างจะยังไม่ทำงานจนกว่าจะสั่งเปิดใช้งาน เมื่อกดเปิดใช้งาน ระบบจะแจ้งว่าค่าธรรมเนียมการจัดการจะถูกหักจากบัญชีเมื่อเปิดใช้งาน แล้วจึงเริ่มคัดลอกคำสั่งใหม่ของผู้นำเทรด</div>
+        <div class="step-imgs">
+          <div class="step-img" onclick="zoom(this)">
+            <img src="guide/step3.png" alt="กดเปิดใช้งาน" loading="lazy" onerror="this.closest('.step-img').style.display='none'">
+            <div class="step-img-cap">การดำเนินการ → เปิดใช้งาน → ยืนยัน</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">กด "แก้ไข" ที่ "กลยุทธ์การติดตาม" เพื่อตั้งขนาด lot</div>
+        <div class="step-desc">เลือกได้ 3 แบบ คือ <strong>ปรับขนาดอัตโนมัติ</strong> (Autoscale) <strong>คูณ</strong> (Multiply) และ <strong>คงที่</strong> (Fixed) ความหมายของแต่ละแบบอธิบายไว้ด้านล่าง หากไม่ตั้งค่า ระบบจะใช้แบบปรับขนาดอัตโนมัติให้</div>
+        <div class="step-imgs">
+          <div class="step-img" onclick="zoom(this)">
+            <img src="guide/step4.png" alt="ตั้งกลยุทธ์การติดตาม" loading="lazy" onerror="this.closest('.step-img').style.display='none'">
+            <div class="step-img-cap">แก้ไขกลยุทธ์การติดตาม</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">ตรวจสอบที่หน้า "ผลงานของฉัน"</div>
+        <div class="step-desc">เมื่อติดตามสำเร็จ ชื่อผู้นำเทรดจะปรากฏในหน้าผลงานของฉัน พร้อมสถานะ <strong>ใช้งานอยู่</strong> ส่วนแบ่งกำไร และวันที่ลงทะเบียน กดที่แถวนั้นเพื่อดูข้อมูลของผู้นำเทรดได้</div>
+        <div class="step-imgs">
+          <div class="step-img" onclick="zoom(this)">
+            <img src="guide/step5.png" alt="หน้าผลงานของฉัน" loading="lazy" onerror="this.closest('.step-img').style.display='none'">
+            <div class="step-img-cap">ตรวจสอบสถานะที่หน้าผลงานของฉัน</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════ ประเภท LOT ══════ -->
+  <div class="sec-title">ความหมายของแต่ละประเภท</div>
+
+  <div class="lot-cards">
+
+    <div class="lot-card">
+      <div class="lot-head">
+        <span class="lot-badge lot-b-auto">AUTOSCALE</span>
+        <span class="lot-name">ปรับขนาดอัตโนมัติ</span>
+        <span class="lot-tag">ตามสัดส่วนเงินทุน</span>
+      </div>
+      <div class="lot-body">
+        ระบบออก lot โดยปรับขนาดตามทุนให้อัตโนมัติ เทียบได้ทั้งจาก <strong>บาลานซ์</strong> (Balance) และ <strong>ทุน</strong> (Equity) และตั้งตัวคูณอัตราส่วนเพิ่มหรือลดตามความเสี่ยงที่รับได้<br>
+        ตัวคูณ <code>1</code> คือออก lot เท่าสัดส่วนทุนของผู้นำเทรด กำไรและขาดทุนจะใกล้เคียงกัน มากกว่า 1 จะออก lot ใหญ่กว่า และน้อยกว่า 1 จะออก lot เล็กกว่า
+        <div class="lot-pros">
+          <div class="pro-box pro-good"><span class="pro-lbl">✓ ข้อดี</span><span>เมื่อผู้นำเทรดหรือผู้ติดตามเพิ่มหรือลดทุน ขนาด lot จะถูกปรับให้เอง</span></div>
+          <div class="pro-box pro-bad"><span class="pro-lbl">⚠ ข้อด้อย</span><span>หากผู้นำเทรดเปิดสวนทางในพอร์ตตนเอง ปริมาณ lot ฝั่งซื้อและฝั่งขายของผู้ติดตามอาจไม่เท่ากัน เพราะการคำนวณจากทุนมีการปัดเศษเสมอ</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lot-card rec">
+      <div class="lot-head">
+        <span class="lot-badge lot-b-mul">MULTIPLY</span>
+        <span class="lot-name">คูณ</span>
+        <span class="rec-pill">แนะนำ</span>
+        <span class="lot-tag">คูณจาก lot ผู้นำเทรด</span>
+      </div>
+      <div class="lot-body">
+        ระบบนำ lot ของผู้นำเทรดมาคูณกับตัวคูณที่ตั้งไว้ จึงควรทราบทุนของผู้นำเทรดก่อนตั้งค่า<br>
+        คำนวณตัวคูณจาก <strong>ทุนของตนเอง ÷ ทุนของผู้นำเทรด</strong>
+        <table class="ex-table">
+          <thead><tr><th>ทุนผู้นำเทรด</th><th>ทุนของคุณ</th><th>ตัวคูณที่ใช้</th></tr></thead>
+          <tbody>
+            <tr><td>1,000 USD</td><td>5,000 USD</td><td class="ex-hl">5</td></tr>
+            <tr><td>1,000 USD</td><td>500 USD</td><td class="ex-hl">0.5</td></tr>
+            <tr><td>1,000 USD</td><td>100 USD</td><td class="ex-hl">0.1</td></tr>
+          </tbody>
+        </table>
+        <div class="lot-pros">
+          <div class="pro-box pro-good"><span class="pro-lbl">✓ ข้อดี</span><span>lot คงที่เสมอ และเปอร์เซ็นต์กำไรขาดทุนใกล้เคียงพอร์ตของผู้นำเทรดมากที่สุด</span></div>
+          <div class="pro-box pro-bad"><span class="pro-lbl">⚠ ข้อด้อย</span><span>เมื่อฝ่ายใดฝ่ายหนึ่งเพิ่มหรือลดทุน ผู้ติดตามต้องเข้ามาปรับตัวคูณเอง</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lot-card">
+      <div class="lot-head">
+        <span class="lot-badge lot-b-fix">FIXED</span>
+        <span class="lot-name">คงที่</span>
+        <span class="lot-tag">ขนาดเท่ากันทุกออเดอร์</span>
+      </div>
+      <div class="lot-body">
+        ผู้ติดตามกำหนดขนาด lot เองและใช้ค่านั้นทุกออเดอร์ เช่น ตั้งไว้ <code>1.00 lot</code> ก็จะออก 1.00 lot เสมอ
+        <div class="lot-pros">
+          <div class="pro-box pro-good"><span class="pro-lbl">✓ ข้อดี</span><span>เหมาะกับการติดตามผู้นำเทรดที่ออกไม้ด้วยขนาดเท่าเดิมตลอด</span></div>
+          <div class="pro-box pro-bad"><span class="pro-lbl">⚠ ข้อด้อย</span><span>หากผู้นำเทรดออกไม้หลายขนาด กำไรและขาดทุนของผู้ติดตามจะต่างจากผู้นำเทรดอย่างมาก</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════ ข้อควรทราบ ══════ -->
+  <div class="sec-title">ข้อควรทราบ</div>
+
+  <div class="warn-list">
+    <div class="warn-item">
+      <strong>แนะนำให้ใช้แบบตัวคูณ (Multiply)</strong> ตามสัดส่วนทุนของผู้นำเทรด เพื่อให้ขนาด lot ใกล้เคียงตามสัดส่วน หากทุนเปลี่ยนภายหลังก็กลับมาปรับตัวคูณได้ หรือจะเลือกปรับขนาดอัตโนมัติตามบาลานซ์ก็ได้ แต่ขนาด lot อาจไม่เป็นสัดส่วนเท่าแบบตัวคูณ
+    </div>
+    <div class="warn-item fee">
+      <strong>ค่าธรรมเนียมส่วนแบ่งกำไร</strong>
+      <div class="fee-rows">
+        <div class="fee-row">
+          <span class="fee-label">สมาชิกทั่วไป</span>
+          <span class="fee-val">35%</span>
+        </div>
+        <div class="fee-row ib">
+          <span class="fee-label">IB Partner DRFX</span>
+          <span class="fee-val ib-val">20%</span>
+        </div>
+      </div>
+
+      <div class="ib-box">
+        <div class="ib-title">🤝 ยังไม่ได้อยู่ใต้ IB Partner DRFX?</div>
+        <div class="ib-desc">เลือกวิธีที่ตรงกับสถานะของคุณ เพื่อรับสิทธิ์ค่าธรรมเนียม 20% และใช้งาน EA ได้ฟรี</div>
+        <div class="ib-btns">
+          <a class="ib-btn ib-btn-new" href="https://vtm.pro/la5-com/global/drfx2023" target="_blank" rel="noopener">
+            <div class="ib-btn-ic">✨</div>
+            <div class="ib-btn-txt">
+              <div class="ib-btn-t">สมัครสมาชิกใหม่</div>
+              <div class="ib-btn-s">ยังไม่เคยมีบัญชี VT Markets</div>
+            </div>
+          </a>
+          <button class="ib-btn ib-btn-move" onclick="openTF()">
+            <div class="ib-btn-ic">🔄</div>
+            <div class="ib-btn-txt">
+              <div class="ib-btn-t">ย้ายสายงาน</div>
+              <div class="ib-btn-s">มีบัญชีอยู่แล้ว ต้องการย้ายมา</div>
+            </div>
+          </button>
+        </div>
+        <div class="ib-code">
+          <span class="ib-code-lbl">Referral Code</span>
+          <span class="ib-code-val" id="refCode">drfx2023</span>
+          <button class="ib-code-btn" onclick="copyTxt('drfx2023',this)">คัดลอก</button>
+        </div>
+      </div>
+    </div>
+    <div class="warn-item">
+      <strong>คัดลอกเฉพาะคำสั่งใหม่</strong> — ระบบจะคัดลอกเฉพาะคำสั่งที่ผู้นำเทรดเปิดใหม่หลังเปิดใช้งานแล้วเท่านั้น ไม้ที่เปิดค้างไว้ก่อนหน้าจะไม่ถูกคัดลอกมา
+    </div>
+    <div class="warn-item risk">
+      <strong>ความเสี่ยง</strong> — ผลการเทรดในอดีตไม่รับประกันผลในอนาคต การคัดลอกเทรดมีความเสี่ยงที่จะขาดทุน
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-title">อ่านครบแล้ว พร้อมเริ่มใช่ไหม</div>
+    <div class="cta-desc">กดปุ่มด้านล่างเพื่อเปิดหน้าสมัครติดตามของผู้นำเทรดรายนี้ในแท็บใหม่</div>
+    <a class="cta-btn disabled" id="ctaBtn" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M8 7h9a3 3 0 0 1 3 3v9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><rect x="4" y="3" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.7" fill="none"/></svg>
+      ไปขั้นตอนถัดไป
+      <span style="font-size:16px">↗</span>
+    </a>
+    <div class="cta-note" id="ctaNote">เปิดในแท็บใหม่ · เว็บไซต์ของ VT Markets</div>
+  </div>
+
+  <div class="help">
+    <div class="help-title">ติดปัญหา? ทีมงานพร้อมช่วยเหลือ</div>
+    <div class="help-btns">
+      <a class="help-btn help-line" href="https://line.me/ti/p/@Drfx" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15"><path d="M12 2C6.48 2 2 6.04 2 11c0 3.16 1.68 5.94 4.24 7.65L5.5 22l3.07-1.6C9.6 20.77 10.78 21 12 21c5.52 0 10-4.04 10-9S17.52 2 12 2z"/></svg>
+        LINE: @Drfx
+      </a>
+      <a class="help-btn help-tg" href="https://t.me/DRFXBotBuilders" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="ftr">© DRFX BOT BUILDERS · <a href="https://drfxtrading.net" target="_blank">drfxtrading.net</a></div>
+
+<!-- TRANSFER MODAL -->
+<div class="tf-overlay" id="tfOverlay" onclick="closeTF(event)">
+  <div class="tf-popup" onclick="event.stopPropagation()">
+    <div class="tf-head">
+      <div>
+        <div class="tf-title">ย้ายสายงานมาที่ IB DRFX</div>
+        <div class="tf-sub">คัดลอกข้อความด้านล่าง แล้วส่งอีเมลไปที่ฝ่ายซัพพอร์ต</div>
+      </div>
+      <button class="tf-close" onclick="closeTF()">✕</button>
+    </div>
+    <div class="tf-body">
+
+      <div class="tf-field">
+        <div class="tf-lbl">
+          <span>ส่งเมลไปที่</span>
+          <button class="tf-copy" onclick="copyTxt('support.thai@vtmarkets.com',this)">คัดลอก</button>
+        </div>
+        <div class="tf-val" id="tfTo">support.thai@vtmarkets.com</div>
+      </div>
+
+      <div class="tf-field">
+        <div class="tf-lbl">
+          <span>หัวเรื่อง</span>
+          <button class="tf-copy" onclick="copyTxt('Transfer client',this)">คัดลอก</button>
+        </div>
+        <div class="tf-val" id="tfSubj">Transfer client</div>
+      </div>
+
+      <div class="tf-field">
+        <div class="tf-lbl">
+          <span>เนื้อหาอีเมล</span>
+          <button class="tf-copy" onclick="copyBody(this)">คัดลอก</button>
+        </div>
+        <div class="tf-val body-txt" id="tfBody">Dear Support,
+
+Name: 
+Email: 
+
+would like to transfer under 1171208,
+Reason: copytrade and use EA
+
+Please approve and transfer me to under IB. Thank you.
+
+Kindly note if no response is received within 3 days, the client will proceed with the transfer immediately.
+
+Best Regards,</div>
+      </div>
+
+      <div class="tf-warn">
+        <strong>⚠ สำคัญ:</strong> กรุณาใช้อีเมลที่เคยเปิดบัญชี หรืออีเมลที่ใช้อยู่ปัจจุบันเท่านั้น และอย่าลืมกรอก <strong>Name</strong> กับ <strong>Email</strong> ของคุณก่อนส่ง
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="lb" id="lb" onclick="closeLb()">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<script>
+(function(){
+  let url='', acct='';
+
+  // อ่านจาก localStorage ที่ dashboard เขียนไว้ (URL สะอาด)
+  try{
+    const raw = localStorage.getItem('drfx_ct_ctx');
+    if(raw){
+      const d = JSON.parse(raw);
+      // ใช้ได้ภายใน 10 นาที กันข้อมูลค้าง
+      if(d && d.ts && (Date.now() - d.ts) < 600000){
+        url = d.url || '';
+        acct = d.acct || '';
+      }
+    }
+  }catch(e){}
+
+  // fallback: รองรับ URL param แบบเดิมด้วย (เผื่อแชร์ลิงก์ตรง)
+  if(!url){
+    const p = new URLSearchParams(location.search);
+    if(p.get('url')) url = decodeURIComponent(p.get('url'));
+    if(p.get('acct')) acct = decodeURIComponent(p.get('acct'));
+  }
+
+  if(acct){
+    document.getElementById('acctChip').style.display='inline-flex';
+    document.getElementById('acctName').textContent = acct;
+  }
+
+  const btn = document.getElementById('ctaBtn');
+  if(url){
+    btn.href = url;
+    btn.classList.remove('disabled');
+  }else{
+    document.getElementById('ctaNote').textContent = 'ยังไม่มีลิงก์ — กรุณากดจากหน้า Dashboard';
+  }
+})();
+function zoom(el){
+  const img = el.querySelector('img');
+  if(!img) return;
+  document.getElementById('lbImg').src = img.src;
+  document.getElementById('lb').classList.add('show');
+}
+function closeLb(){ document.getElementById('lb').classList.remove('show'); }
+
+// ── TRANSFER MODAL ──
+function openTF(){ document.getElementById('tfOverlay').classList.add('show'); }
+function closeTF(e){
+  if(!e || e.target===document.getElementById('tfOverlay') || e.currentTarget?.tagName==='BUTTON')
+    document.getElementById('tfOverlay').classList.remove('show');
+}
+
+// ── COPY HELPERS ──
+function flash(btn, txt){
+  if(!btn) return;
+  const old = btn.textContent;
+  btn.textContent = txt || '✓ คัดลอกแล้ว';
+  btn.classList.add('done');
+  setTimeout(()=>{ btn.textContent = old; btn.classList.remove('done'); }, 1600);
+}
+function doCopy(text, btn){
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>flash(btn)).catch(()=>fallbackCopy(text,btn));
+  }else{ fallbackCopy(text,btn); }
+}
+function fallbackCopy(text, btn){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); flash(btn); }catch(e){ alert('คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตัวเองครับ'); }
+  document.body.removeChild(ta);
+}
+function copyTxt(text, btn){ doCopy(text, btn); }
+function copyBody(btn){ doCopy(document.getElementById('tfBody').innerText, btn); }
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ closeLb(); closeTF(); }
+});
+</script>
+</body>
+</html>

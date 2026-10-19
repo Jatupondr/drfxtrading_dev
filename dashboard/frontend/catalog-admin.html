@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200">
+<title>DRFX Admin — EA Catalog Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a1a;
+  --card: #0e0e1c;
+  --elevated: #14142a;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.18);
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --text-muted: rgba(255,255,255,0.4);
+  --accent: #00f5ff;
+  --accent-dim: rgba(0,245,255,0.15);
+  --success: #22c55e;
+  --danger: #ff2d78;
+  --warning: #eab308;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', 'Sarabun', sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+}
+input, select, textarea, button { font-family: inherit; font-size: inherit; color: inherit; }
+input, select, textarea {
+  background: var(--elevated); border: 1px solid var(--border);
+  padding: 8px 10px; color: var(--text); outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+textarea { resize: vertical; font-family: inherit; line-height: 1.5; }
+button { cursor: pointer; background: transparent; border: 1px solid var(--border-strong); color: var(--text); padding: 8px 14px; transition: all 0.15s; }
+button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.primary { background: var(--accent); color: #050510; border-color: var(--accent); font-weight: 600; }
+button.primary:hover:not(:disabled) { background: #00d5df; }
+button.danger { color: var(--danger); border-color: rgba(255,45,120,0.3); }
+button.danger:hover:not(:disabled) { background: rgba(255,45,120,0.1); border-color: var(--danger); }
+button.small { padding: 5px 10px; font-size: 12px; }
+
+/* ============ LOGIN ============ */
+.login-screen {
+  position: fixed; inset: 0; display: none;
+  align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #14142a 0%, #05050f 100%);
+}
+.login-screen.show { display: flex; }
+.login-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 40px 36px; width: 400px; max-width: calc(100vw - 40px);
+}
+.login-brand {
+  text-align: center; margin-bottom: 28px;
+}
+.login-brand-title {
+  font-size: 22px; font-weight: 700; letter-spacing: 2px;
+  color: var(--accent); margin-bottom: 4px;
+}
+.login-brand-sub {
+  font-size: 11px; color: var(--text-muted); letter-spacing: 3px;
+}
+.login-field { margin-bottom: 14px; }
+.login-field label {
+  display: block; font-size: 11px; color: var(--text-muted);
+  letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase;
+}
+.login-field input { width: 100%; padding: 10px 12px; }
+.login-btn { width: 100%; margin-top: 8px; padding: 11px; font-weight: 600; }
+.login-error {
+  margin-top: 12px; padding: 10px; background: rgba(255,45,120,0.1);
+  border: 1px solid rgba(255,45,120,0.3); color: var(--danger);
+  font-size: 12px; display: none;
+}
+.login-error.show { display: block; }
+
+/* ============ APP LAYOUT ============ */
+.app { display: none; height: 100vh; flex-direction: column; }
+.app.show { display: flex; }
+
+/* Topbar */
+.topbar {
+  display: flex; align-items: center; gap: 20px;
+  padding: 12px 20px; background: var(--card);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.topbar-brand {
+  font-size: 15px; font-weight: 700; letter-spacing: 1px;
+  color: var(--accent);
+}
+.topbar-brand-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 2px; }
+.topbar-tabs { display: flex; gap: 4px; margin-left: 20px; }
+.tab {
+  padding: 7px 16px; border: 1px solid transparent;
+  color: var(--text-dim); font-size: 13px; cursor: pointer;
+  transition: all 0.15s;
+}
+.tab.active { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+.tab:hover:not(.active) { color: var(--text); }
+.topbar-spacer { flex: 1; }
+.topbar-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text-muted);
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+.status-dot.dirty { background: var(--warning); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Workspace */
+.workspace { display: flex; flex: 1; overflow: hidden; }
+
+/* Sidebar (EA list) */
+.sidebar {
+  width: 260px; background: var(--card); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.sidebar-header {
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sidebar-title { font-size: 11px; letter-spacing: 2px; color: var(--text-muted); font-weight: 600; }
+.sidebar-search {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+}
+.sidebar-search input { width: 100%; padding: 6px 10px; font-size: 12px; }
+.sidebar-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+.sidebar-item {
+  padding: 10px 14px; border-left: 3px solid transparent;
+  cursor: pointer; display: flex; align-items: center; gap: 10px;
+  transition: all 0.15s;
+}
+.sidebar-item:hover { background: var(--elevated); }
+.sidebar-item.active {
+  background: var(--accent-dim); border-left-color: var(--accent);
+}
+.sidebar-item-color { width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; }
+.sidebar-item-info { flex: 1; min-width: 0; }
+.sidebar-item-name {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sidebar-item-ver {
+  font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;
+}
+.sidebar-item.dirty::after {
+  content: '•'; color: var(--warning); font-size: 20px; line-height: 0;
+}
+
+/* Editor area */
+.editor { flex: 1; overflow-y: auto; padding: 24px 32px; }
+.editor-empty {
+  display: flex; align-items: center; justify-content: center;
+  height: 100%; color: var(--text-muted); font-size: 14px;
+}
+.editor-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 20px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.editor-title { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+.editor-title-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; letter-spacing: 1px; }
+.editor-actions { display: flex; gap: 8px; }
+
+/* Field sections */
+.section {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 18px 20px; margin-bottom: 16px;
+}
+.section-title {
+  font-size: 11px; letter-spacing: 2px; color: var(--text-muted);
+  font-weight: 600; margin-bottom: 14px; text-transform: uppercase;
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label {
+  font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px;
+}
+.field input, .field select, .field textarea {
+  width: 100%; padding: 8px 10px;
+}
+.field textarea { min-height: 60px; font-family: 'Sarabun', 'Inter', sans-serif; }
+.field-hint { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-style: italic; }
+
+/* Color input + swatch */
+.color-input-group { display: flex; gap: 4px; }
+.color-input-group input[type=text] { flex: 1; font-family: 'JetBrains Mono', monospace; }
+.color-input-group input[type=color] { width: 36px; padding: 0; border: 1px solid var(--border); cursor: pointer; }
+
+/* Array list items */
+.array-list { display: flex; flex-direction: column; gap: 8px; }
+.array-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  background: var(--elevated); padding: 8px 10px; border: 1px solid var(--border);
+}
+.array-item input, .array-item textarea { flex: 1; background: var(--card); }
+.array-item .array-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: var(--accent); padding-top: 8px; width: 24px; flex-shrink: 0;
+}
+.array-item-delete {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-muted); padding: 4px 8px; font-size: 11px;
+  cursor: pointer; flex-shrink: 0; height: fit-content; margin-top: 2px;
+}
+.array-item-delete:hover { color: var(--danger); border-color: var(--danger); }
+
+/* Complex array items (mechanics, capital) */
+.complex-item {
+  background: var(--elevated); border: 1px solid var(--border);
+  padding: 12px 14px;
+}
+.complex-item-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.complex-item-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: var(--accent); font-weight: 600; letter-spacing: 1px;
+}
+.complex-item-fields { display: grid; gap: 8px; }
+
+/* Add button */
+.add-btn {
+  padding: 8px; background: transparent; border: 1px dashed var(--border-strong);
+  color: var(--text-muted); font-size: 12px; letter-spacing: 0.5px;
+  cursor: pointer; transition: all 0.15s; margin-top: 6px;
+}
+.add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Pricing tiers */
+.tiers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.tier-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.tier-card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.tier-card-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--text-muted); letter-spacing: 1px;
+}
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: var(--card); border: 1px solid var(--border-strong);
+  padding: 12px 20px; font-size: 13px;
+  opacity: 0; transition: all 0.3s; z-index: 100;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: var(--success); color: var(--success); }
+.toast.error { border-color: var(--danger); color: var(--danger); }
+
+/* Loading spinner */
+.spinner {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+  vertical-align: -2px; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* ============ USERS TAB (Design D: Card + Inline Expand) ============ */
+
+/* Utility */
+.text-muted { color: var(--text-muted); font-size: 12px; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.users-workspace {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+  display: none;
+  flex-direction: column;
+}
+.users-workspace.active {
+  display: flex;
+}
+.users-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Filters bar */
+.users-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.users-filters input[type=text] {
+  flex: 1;
+  padding: 9px 12px;
+}
+.users-filters select {
+  padding: 9px 12px;
+  min-width: 130px;
+}
+
+/* Quick filter chips */
+.filter-chips {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+.chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 0.5px solid transparent;
+  transition: all 0.12s;
+  user-select: none;
+  white-space: nowrap;
+}
+.chip:hover { transform: translateY(-1px); }
+.chip.chip-all {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-dim);
+  border-color: rgba(255,255,255,0.15);
+}
+.chip.chip-active   { background: rgba(34,197,94,0.10);  color: #22c55e; border-color: rgba(34,197,94,0.25); }
+.chip.chip-trial    { background: rgba(0,245,255,0.10);  color: #00f5ff; border-color: rgba(0,245,255,0.25); }
+.chip.chip-blocked  { background: rgba(255,45,120,0.10); color: #ff2d78; border-color: rgba(255,45,120,0.25); }
+.chip.chip-expired  { background: rgba(148,163,184,0.10); color: #94a3b8; border-color: rgba(148,163,184,0.25); }
+.chip.chip-activeall { background: rgba(250,204,21,0.10); color: #facc15; border-color: rgba(250,204,21,0.30); }
+.chip.selected {
+  background: var(--accent) !important;
+  color: #050510 !important;
+  border-color: var(--accent) !important;
+  font-weight: 600;
+}
+.chip .chip-count { font-family: 'JetBrains Mono', monospace; opacity: 0.85; margin-left: 4px; }
+
+/* User rows list */
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 200px;
+}
+.users-empty, .users-loading {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Individual row */
+.user-row {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-left: 3px solid var(--text-muted);
+  border-radius: 0 4px 4px 0;
+  transition: border-color 0.15s;
+}
+.user-row.status-active   { border-left-color: #22c55e; }
+.user-row.status-trial    { border-left-color: #00f5ff; }
+.user-row.status-blocked  { border-left-color: #ff2d78; }
+.user-row.status-expired  { border-left-color: #94a3b8; }
+.user-row.status-activeall { border-left-color: #facc15; border-left-width: 4px; background: rgba(250,204,21,0.03); }
+.user-row.status-none     { border-left-color: rgba(255,255,255,0.15); }
+
+.user-row-header {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.user-row-header:hover { background: var(--elevated); }
+.user-row.expanded { border-color: rgba(0,245,255,0.3); }
+.user-row.expanded .user-row-header { background: rgba(0,245,255,0.03); }
+
+.user-row-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 100px 1fr 100px 110px;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+.user-row-account {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 13px;
+}
+.user-row-info { min-width: 0; }
+.user-row-title {
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-row-sub {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-row-balance {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+  font-size: 13px;
+  text-align: right;
+}
+.user-row-chev {
+  font-size: 16px;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+.user-row.expanded .user-row-chev { transform: rotate(180deg); color: var(--accent); }
+
+.user-status {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 2px;
+  justify-self: start;
+}
+.status-active   { background: rgba(34,197,94,0.15);   color: #22c55e; }
+.status-trial    { background: rgba(0,245,255,0.15);   color: #00f5ff; }
+.status-blocked  { background: rgba(255,45,120,0.15);  color: #ff2d78; }
+.status-expired  { background: rgba(148,163,184,0.15); color: #94a3b8; }
+.status-activeall { background: rgba(250,204,21,0.15); color: #facc15; font-weight: 700; }
+.status-none     { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+/* Inline expand panel */
+.user-row-expand {
+  padding: 14px;
+  background: rgba(0,245,255,0.02);
+  border-top: 0.5px solid rgba(0,245,255,0.15);
+}
+.expand-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.expand-grid .field label {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+.expand-grid input, .expand-grid select {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.expand-notes {
+  margin-bottom: 12px;
+}
+.expand-notes textarea {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  min-height: 42px;
+  font-family: 'Sarabun', 'Inter', sans-serif;
+}
+.expand-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.expand-info span.info-value {
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 4px;
+}
+.expand-info .fp-value {
+  font-size: 10px;
+  word-break: break-all;
+}
+.expand-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.expand-actions button { padding: 5px 12px; font-size: 11px; }
+.expand-actions .spacer { flex: 1; min-width: 8px; }
+.expand-actions .btn-delete {
+  color: var(--danger);
+  border-color: rgba(255,45,120,0.3);
+}
+.expand-actions .btn-save {
+  background: var(--accent);
+  color: #050510;
+  border-color: var(--accent);
+  font-weight: 600;
+  padding: 6px 16px;
+}
+.expand-actions .btn-save:hover { background: #00d5df; }
+
+/* Pagination */
+.users-pagination {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div class="login-screen" id="loginScreen">
+  <form class="login-card" id="loginForm" onsubmit="return doLogin(event)">
+    <div class="login-brand">
+      <div class="login-brand-title">DRFX ADMIN</div>
+      <div class="login-brand-sub">EA CATALOG EDITOR</div>
+    </div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="loginUser" required autocomplete="username" autofocus>
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="primary login-btn" id="loginBtn">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+  </form>
+</div>
+
+<!-- ============ ADMIN APP ============ -->
+<div class="app" id="app">
+  <nav class="topbar">
+    <div>
+      <div class="topbar-brand">DRFX ADMIN</div>
+      <div class="topbar-brand-sub">CATALOG EDITOR</div>
+    </div>
+    <div class="topbar-tabs">
+      <div class="tab active" data-tab="eas" onclick="switchTab('eas')">EAs</div>
+      <div class="tab" data-tab="pricing" onclick="switchTab('pricing')">Pricing Tiers</div>
+      <div class="tab" data-tab="users" onclick="switchTab('users')">Users</div>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-status" id="statusText">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusLabel">Saved</span>
+    </div>
+    <button id="saveBtn" class="primary" onclick="saveChanges()" disabled>💾 Save Changes</button>
+    <button onclick="doLogout()">Logout</button>
+  </nav>
+
+  <div class="workspace">
+    <!-- SIDEBAR (only for EAs tab) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">EA LIST</div>
+        <button class="small" onclick="addNewEa()">+ Add EA</button>
+      </div>
+      <div class="sidebar-search">
+        <input type="text" id="searchInput" placeholder="Search..." oninput="renderSidebar()">
+      </div>
+      <div class="sidebar-list" id="sidebarList"></div>
+    </aside>
+
+    <!-- EDITOR (for EAs & Pricing tabs) -->
+    <section class="editor" id="editor"></section>
+
+    <!-- USERS WORKSPACE (for Users tab) -->
+    <section class="users-workspace" id="usersWorkspace">
+      <div class="users-header">
+        <div>
+          <div class="editor-title">User / License Management</div>
+          <div class="editor-title-sub">Google Sheet: Licenses · <span id="usersTotalText">-</span> total rows</div>
+        </div>
+        <button onclick="loadUsers(true)">🔄 Refresh</button>
+      </div>
+
+      <!-- Filters (search + dropdowns) -->
+      <div class="users-filters">
+        <input type="text" id="usersSearch" placeholder="🔍 Search account / name / broker / EA...">
+        <select id="usersFilterEa" onchange="onUsersFilterChange()">
+          <option value="">All EAs</option>
+        </select>
+        <select id="usersFilterBroker" onchange="onUsersFilterChange()">
+          <option value="">All Brokers</option>
+        </select>
+      </div>
+
+      <!-- Quick filter chips (click to filter by status) -->
+      <div class="filter-chips" id="filterChips">
+        <div class="chip chip-all selected" onclick="setStatusFilter('')">All · <span class="chip-count">-</span></div>
+        <div class="chip chip-activeall" onclick="setStatusFilter('ACTIVEALL')">🌐 All-Access · <span class="chip-count">-</span></div>
+        <div class="chip chip-active"  onclick="setStatusFilter('ACTIVE')">● Active · <span class="chip-count">-</span></div>
+        <div class="chip chip-trial"   onclick="setStatusFilter('TRIAL')">● Trial · <span class="chip-count">-</span></div>
+        <div class="chip chip-blocked" onclick="setStatusFilter('BLOCKED')">● Blocked · <span class="chip-count">-</span></div>
+        <div class="chip chip-expired" onclick="setStatusFilter('EXPIRED')">● Expired · <span class="chip-count">-</span></div>
+      </div>
+
+      <!-- User rows list -->
+      <div class="users-list" id="usersList">
+        <div class="users-loading">Loading...</div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="users-pagination">
+        <button onclick="usersPrevPage()" id="usersPrevBtn">← Prev</button>
+        <span class="text-muted">Page <span id="usersPage">1</span> / <span id="usersTotalPages">1</span></span>
+        <button onclick="usersNextPage()" id="usersNextBtn">Next →</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+const state = {
+  authenticated: false,
+  activeTab: 'eas',        // 'eas' | 'pricing'
+  eas: [],
+  pricingTiers: [],
+  selectedEaIndex: -1,
+  dirty: false,
+  saving: false,
+  originalSnapshot: null,  // for revert / dirty check
+};
+
+const RISK_OPTIONS = ['Low', 'Medium', 'High'];
+const TYPE_OPTIONS = ['Semi-Auto', 'Grid', 'Hybrid', 'Multi-Signal', 'Pending', 'Copy'];
+const CTA_ACTION_OPTIONS = ['contact', 'trial', 'url'];
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════
+function escHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+
+function toast(message, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.className = 'toast show ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
+}
+
+function markDirty() {
+  if (state.dirty) return;
+  state.dirty = true;
+  updateStatus();
+}
+
+function markClean() {
+  state.dirty = false;
+  updateStatus();
+}
+
+function updateStatus() {
+  const dot = document.getElementById('statusDot');
+  const label = document.getElementById('statusLabel');
+  const saveBtn = document.getElementById('saveBtn');
+  if (state.saving) {
+    dot.className = 'status-dot dirty';
+    label.textContent = 'Saving...';
+    saveBtn.disabled = true;
+  } else if (state.dirty) {
+    dot.className = 'status-dot dirty';
+    label.textContent = 'Unsaved changes';
+    saveBtn.disabled = false;
+  } else {
+    dot.className = 'status-dot';
+    label.textContent = 'All saved';
+    saveBtn.disabled = true;
+  }
+}
+
+// Warn on unload if dirty
+window.addEventListener('beforeunload', (e) => {
+  if (state.dirty) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════════════════════════
+async function api(url, opts = {}) {
+  const res = await fetch(url, {
+    ...opts,
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+  });
+  if (res.status === 401) {
+    state.authenticated = false;
+    document.getElementById('app').classList.remove('show');
+    document.getElementById('loginScreen').classList.add('show');
+    throw new Error('Not authenticated');
+  }
+  if (!res.ok) {
+    const text = await res.text();
+    let msg;
+    try { msg = JSON.parse(text).detail || text; } catch { msg = text; }
+    throw new Error(msg || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function checkAuth() {
+  try {
+    const me = await api('/api/me');
+    return me.is_admin === true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function loadConfig() {
+  const data = await api('/api/catalog/config');
+  state.eas = data.eas || [];
+  state.pricingTiers = data.pricing_tiers || [];
+  state.originalSnapshot = JSON.stringify({ eas: state.eas, tiers: state.pricingTiers });
+  markClean();
+}
+
+async function saveChanges() {
+  if (!state.dirty || state.saving) return;
+  state.saving = true;
+  updateStatus();
+  try {
+    if (state.activeTab === 'eas' || true) {
+      await api('/api/catalog/eas', { method: 'POST', body: JSON.stringify({ eas: state.eas }) });
+    }
+    await api('/api/catalog/pricing', { method: 'POST', body: JSON.stringify({ tiers: state.pricingTiers }) });
+    state.originalSnapshot = JSON.stringify({ eas: state.eas, tiers: state.pricingTiers });
+    toast('✓ บันทึกเรียบร้อย', 'success');
+    markClean();
+  } catch (e) {
+    toast('✗ Save failed: ' + e.message, 'error');
+  } finally {
+    state.saving = false;
+    updateStatus();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════════════
+async function doLogin(e) {
+  e.preventDefault();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errorEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+
+  errorEl.className = 'login-error';
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, password: pass }),
+    });
+    if (!res.ok) throw new Error('Invalid credentials');
+    document.getElementById('loginScreen').classList.remove('show');
+    document.getElementById('app').classList.add('show');
+    state.authenticated = true;
+    await loadConfig();
+    render();
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.className = 'login-error show';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+  return false;
+}
+
+async function doLogout() {
+  if (state.dirty && !confirm('มี changes ที่ยังไม่ save — ออกจากระบบ?')) return;
+  try { await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }); } catch {}
+  location.reload();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TAB SWITCHING + RENDER
+// ═══════════════════════════════════════════════════════════════════
+function switchTab(tab) {
+  state.activeTab = tab;
+  document.querySelectorAll('.tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  document.getElementById('sidebar').style.display = (tab === 'eas') ? 'flex' : 'none';
+  document.getElementById('editor').style.display = (tab === 'users') ? 'none' : '';
+  document.getElementById('usersWorkspace').classList.toggle('active', tab === 'users');
+  // Save button only shows for EAs/Pricing (Users has inline save per-row)
+  document.getElementById('saveBtn').style.display = (tab === 'users') ? 'none' : '';
+
+  if (tab === 'users') {
+    if (!state.usersMeta) loadUsers();   // First-time load
+  } else {
+    render();
+  }
+}
+
+function render() {
+  if (state.activeTab === 'eas') {
+    renderSidebar();
+    renderEaEditor();
+  } else {
+    renderPricingEditor();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SIDEBAR (EA LIST)
+// ═══════════════════════════════════════════════════════════════════
+function renderSidebar() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const list = document.getElementById('sidebarList');
+  const items = state.eas
+    .map((ea, i) => ({ ea, i }))
+    .filter(({ ea }) => !search || (ea.name || '').toLowerCase().includes(search));
+
+  if (items.length === 0) {
+    list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 12px;">' +
+      (state.eas.length === 0 ? 'ยังไม่มี EA<br>คลิก "+ Add EA" เพื่อสร้าง' : 'ไม่พบผลลัพธ์') + '</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(({ ea, i }) => `
+    <div class="sidebar-item ${i === state.selectedEaIndex ? 'active' : ''}" onclick="selectEa(${i})">
+      <div class="sidebar-item-color" style="background: ${escHtml(ea.color || '#666')};"></div>
+      <div class="sidebar-item-info">
+        <div class="sidebar-item-name">${escHtml(ea.name || '(unnamed)')}</div>
+        <div class="sidebar-item-ver">${escHtml(ea.ver || '')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectEa(index) {
+  state.selectedEaIndex = index;
+  renderSidebar();
+  renderEaEditor();
+}
+
+function addNewEa() {
+  const newEa = {
+    name: 'NEW-EA-' + (state.eas.length + 1),
+    ver: 'v1.0',
+    tag: 'NEW STRATEGY',
+    color: '#00f5ff',
+    icon: '🤖',
+    image: '',
+    type: 'Grid',
+    desc: '',
+    features: [],
+    badge: null,
+    detailedDesc: '',
+    highlights: [],
+    // Design B card sections
+    strategy: '',
+    strength: '',
+    limitation: '',
+    recommendedCapital: '',
+    platform: 'MetaTrader 5',
+    markets: ['XAUUSD'],
+    risk: 'Medium',
+    minDeposit: 500,
+    trialUrl: '',
+    mechanics: [],
+    capital: [
+      { tier: 'Aggressive', risk: 'High', amount: '$500', desc: '' },
+      { tier: 'Balanced', risk: 'Medium', amount: '$1,000', desc: '' },
+      { tier: 'Conservative', risk: 'Low', amount: '$2,500', desc: '' },
+    ],
+  };
+  state.eas.push(newEa);
+  state.selectedEaIndex = state.eas.length - 1;
+  markDirty();
+  renderSidebar();
+  renderEaEditor();
+}
+
+function deleteEa() {
+  if (state.selectedEaIndex < 0) return;
+  const ea = state.eas[state.selectedEaIndex];
+  if (!confirm(`ลบ EA "${ea.name}" ?\n\n(ยังไม่ทำงานจริงจนกว่าจะกด Save)`)) return;
+  state.eas.splice(state.selectedEaIndex, 1);
+  state.selectedEaIndex = -1;
+  markDirty();
+  renderSidebar();
+  renderEaEditor();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EA EDITOR
+// ═══════════════════════════════════════════════════════════════════
+function currentEa() {
+  return state.selectedEaIndex >= 0 ? state.eas[state.selectedEaIndex] : null;
+}
+
+function updateEaField(field, value) {
+  const ea = currentEa();
+  if (!ea) return;
+  ea[field] = value;
+  markDirty();
+  // Update sidebar if name/ver/color changed
+  if (field === 'name' || field === 'ver' || field === 'color') renderSidebar();
+}
+
+function renderEaEditor() {
+  const ea = currentEa();
+  const editor = document.getElementById('editor');
+
+  if (!ea) {
+    editor.innerHTML = '<div class="editor-empty">← เลือก EA จากด้านซ้าย หรือกด + Add EA</div>';
+    return;
+  }
+
+  editor.innerHTML = `
+    <div class="editor-header">
+      <div>
+        <div class="editor-title">${escHtml(ea.name || '(unnamed)')}</div>
+        <div class="editor-title-sub">${escHtml(ea.tag || '')}</div>
+      </div>
+      <div class="editor-actions">
+        <button class="danger" onclick="deleteEa()">🗑 Delete EA</button>
+      </div>
+    </div>
+
+    <!-- BASIC INFO -->
+    <div class="section">
+      <div class="section-title">Basic Info</div>
+      <div class="grid-3">
+        ${textField('Name *', 'name', ea.name)}
+        ${textField('Version', 'ver', ea.ver, 'e.g. SEMI v3.3')}
+        ${textField('Tag / Subtitle', 'tag', ea.tag, 'e.g. SMART TRADING ASSISTANT')}
+        ${colorField('Color', 'color', ea.color)}
+        ${textField('Icon (emoji)', 'icon', ea.icon, 'e.g. 🛡️')}
+        ${textField('Image path', 'image', ea.image, 'e.g. images/aegis-x.png')}
+        ${selectField('Type', 'type', ea.type, TYPE_OPTIONS)}
+        ${textField('Badge (override)', 'badge', ea.badge, 'null = auto from ver')}
+      </div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="section">
+      <div class="section-title">Description</div>
+      <div class="field">
+        <label>Short desc (1-2 บรรทัด สำหรับการ์ด)</label>
+        <textarea rows="2" oninput="updateEaField('desc', this.value)">${escHtml(ea.desc)}</textarea>
+      </div>
+      <div class="field" style="margin-top: 12px;">
+        <label>Detailed desc (สำหรับ popup, ใช้ \\n\\n คั่น paragraph)</label>
+        <textarea rows="6" oninput="updateEaField('detailedDesc', this.value)">${escHtml(ea.detailedDesc)}</textarea>
+      </div>
+    </div>
+
+    <!-- DESIGN B — CARD SECTIONS (แสดงบนการ์ด + summary หัว popup) -->
+    <div class="section" style="border-left: 3px solid #00f5ff; padding-left: 14px;">
+      <div class="section-title" style="color: #00f5ff;">Card Sections (Design B) — แสดงบนการ์ด + summary หัว popup</div>
+      <div style="font-size: 11px; color: var(--text-muted); margin: -6px 0 12px; line-height: 1.5;">
+        4 ช่องนี้จะไปแสดงเป็น 4 section บนการ์ด (Strategy / จุดเด่น / ข้อจำกัด / ทุนแนะนำ) และ summary หัว popup ด้วย · ถ้าเว้นว่างจะ fallback ไปใช้ field อื่นอัตโนมัติ (Strategy→desc, จุดเด่น→highlights[0])
+      </div>
+
+      <div class="field">
+        <label>1. Strategy — อธิบาย EA เข้าออเดอร์อย่างไร (1 บรรทัด, fallback: desc)</label>
+        <textarea rows="2" placeholder="เช่น Grid แก้ไม้ + HedgeLot เพื่อช่วยบริหารไม้ตอนกราฟลาก" oninput="updateEaField('strategy', this.value)">${escHtml(ea.strategy)}</textarea>
+      </div>
+
+      <div class="field" style="margin-top: 10px;">
+        <label>2. จุดเด่น — แตกต่างจากตัวอื่นยังไง (1 บรรทัด, fallback: highlights[0])</label>
+        <textarea rows="2" placeholder="เช่น เหมาะกับ Sideway กรอบใหญ่ และรับมือจังหวะกราฟลากได้มากขึ้น" oninput="updateEaField('strength', this.value)">${escHtml(ea.strength)}</textarea>
+      </div>
+
+      <div class="field" style="margin-top: 10px;">
+        <label>3. ข้อจำกัด — ตลาด/สถานการณ์ที่ควรระวัง (1 บรรทัด)</label>
+        <textarea rows="2" placeholder="เช่น ไม่เหมาะกับตลาดที่กลับตัวแรงแบบกะทันหัน" oninput="updateEaField('limitation', this.value)">${escHtml(ea.limitation)}</textarea>
+      </div>
+
+      <div class="field" style="margin-top: 10px;">
+        <label>4. ทุนแนะนำ — ตัวเลขเดี่ยว (fallback: capital[1].amount)</label>
+        <input type="text" placeholder="เช่น 50,000 USC หรือ $1,000" oninput="updateEaField('recommendedCapital', this.value)" value="${escHtml(ea.recommendedCapital)}">
+      </div>
+    </div>
+
+    <!-- FEATURES (การ์ด) -->
+    <div class="section">
+      <div class="section-title">Card Features (4-6 items — legacy, ไม่แสดงบน Design B แล้ว แต่ modal ยังใช้)</div>
+      ${stringArrayEditor(ea.features, 'features')}
+    </div>
+
+    <!-- HIGHLIGHTS (popup) -->
+    <div class="section">
+      <div class="section-title">Popup Highlights (จุดเด่นใน detail popup)</div>
+      ${stringArrayEditor(ea.highlights, 'highlights')}
+    </div>
+
+    <!-- META INFO -->
+    <div class="section">
+      <div class="section-title">Meta Info</div>
+      <div class="grid-2">
+        ${textField('Platform', 'platform', ea.platform, 'e.g. MetaTrader 5')}
+        ${textField('Markets (comma-sep)', 'markets', (ea.markets || []).join(', '), 'e.g. XAUUSD, EURUSD', 'markets_str')}
+        ${selectField('Risk Level', 'risk', ea.risk, RISK_OPTIONS)}
+        ${numberField('Min Deposit (USD)', 'minDeposit', ea.minDeposit)}
+      </div>
+      <div class="field" style="margin-top: 12px;">
+        <label>Trial URL (Google Drive link ฯลฯ)</label>
+        <input type="text" value="${escHtml(ea.trialUrl)}" oninput="updateEaField('trialUrl', this.value)" placeholder="https://drive.google.com/...">
+      </div>
+    </div>
+
+    <!-- MECHANICS -->
+    <div class="section">
+      <div class="section-title">🔁 How-it-works Steps (4-6 steps)</div>
+      ${mechanicsEditor(ea.mechanics || [])}
+    </div>
+
+    <!-- CAPITAL SIZING -->
+    <div class="section">
+      <div class="section-title">💵 Capital Sizing (3 tiers: Aggressive / Balanced / Conservative)</div>
+      ${capitalEditor(ea.capital || [])}
+    </div>
+  `;
+
+  // Special handler for markets (parse comma-sep back into array)
+  const marketsInput = editor.querySelector('[data-special=markets_str]');
+  if (marketsInput) {
+    marketsInput.oninput = (e) => {
+      const arr = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+      ea.markets = arr;
+      markDirty();
+    };
+  }
+}
+
+// ── Field builders ─────────────────────────────────────
+function textField(label, field, value, placeholder = '', special = '') {
+  return `
+    <div class="field">
+      <label>${escHtml(label)}</label>
+      <input type="text" value="${escHtml(value)}"
+        ${special ? `data-special="${special}"` : `oninput="updateEaField('${field}', this.value)"`}
+        placeholder="${escHtml(placeholder)}">
+    </div>`;
+}
+
+function numberField(label, field, value) {
+  return `
+    <div class="field">
+      <label>${escHtml(label)}</label>
+      <input type="number" value="${value ?? 0}" oninput="updateEaField('${field}', Number(this.value))">
+    </div>`;
+}
+
+function selectField(label, field, value, options) {
+  const opts = options.map(o => `<option value="${escHtml(o)}" ${o === value ? 'selected' : ''}>${escHtml(o)}</option>`).join('');
+  return `
+    <div class="field">
+      <label>${escHtml(label)}</label>
+      <select onchange="updateEaField('${field}', this.value)">${opts}</select>
+    </div>`;
+}
+
+function colorField(label, field, value) {
+  const safe = value || '#00f5ff';
+  return `
+    <div class="field">
+      <label>${escHtml(label)}</label>
+      <div class="color-input-group">
+        <input type="text" value="${escHtml(safe)}" oninput="syncColor('${field}', this.value, this.parentElement.querySelector('input[type=color]'))">
+        <input type="color" value="${escHtml(safe)}" oninput="syncColor('${field}', this.value, this.parentElement.querySelector('input[type=text]'))">
+      </div>
+    </div>`;
+}
+
+function syncColor(field, value, otherInput) {
+  updateEaField(field, value);
+  if (otherInput) otherInput.value = value;
+  renderSidebar();
+}
+
+// ── Array editors ──────────────────────────────────────
+function stringArrayEditor(items, fieldName) {
+  const html = items.map((item, i) => `
+    <div class="array-item">
+      <div class="array-num">${String(i + 1).padStart(2, '0')}</div>
+      <input type="text" value="${escHtml(item)}" oninput="updateStringArrayItem('${fieldName}', ${i}, this.value)">
+      <button class="array-item-delete" onclick="removeStringArrayItem('${fieldName}', ${i})">Delete</button>
+    </div>
+  `).join('');
+  return `
+    <div class="array-list">${html}</div>
+    <button class="add-btn" onclick="addStringArrayItem('${fieldName}')">+ Add item</button>
+  `;
+}
+
+function updateStringArrayItem(field, index, value) {
+  const ea = currentEa();
+  if (!ea || !ea[field]) return;
+  ea[field][index] = value;
+  markDirty();
+}
+
+function addStringArrayItem(field) {
+  const ea = currentEa();
+  if (!ea) return;
+  if (!Array.isArray(ea[field])) ea[field] = [];
+  ea[field].push('');
+  renderEaEditor();
+  markDirty();
+}
+
+function removeStringArrayItem(field, index) {
+  const ea = currentEa();
+  if (!ea || !ea[field]) return;
+  ea[field].splice(index, 1);
+  renderEaEditor();
+  markDirty();
+}
+
+// ── Mechanics editor (array of {step, title, desc}) ────
+function mechanicsEditor(items) {
+  const html = items.map((m, i) => `
+    <div class="complex-item" style="margin-bottom: 10px;">
+      <div class="complex-item-header">
+        <div class="complex-item-num">STEP ${escHtml(m.step || String(i + 1).padStart(2, '0'))}</div>
+        <button class="array-item-delete" onclick="removeMechanic(${i})">Delete</button>
+      </div>
+      <div class="grid-2" style="margin-bottom: 8px;">
+        <div class="field">
+          <label>Step number (e.g. 01)</label>
+          <input type="text" value="${escHtml(m.step)}" oninput="updateMechanic(${i}, 'step', this.value)">
+        </div>
+        <div class="field">
+          <label>Title</label>
+          <input type="text" value="${escHtml(m.title)}" oninput="updateMechanic(${i}, 'title', this.value)">
+        </div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea rows="2" oninput="updateMechanic(${i}, 'desc', this.value)">${escHtml(m.desc)}</textarea>
+      </div>
+    </div>
+  `).join('');
+  return html + `<button class="add-btn" onclick="addMechanic()">+ Add step</button>`;
+}
+
+function updateMechanic(index, subfield, value) {
+  const ea = currentEa();
+  if (!ea || !ea.mechanics) return;
+  ea.mechanics[index][subfield] = value;
+  markDirty();
+}
+
+function addMechanic() {
+  const ea = currentEa();
+  if (!ea) return;
+  if (!Array.isArray(ea.mechanics)) ea.mechanics = [];
+  const nextStep = String(ea.mechanics.length + 1).padStart(2, '0');
+  ea.mechanics.push({ step: nextStep, title: '', desc: '' });
+  renderEaEditor();
+  markDirty();
+}
+
+function removeMechanic(index) {
+  const ea = currentEa();
+  if (!ea || !ea.mechanics) return;
+  ea.mechanics.splice(index, 1);
+  renderEaEditor();
+  markDirty();
+}
+
+// ── Capital editor (array of {tier, risk, amount, desc}) ────
+function capitalEditor(items) {
+  return items.map((c, i) => `
+    <div class="complex-item" style="margin-bottom: 10px;">
+      <div class="complex-item-header">
+        <div class="complex-item-num">TIER ${i + 1}</div>
+        <button class="array-item-delete" onclick="removeCapital(${i})">Delete</button>
+      </div>
+      <div class="grid-3" style="margin-bottom: 8px;">
+        <div class="field">
+          <label>Tier name</label>
+          <input type="text" value="${escHtml(c.tier)}" oninput="updateCapital(${i}, 'tier', this.value)" placeholder="e.g. Aggressive">
+        </div>
+        <div class="field">
+          <label>Risk</label>
+          <select onchange="updateCapital(${i}, 'risk', this.value)">
+            ${RISK_OPTIONS.map(r => `<option value="${r}" ${r === c.risk ? 'selected' : ''}>${r}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Amount</label>
+          <input type="text" value="${escHtml(c.amount)}" oninput="updateCapital(${i}, 'amount', this.value)" placeholder="e.g. $500">
+        </div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input type="text" value="${escHtml(c.desc)}" oninput="updateCapital(${i}, 'desc', this.value)">
+      </div>
+    </div>
+  `).join('') + `<button class="add-btn" onclick="addCapital()">+ Add tier</button>`;
+}
+
+function updateCapital(index, subfield, value) {
+  const ea = currentEa();
+  if (!ea || !ea.capital) return;
+  ea.capital[index][subfield] = value;
+  markDirty();
+}
+
+function addCapital() {
+  const ea = currentEa();
+  if (!ea) return;
+  if (!Array.isArray(ea.capital)) ea.capital = [];
+  ea.capital.push({ tier: '', risk: 'Medium', amount: '', desc: '' });
+  renderEaEditor();
+  markDirty();
+}
+
+function removeCapital(index) {
+  const ea = currentEa();
+  if (!ea || !ea.capital) return;
+  ea.capital.splice(index, 1);
+  renderEaEditor();
+  markDirty();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PRICING TIERS EDITOR
+// ═══════════════════════════════════════════════════════════════════
+function renderPricingEditor() {
+  const editor = document.getElementById('editor');
+  const tiers = state.pricingTiers || [];
+
+  editor.innerHTML = `
+    <div class="editor-header">
+      <div>
+        <div class="editor-title">Pricing Tiers</div>
+        <div class="editor-title-sub">Global — ใช้ทุก EA</div>
+      </div>
+      <div class="editor-actions">
+        <button onclick="addPricingTier()">+ Add Tier</button>
+      </div>
+    </div>
+
+    <div class="tiers-grid">
+      ${tiers.map((t, i) => renderTierCard(t, i)).join('')}
+    </div>
+
+    <div class="text-muted" style="margin-top: 24px;">
+      💡 Tier แรก (index 0) มักเป็น IB Partner ฟรี ตามลำดับที่แสดงในเว็บ
+    </div>
+  `;
+}
+
+function renderTierCard(tier, index) {
+  return `
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <div class="tier-card-num">TIER ${index + 1}</div>
+        <button class="array-item-delete" onclick="removeTier(${index})">Delete</button>
+      </div>
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" value="${escHtml(tier.name)}" oninput="updateTier(${index}, 'name', this.value)">
+      </div>
+      <div class="field">
+        <label>Price (display)</label>
+        <input type="text" value="${escHtml(tier.price)}" oninput="updateTier(${index}, 'price', this.value)" placeholder="e.g. $99 หรือ ฟรี">
+      </div>
+      <div class="field">
+        <label>Price unit</label>
+        <input type="text" value="${escHtml(tier.priceUnit)}" oninput="updateTier(${index}, 'priceUnit', this.value)" placeholder="e.g. ครั้งเดียว">
+      </div>
+      <div class="field">
+        <label>Accounts</label>
+        <input type="text" value="${escHtml(tier.accounts)}" oninput="updateTier(${index}, 'accounts', this.value)" placeholder="e.g. 1 Account">
+      </div>
+      <div class="field">
+        <label>Updates</label>
+        <input type="text" value="${escHtml(tier.updates)}" oninput="updateTier(${index}, 'updates', this.value)">
+      </div>
+      <div class="field">
+        <label>Duration (ระยะเวลาใช้งาน)</label>
+        <input type="text" value="${escHtml(tier.duration)}" oninput="updateTier(${index}, 'duration', this.value)" placeholder="e.g. 1 เดือน, 1 ปี, ตลอดชีพ">
+      </div>
+      <div class="field">
+        <label>Highlight badge (optional)</label>
+        <input type="text" value="${escHtml(tier.highlight)}" oninput="updateTier(${index}, 'highlight', this.value || null)" placeholder="e.g. ยอดนิยม (ว่างได้)">
+      </div>
+      <div class="field">
+        <label>Color</label>
+        <div class="color-input-group">
+          <input type="text" value="${escHtml(tier.color || '#00f5ff')}" oninput="updateTierColor(${index}, this.value, this.parentElement.querySelector('input[type=color]'))">
+          <input type="color" value="${escHtml(tier.color || '#00f5ff')}" oninput="updateTierColor(${index}, this.value, this.parentElement.querySelector('input[type=text]'))">
+        </div>
+      </div>
+      <div class="field">
+        <label>CTA button label</label>
+        <input type="text" value="${escHtml(tier.ctaLabel)}" oninput="updateTier(${index}, 'ctaLabel', this.value)">
+      </div>
+      <div class="field">
+        <label>CTA action</label>
+        <select onchange="updateTier(${index}, 'ctaAction', this.value)">
+          ${CTA_ACTION_OPTIONS.map(a => `<option value="${a}" ${a === tier.ctaAction ? 'selected' : ''}>${a}</option>`).join('')}
+        </select>
+        <div class="field-hint">contact = เปิด contact popup | trial = trial popup | url = ไปที่ ctaUrl</div>
+      </div>
+      <div class="field">
+        <label>Features (บรรทัดละ 1 ข้อ)</label>
+        <textarea rows="6" oninput="updateTierFeatures(${index}, this.value)">${escHtml((tier.features || []).join('\n'))}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function updateTier(index, field, value) {
+  if (!state.pricingTiers[index]) return;
+  state.pricingTiers[index][field] = value;
+  markDirty();
+}
+
+function updateTierColor(index, value, otherInput) {
+  updateTier(index, 'color', value);
+  if (otherInput) otherInput.value = value;
+}
+
+function updateTierFeatures(index, text) {
+  if (!state.pricingTiers[index]) return;
+  state.pricingTiers[index].features = text.split('\n').map(s => s.trim()).filter(Boolean);
+  markDirty();
+}
+
+function addPricingTier() {
+  state.pricingTiers.push({
+    name: 'New Tier', price: '$0', priceUnit: 'ครั้งเดียว',
+    accounts: '1 Account', updates: '1 ปี', duration: 'ตลอดชีพ', highlight: null,
+    features: ['Feature 1'], ctaLabel: 'ซื้อ', ctaAction: 'contact',
+    color: '#00f5ff',
+  });
+  markDirty();
+  renderPricingEditor();
+}
+
+function removeTier(index) {
+  if (!confirm(`ลบ Tier "${state.pricingTiers[index]?.name}" ?`)) return;
+  state.pricingTiers.splice(index, 1);
+  markDirty();
+  renderPricingEditor();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// USERS / LICENSES (Design D: Card + Inline Expand)
+// ═══════════════════════════════════════════════════════════════════
+Object.assign(state, {
+  users: [], usersPage: 1, usersPageSize: 50, usersTotal: 0, usersTotalPages: 1,
+  usersSearch: '', usersFilterStatus: '', usersFilterEa: '', usersFilterBroker: '',
+  usersMeta: null, usersLoading: false, expandedIndex: -1,
+});
+let usersSearchTimer = null;
+
+function fmtBalance(n) {
+  const v = Number(n) || 0;
+  return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtShortBalance(n) {
+  const v = Number(n) || 0;
+  if (v >= 1000) return '$' + Math.round(v).toLocaleString();
+  return '$' + v.toFixed(2);
+}
+function fmtShortDate(iso) {
+  if (!iso) return '—';
+  const m = String(iso).match(/^(\d{4}-\d{2}-\d{2})[T ]?(\d{2}:\d{2})?/);
+  if (m) return m[2] ? `${m[1]} ${m[2]}` : m[1];
+  return iso;
+}
+
+async function loadUsers(forceRefresh = false) {
+  if (state.usersLoading) return;
+  state.usersLoading = true;
+  state.expandedIndex = -1;
+
+  const params = new URLSearchParams();
+  params.set('page', state.usersPage);
+  params.set('pageSize', state.usersPageSize);
+  if (state.usersSearch) params.set('search', state.usersSearch);
+  if (state.usersFilterStatus) params.set('status', state.usersFilterStatus);
+  if (state.usersFilterEa) params.set('ea', state.usersFilterEa);
+  if (state.usersFilterBroker) params.set('broker', state.usersFilterBroker);
+  if (!state.usersMeta || forceRefresh) params.set('includeMeta', 'true');
+
+  const list = document.getElementById('usersList');
+  list.innerHTML = '<div class="users-loading"><span class="spinner"></span> Loading...</div>';
+
+  try {
+    const data = await api('/api/users?' + params.toString());
+    state.users = data.rows || [];
+    state.usersTotal = data.total || 0;
+    state.usersTotalPages = Math.max(1, data.totalPages || 1);
+    if (data.meta) state.usersMeta = data.meta;
+    renderUsers();
+  } catch (e) {
+    list.innerHTML = `<div class="users-empty" style="color: var(--danger);">Failed to load: ${escHtml(e.message)}</div>`;
+    toast('Load users failed: ' + e.message, 'error');
+  } finally {
+    state.usersLoading = false;
+  }
+}
+
+function renderUsers() {
+  const list = document.getElementById('usersList');
+  if (!state.users.length) {
+    list.innerHTML = '<div class="users-empty">ไม่พบข้อมูล</div>';
+  } else {
+    list.innerHTML = state.users.map((u, i) => renderUserRow(u, i)).join('');
+  }
+
+  document.getElementById('usersTotalText').textContent = state.usersTotal.toLocaleString();
+  document.getElementById('usersPage').textContent = state.usersPage;
+  document.getElementById('usersTotalPages').textContent = state.usersTotalPages;
+  document.getElementById('usersPrevBtn').disabled = state.usersPage <= 1;
+  document.getElementById('usersNextBtn').disabled = state.usersPage >= state.usersTotalPages;
+
+  if (state.usersMeta) {
+    const counts = state.usersMeta.statusCounts || {};
+    updateChip('.chip-all',     state.usersTotal);
+    updateChip('.chip-activeall', counts.ACTIVEALL || 0);
+    updateChip('.chip-active',  counts.ACTIVE || 0);
+    updateChip('.chip-trial',   counts.TRIAL || 0);
+    updateChip('.chip-blocked', counts.BLOCKED || 0);
+    updateChip('.chip-expired', counts.EXPIRED || 0);
+
+    populateFilterDropdown('usersFilterEa', state.usersMeta.eaList || [], state.usersFilterEa);
+    populateFilterDropdown('usersFilterBroker', state.usersMeta.brokerList || [], state.usersFilterBroker);
+  }
+
+  document.querySelectorAll('.chip').forEach(el => el.classList.remove('selected'));
+  const chipMap = {'':'.chip-all','ACTIVEALL':'.chip-activeall','ACTIVE':'.chip-active','TRIAL':'.chip-trial','BLOCKED':'.chip-blocked','EXPIRED':'.chip-expired'};
+  const activeChip = document.querySelector(chipMap[state.usersFilterStatus] || '.chip-all');
+  if (activeChip) activeChip.classList.add('selected');
+}
+
+function renderUserRow(u, i) {
+  const isWildcard = (u.ea === '*');
+  const statusCls = isWildcard ? 'activeall' : (u.status || 'none').toLowerCase();
+  const statusText = isWildcard ? 'ALL-ACCESS' : (u.status || '—');
+  const expiry = u.licenseExpiry || u.trialExpiry || '';
+  const expiryTxt = expiry ? `Expires ${expiry}` : 'Lifetime';
+
+  if (isWildcard) {
+    return `
+      <div class="user-row status-activeall" data-index="${i}">
+        <div class="user-row-header" onclick="toggleUserRow(${i})">
+          <div class="user-row-main">
+            <span class="user-row-account">${escHtml(u.account)}</span>
+            <div class="user-row-info">
+              <div class="user-row-title">🌐 <b>ALL EAs</b> · ${escHtml(u.accountName || 'IB Partner')}</div>
+              <div class="user-row-sub" style="color:#facc15;">ACTIVEALL — every EA on this account gets ACTIVE</div>
+            </div>
+            <span class="user-status status-activeall">🌐 ALL</span>
+            <span class="user-row-balance" style="color:#facc15;">LIFETIME</span>
+          </div>
+          <i class="user-row-chev">▼</i>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="user-row status-${statusCls}" data-index="${i}">
+      <div class="user-row-header" onclick="toggleUserRow(${i})">
+        <div class="user-row-main">
+          <span class="user-row-account">${escHtml(u.account)}</span>
+          <div class="user-row-info">
+            <div class="user-row-title">${escHtml(u.accountName || '(no name)')}${u.broker ? ' · ' + escHtml(u.broker) : ''}</div>
+            <div class="user-row-sub">${escHtml(u.ea || '—')} · ${escHtml(expiryTxt)}</div>
+          </div>
+          <span class="user-status status-${statusCls}">${escHtml(statusText)}</span>
+          <span class="user-row-balance">${fmtShortBalance(u.balance)}</span>
+        </div>
+        <i class="user-row-chev">▼</i>
+      </div>
+    </div>
+  `;
+}
+
+function updateChip(selector, count) {
+  const el = document.querySelector(selector + ' .chip-count');
+  if (el) el.textContent = count.toLocaleString();
+}
+
+function populateFilterDropdown(id, values, current) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const allLabel = sel.options[0]?.text || 'All';
+  const existing = Array.from(sel.options).slice(1).map(o => o.value);
+  const same = existing.length === values.length && existing.every((v, i) => v === values[i]);
+  if (same) return;
+  sel.innerHTML = `<option value="">${allLabel}</option>` +
+    values.map(v => `<option value="${escHtml(v)}" ${v === current ? 'selected' : ''}>${escHtml(v)}</option>`).join('');
+}
+
+function setStatusFilter(status) {
+  state.usersFilterStatus = status;
+  state.usersPage = 1;
+  loadUsers();
+}
+function onUsersFilterChange() {
+  state.usersFilterEa     = document.getElementById('usersFilterEa').value;
+  state.usersFilterBroker = document.getElementById('usersFilterBroker').value;
+  state.usersPage = 1;
+  loadUsers();
+}
+function usersPrevPage() { if (state.usersPage > 1) { state.usersPage--; loadUsers(); } }
+function usersNextPage() { if (state.usersPage < state.usersTotalPages) { state.usersPage++; loadUsers(); } }
+
+setTimeout(() => {
+  const el = document.getElementById('usersSearch');
+  if (el) {
+    el.oninput = (e) => {
+      clearTimeout(usersSearchTimer);
+      usersSearchTimer = setTimeout(() => {
+        state.usersSearch = e.target.value.trim();
+        state.usersPage = 1;
+        loadUsers();
+      }, 300);
+    };
+  }
+}, 500);
+
+// ── Row expand/collapse (inline edit — no modal) ──────────
+function toggleUserRow(index) {
+  const rows = document.querySelectorAll('.user-row');
+  const row = rows[index];
+  if (!row) return;
+  const wasExpanded = state.expandedIndex === index;
+
+  rows.forEach(r => {
+    r.classList.remove('expanded');
+    const panel = r.querySelector('.user-row-expand');
+    if (panel) panel.remove();
+  });
+  state.expandedIndex = -1;
+
+  if (!wasExpanded) {
+    row.classList.add('expanded');
+    const u = state.users[index];
+    row.insertAdjacentHTML('beforeend', renderExpandPanel(u, index));
+    state.expandedIndex = index;
+    row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function renderExpandPanel(u, index) {
+  const isWildcard = (u.ea === '*');
+
+  // Wildcard row → simple revoke UI (no per-EA fields)
+  if (isWildcard) {
+    return `
+      <div class="user-row-expand" onclick="event.stopPropagation()" style="background: rgba(250,204,21,0.04);">
+        <div style="margin-bottom: 14px; font-size: 13px; line-height: 1.6; color: var(--text-dim);">
+          <b style="color: #facc15;">🌐 ACTIVEALL is active on account ${escHtml(u.account)}</b><br>
+          บัญชีนี้ปลดล็อค EA ทุกตัว (รวม EA ที่มาใหม่ในอนาคต) โดยไม่ต้อง grant ทีละตัว<br>
+          <span class="text-muted">Granted: ${escHtml(fmtShortDate(u.firstSeen))} · Last seen: ${escHtml(fmtShortDate(u.lastSeen))}</span>
+        </div>
+        <div class="expand-actions">
+          <button onclick="quickAction(${index}, 'revokeall')" class="danger">❌ Revoke ALL-Access</button>
+          <div class="spacer"></div>
+          <button class="btn-delete" onclick="deleteUserRow(${index})">🗑 Delete row</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Normal per-EA row
+  const trialDate = (u.trialExpiry || '').slice(0, 10);
+  const licenseDate = (u.licenseExpiry || '').slice(0, 10);
+  const statusOpts = ['', 'TRIAL', 'ACTIVE', 'ACTIVEALL', 'BLOCKED', 'EXPIRED']
+    .map(s => `<option value="${s}" ${s === (u.status || '') ? 'selected' : ''}>${s === 'ACTIVEALL' ? '🌐 ACTIVEALL (all EAs)' : (s || '(Auto — by expiry)')}</option>`)
+    .join('');
+  return `
+    <div class="user-row-expand" onclick="event.stopPropagation()">
+      <div class="expand-grid">
+        <div class="field">
+          <label>STATUS</label>
+          <select data-field="Status">${statusOpts}</select>
+        </div>
+        <div class="field">
+          <label>ACCOUNT NAME</label>
+          <input type="text" data-field="AccountName" value="${escHtml(u.accountName)}">
+        </div>
+        <div class="field">
+          <label>BROKER</label>
+          <input type="text" data-field="Broker" value="${escHtml(u.broker)}">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <div style="padding: 6px 10px; font-size: 11px; color: var(--text-muted);">EA: <span style="color: var(--text);">${escHtml(u.ea)}</span></div>
+        </div>
+        <div class="field">
+          <label>TRIAL EXPIRY (blank = lifetime)</label>
+          <input type="date" data-field="TrialExpiry" value="${escHtml(trialDate)}">
+        </div>
+        <div class="field">
+          <label>LICENSE EXPIRY (blank = lifetime)</label>
+          <input type="date" data-field="LicenseExpiry" value="${escHtml(licenseDate)}">
+        </div>
+      </div>
+      <div class="expand-notes">
+        <label style="font-size: 10px; color: var(--text-muted); letter-spacing: 1px; font-weight: 600; display: block; margin-bottom: 3px;">NOTES</label>
+        <textarea data-field="Notes">${escHtml(u.notes)}</textarea>
+      </div>
+      <div class="expand-info">
+        <span>Balance:<span class="info-value">${fmtBalance(u.balance)}</span></span>
+        <span>Last Seen:<span class="info-value">${escHtml(fmtShortDate(u.lastSeen))}</span></span>
+        <span>First Seen:<span class="info-value">${escHtml(fmtShortDate(u.firstSeen))}</span></span>
+        <span>Version:<span class="info-value">${escHtml(u.version || '—')}</span></span>
+        <span>Agreement:<span class="info-value">${u.agreementVer ? '✓ ' + escHtml(u.agreementVer) : '—'}</span></span>
+      </div>
+      <div class="expand-info" style="margin-top: -4px;">
+        <span>FP:<span class="info-value fp-value">${escHtml(u.fingerprint || '—')}</span></span>
+      </div>
+      <div class="expand-actions">
+        <button onclick="quickAction(${index}, 'grant', 30)">➕ +30d</button>
+        <button onclick="quickAction(${index}, 'grant', 90)">➕ +90d</button>
+        <button onclick="quickAction(${index}, 'lifetime')">♾ Lifetime</button>
+        <button onclick="quickAction(${index}, 'trial')">🎁 Lifetime Trial</button>
+        <button onclick="quickAction(${index}, 'block')" class="danger">🚫 Block</button>
+        <button onclick="quickAction(${index}, 'reset')">🔄 Reset FP</button>
+        <button onclick="quickAction(${index}, 'grantall')" style="background: rgba(250,204,21,0.15); color: #facc15; border-color: rgba(250,204,21,0.4); font-weight: 600;">🌐 Grant ALL-Access</button>
+        <div class="spacer"></div>
+        <button class="btn-delete" onclick="deleteUserRow(${index})">🗑</button>
+        <button class="btn-save" onclick="saveUserRow(${index})">💾 Save</button>
+      </div>
+    </div>
+  `;
+}
+
+async function saveUserRow(index) {
+  const u = state.users[index];
+  if (!u) return;
+  const row = document.querySelectorAll('.user-row')[index];
+  const panel = row?.querySelector('.user-row-expand');
+  if (!panel) return;
+
+  const updates = {};
+  panel.querySelectorAll('[data-field]').forEach(el => {
+    updates[el.dataset.field] = el.value;
+  });
+
+  const btn = panel.querySelector('.btn-save');
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  try {
+    const res = await api('/api/users/update', {
+      method: 'POST',
+      body: JSON.stringify({ account: u.account, ea: u.ea, updates }),
+    });
+    toast('✓ ' + (res.msg || 'บันทึกเรียบร้อย'), 'success');
+    loadUsers();
+  } catch (e) {
+    toast('Save failed: ' + e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = orig;
+  }
+}
+
+async function quickAction(index, type, days) {
+  const u = state.users[index];
+  if (!u) return;
+  const labels = {
+    grant:     `Extend +${days} days`,
+    lifetime:  'Grant Lifetime License',
+    trial:     'Grant Lifetime Trial',
+    block:     'Block Account',
+    reset:     'Reset Fingerprint',
+    grantall:  '🌐 Grant ALL-Access (every EA on this account)',
+    revokeall: '❌ Revoke ALL-Access',
+  };
+  const isAccountLevel = (type === 'grantall' || type === 'revokeall');
+  const scope = isAccountLevel ? `account ${u.account}` : `${u.account} / ${u.ea}`;
+  if (!confirm(`${labels[type]}\n\nFor: ${scope}`)) return;
+
+  const body = { type, account: u.account };
+  if (!isAccountLevel) body.ea = u.ea;
+  if (type === 'grant') body.days = days;
+  if (type === 'block') {
+    const reason = prompt('Block reason:', 'manual block');
+    if (reason === null) return;
+    body.reason = reason || 'manual block';
+  }
+
+  try {
+    const res = await api('/api/users/action', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    toast('✓ ' + (res.msg || 'Done'), 'success');
+    loadUsers(true);   // force refresh meta (counts may change)
+  } catch (e) {
+    toast('Action failed: ' + e.message, 'error');
+  }
+}
+
+async function deleteUserRow(index) {
+  const u = state.users[index];
+  if (!u) return;
+  if (!confirm(`⚠️ DELETE ROW\n\n${u.account} / ${u.ea}\n\nThis will remove the (account + EA) pair from the Sheet permanently.\nNo undo!`)) return;
+
+  try {
+    await api(`/api/users/${encodeURIComponent(u.account)}/${encodeURIComponent(u.ea)}`, {
+      method: 'DELETE',
+    });
+    toast('✓ Row deleted', 'success');
+    loadUsers();
+  } catch (e) {
+    toast('Delete failed: ' + e.message, 'error');
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+(async function init() {
+  const isAdmin = await checkAuth();
+  if (isAdmin) {
+    document.getElementById('loginScreen').classList.remove('show');
+    document.getElementById('app').classList.add('show');
+    state.authenticated = true;
+    try {
+      await loadConfig();
+      render();
+    } catch (e) {
+      toast('โหลด config ไม่สำเร็จ: ' + e.message, 'error');
+    }
+  } else {
+    document.getElementById('loginScreen').classList.add('show');
+  }
+})();
+</script>
+
+</body>
+</html>

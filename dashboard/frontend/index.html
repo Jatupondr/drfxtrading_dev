@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRFX Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<style>
+:root{
+  --bg:#060b14;--bg2:#0a1628;--bg3:#0f2545;--bg4:#060e1e;
+  --border:#0f2545;--border2:#1e3a5f;
+  --text:#f1f5f9;--muted:#94a3b8;--dim:#475569;--faint:#334155;
+  --accent:#38bdf8;--green:#22c55e;--red:#f87171;--amber:#f59e0b;
+  --purple:#a78bfa;--orange:#f97316;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Sarabun','Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── HEADER ── */
+.header{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid var(--border2);position:sticky;top:0;z-index:100;background:var(--bg);flex-wrap:wrap;gap:8px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:30px;height:30px;background:rgba(56,189,248,.1);border:0.5px solid rgba(56,189,248,.25);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.brand-name{font-size:15px;font-weight:600;color:var(--text)}
+.brand-time{font-size:11px;color:var(--faint);margin-top:2px;font-family:var(--mono)}
+.header-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+
+/* chips/badges */
+.chip{font-size:11px;padding:4px 11px;border-radius:20px;font-family:var(--mono);white-space:nowrap}
+.chip-live{background:rgba(34,197,94,.12);color:var(--green);border:0.5px solid rgba(34,197,94,.28)}
+.chip-demo{background:rgba(245,158,11,.12);color:var(--amber);border:0.5px solid rgba(245,158,11,.28)}
+.chip-admin{background:rgba(167,139,250,.12);color:var(--purple);border:0.5px solid rgba(167,139,250,.28)}
+
+/* toggle */
+.toggle{display:flex;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;overflow:hidden}
+.tbtn{padding:5px 12px;border:none;font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .2s}
+.tbtn.on{background:rgba(56,189,248,.14);color:var(--accent);font-weight:600}
+.tbtn:not(.on){background:transparent;color:var(--dim);font-weight:500}
+
+/* rate */
+.rate-box{display:flex;align-items:center;gap:5px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 10px;font-family:var(--mono);font-size:11px}
+.rate-lbl{color:var(--dim)}.rate-val{color:var(--accent);font-weight:600;font-size:13px}.rate-src{font-size:10px;color:var(--green)}
+
+/* icon btns */
+.ibtn{display:flex;align-items:center;justify-content:center;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:5px 7px;color:var(--dim);cursor:pointer;transition:all .2s}
+.ibtn:hover{border-color:var(--accent);color:var(--accent)}
+.ibtn svg{width:14px;height:14px}
+.ibtn.spin svg{animation:spin .6s linear}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* contact btn */
+.contact-btn{display:flex;align-items:center;gap:6px;background:rgba(56,189,248,.08);border:0.5px solid rgba(56,189,248,.22);border-radius:6px;padding:5px 12px;font-size:12px;color:var(--accent);cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.contact-btn:hover{background:rgba(56,189,248,.15)}
+
+/* logout */
+.logout-btn{display:flex;align-items:center;gap:5px;background:rgba(167,139,250,.1);border:0.5px solid rgba(167,139,250,.28);border-radius:6px;padding:5px 11px;font-family:var(--mono);font-size:11px;color:var(--purple);cursor:pointer;transition:all .2s}
+.logout-btn:hover{background:rgba(167,139,250,.2)}
+.logout-btn svg{width:13px;height:13px}
+
+/* login btn */
+.login-btn{display:flex;align-items:center;background:transparent;border:0.5px solid transparent;border-radius:6px;padding:5px 7px;color:var(--dim);cursor:pointer;transition:all .2s;opacity:.4}
+.login-btn:hover{border-color:var(--border2);color:var(--accent);opacity:1}
+.login-btn svg{width:14px;height:14px}
+
+/* ── ADMIN PANEL ── */
+.admin-panel{background:rgba(167,139,250,.05);border:0.5px solid rgba(167,139,250,.18);border-radius:8px;padding:12px 18px;margin:10px 20px;display:none}
+.admin-panel.show{display:block}
+.admin-panel h4{font-size:11px;font-weight:600;color:var(--purple);margin-bottom:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.admin-tools{display:flex;gap:8px;flex-wrap:wrap}
+.atool{background:rgba(167,139,250,.1);border:0.5px solid rgba(167,139,250,.2);border-radius:6px;padding:6px 13px;font-family:var(--mono);font-size:11px;color:var(--purple);cursor:pointer;transition:all .2s}
+.atool:hover{background:rgba(167,139,250,.2)}
+
+/* ── SUMMARY CARDS ── */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;padding:14px 20px}
+.scard{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:12px 14px}
+.slbl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.sval{font-size:18px;font-weight:500;font-family:var(--mono);color:var(--text);line-height:1.1}
+.sthb{font-size:11px;color:var(--amber);margin-top:3px}
+.spct{font-size:11px;margin-top:1px}
+.pos{color:#4ade80}.neg{color:var(--red)}.amber{color:var(--amber)}
+
+/* ── SECTION LABEL ── */
+.section-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 6px}
+.section-lbl{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:6px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px rgba(34,197,94,.6);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:0 20px 24px;align-items:stretch}
+
+/* ── ACCOUNT CARD ── */
+.acard{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s;display:flex;flex-direction:column;height:100%}
+.acard:hover{border-color:var(--border2)}
+
+/* card header */
+.ach{padding:13px 14px 11px;border-bottom:0.5px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.aname{font-size:15px;font-weight:600;color:var(--text)}
+.aid{font-size:11px;color:var(--faint);margin-top:3px;font-family:var(--mono)}
+
+/* myfxbook btn */
+.mfxb{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(255,140,0,.08);border:0.5px solid rgba(255,140,0,.28);border-radius:6px;text-decoration:none;cursor:pointer;transition:all .2s;flex-shrink:0;margin-top:1px}
+.mfxb:hover{background:rgba(255,140,0,.18);border-color:rgba(255,140,0,.5)}
+.mfxb svg{width:13px;height:13px;flex-shrink:0}
+.mfxb-txt{font-size:10px;color:#ff8c00;font-family:var(--mono);font-weight:500;white-space:nowrap}
+
+/* card body */
+.acb{padding:12px 14px;flex:1}
+.mrow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:0.5px solid rgba(15,37,69,.7)}
+.mrow:last-child{border-bottom:none}
+.ml{font-size:13px;color:var(--dim)}
+.mv{text-align:right}
+.mv-main{font-size:14px;font-weight:500;font-family:var(--mono);line-height:1.2}
+.mv-thb{font-size:11px;color:var(--amber);margin-top:2px}
+.mv-pct{font-size:11px;margin-top:1px}
+.cdiv{height:0.5px;background:var(--border);margin:7px 0}
+
+/* DD rows */
+.ddrow{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0}
+.ddlbl{font-size:11px;color:var(--faint)}
+.ddval{font-size:12px;font-family:var(--mono);color:var(--red)}
+.ddpct{font-size:10px;color:#7f1d1d;margin-left:3px}
+
+/* card footer */
+.acf{padding:9px 14px;background:var(--bg4);border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.ea-nm{font-size:12px;font-family:var(--mono)}
+.st-on{font-size:11px;color:var(--green)}
+.st-off{font-size:11px;color:var(--red)}
+
+/* admin hidden */
+.port-hidden{display:none}
+body.is-admin .port-hidden{display:block;opacity:.45}
+body.is-admin .port-hidden .acard{border-style:dashed;opacity:.7}
+.admin-col-actions{display:none}
+body.is-admin .admin-col-actions{display:flex}
+
+/* ── LOGIN MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:#0c1220;border:0.5px solid var(--border2);border-radius:12px;padding:32px;width:360px;max-width:90vw;transform:translateY(-14px);transition:transform .25s}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal h3{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);margin-bottom:5px}
+.modal .msub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.modal label{display:block;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.modal input{width:100%;background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:10px 13px;font-family:var(--mono);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;margin-bottom:13px}
+.modal input:focus{border-color:var(--accent)}
+.modal-err{font-size:12px;color:var(--red);margin-top:-7px;margin-bottom:11px;display:none}
+.modal-err.show{display:block}
+.modal-btns{display:flex;gap:9px;margin-top:4px}
+.btn-primary{flex:1;background:rgba(56,189,248,.13);border:0.5px solid rgba(56,189,248,.3);border-radius:6px;padding:10px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;transition:all .2s}
+.btn-primary:hover{background:rgba(56,189,248,.22)}
+.btn-cancel{background:var(--bg2);border:0.5px solid var(--border2);border-radius:6px;padding:10px 15px;font-family:var(--mono);font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s}
+.btn-cancel:hover{color:var(--text)}
+
+/* ── CONTACT POPUP ── */
+.contact-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s}
+.contact-overlay.show{opacity:1;pointer-events:all}
+.contact-popup{background:#07071a;border:0.5px solid rgba(56,189,248,.35);box-shadow:0 0 60px rgba(56,189,248,.1);max-width:400px;width:100%;padding:32px 24px 24px;position:relative;transform:scale(.94);transition:transform .25s;border-radius:8px}
+.contact-overlay.show .contact-popup{transform:scale(1)}
+.cp-close{position:absolute;top:12px;right:12px;background:none;border:0.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.3);width:26px;height:26px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;border-radius:4px}
+.cp-close:hover{border-color:var(--red);color:var(--red)}
+.cp-logo{text-align:center;font-size:24px;margin-bottom:4px}
+.cp-title{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--accent);text-align:center;letter-spacing:2px;margin-bottom:3px}
+.cp-sub{font-size:12px;color:rgba(255,255,255,.28);text-align:center;margin-bottom:20px}
+.channels{display:flex;flex-direction:column;gap:7px}
+.ch{display:flex;align-items:center;gap:12px;padding:11px 14px;text-decoration:none;border:0.5px solid rgba(255,255,255,.06);background:#0a0a1a;transition:all .2s;border-radius:4px}
+.ch:hover{transform:translateX(4px)}
+.ch-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ch-info{flex:1}
+.ch-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.ch-handle{font-size:11px;color:rgba(255,255,255,.55)}
+.ch-arrow{font-size:12px;color:rgba(255,255,255,.2)}
+.ch-line{border-color:rgba(6,199,85,.2)}.ch-line:hover{border-color:#06C755;background:rgba(6,199,85,.07);box-shadow:0 0 12px rgba(6,199,85,.12)}.ch-line .ch-icon{background:rgba(6,199,85,.13)}.ch-line .ch-name{color:#06C755}
+.ch-openchat{border-color:rgba(6,199,85,.2)}.ch-openchat:hover{border-color:#06C755;background:rgba(6,199,85,.07)}.ch-openchat .ch-icon{background:rgba(6,199,85,.13)}.ch-openchat .ch-name{color:#06C755}
+.ch-fb{border-color:rgba(24,119,242,.2)}.ch-fb:hover{border-color:#1877F2;background:rgba(24,119,242,.07)}.ch-fb .ch-icon{background:rgba(24,119,242,.13)}.ch-fb .ch-name{color:#1877F2}
+.ch-tt{border-color:rgba(255,255,255,.1)}.ch-tt:hover{border-color:#fff;background:rgba(255,255,255,.05)}.ch-tt .ch-icon{background:rgba(255,255,255,.07)}.ch-tt .ch-name{color:#fff}
+.ch-tg{border-color:rgba(34,158,217,.2)}.ch-tg:hover{border-color:#229ED9;background:rgba(34,158,217,.07)}.ch-tg .ch-icon{background:rgba(34,158,217,.13)}.ch-tg .ch-name{color:#229ED9}
+.ch-yt{border-color:rgba(255,0,0,.2)}.ch-yt:hover{border-color:#FF0000;background:rgba(255,0,0,.07)}.ch-yt .ch-icon{background:rgba(255,0,0,.13)}.ch-yt .ch-name{color:#FF0000}
+
+/* ── DRAG & DROP CARDS ── */
+.acard.dragging{opacity:.4;border-style:dashed}
+.drag-over{border-color:var(--accent) !important;box-shadow:0 0 0 2px var(--accent) !important}
+.drag-handle{cursor:grab;color:var(--faint);font-size:14px;padding:2px 4px;line-height:1;display:none;user-select:none}
+body.is-admin .drag-handle{display:inline-block}
+body.is-admin .acard{cursor:default}
+
+
+/* ── COPY TRADE BUTTON (card) ── */
+.ct-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(167,139,250,.1);border:0.5px solid rgba(167,139,250,.3);border-radius:6px;cursor:pointer;transition:all .2s;flex-shrink:0;margin-top:1px;font-family:var(--sans)}
+.ct-btn:hover{background:rgba(167,139,250,.2);border-color:rgba(167,139,250,.55)}
+.ct-txt{font-size:10px;color:var(--purple);font-family:var(--mono);font-weight:500;white-space:nowrap}
+.card-btns{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+
+/* ── ADMIN CARD ACTIONS ── */
+.card-admin-bar{display:none;gap:6px;padding:8px 14px;background:rgba(167,139,250,.05);border-top:0.5px solid rgba(167,139,250,.15)}
+body.is-admin .card-admin-bar{display:flex}
+.ab{background:var(--bg3);border:0.5px solid var(--border2);color:var(--muted);font-size:11px;padding:4px 9px;border-radius:4px;cursor:pointer;transition:all .15s;font-family:var(--mono)}
+.ab:hover{border-color:var(--accent);color:var(--accent)}
+.ab-del{color:var(--red);border-color:rgba(248,113,113,.25)}.ab-del:hover{border-color:var(--red)}
+.ab-vis{color:var(--purple);border-color:rgba(167,139,250,.25)}.ab-vis:hover{border-color:var(--purple)}
+.ab-mfx{color:#ff8c00;border-color:rgba(255,140,0,.25)}.ab-mfx:hover{border-color:#ff8c00}
+.ab-ct{color:var(--purple);border-color:rgba(167,139,250,.25)}.ab-ct:hover{border-color:var(--purple)}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:14px;font-size:11px;font-family:var(--mono);color:var(--faint);border-top:0.5px solid var(--border);margin:0 20px}
+.footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <h3>Admin Login</h3>
+    <p class="msub">เข้าสู่ระบบเพื่อจัดการบัญชี</p>
+    <label>Username</label>
+    <input type="text" id="adminUser" placeholder="admin" autocomplete="username">
+    <label>Password</label>
+    <input type="password" id="adminPass" placeholder="••••••••" autocomplete="current-password">
+    <div class="modal-err" id="loginErr">Username หรือ Password ไม่ถูกต้อง</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="doLogin()">Login as Admin</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT POPUP -->
+<div class="contact-overlay" id="contactOverlay" onclick="closeContact(event)">
+  <div class="contact-popup">
+    <button class="cp-close" onclick="closeContact()">✕</button>
+    <div class="cp-logo">⚡</div>
+    <div class="cp-title">DRFX BOT BUILDERS</div>
+    <div class="cp-sub">ช่องทางการติดต่อ</div>
+    <div class="channels">
+      <a class="ch ch-line" href="https://line.me/ti/p/@Drfx" target="_blank">
+        <div class="ch-icon"><svg viewBox="0 0 24 24" fill="#06C755" width="18"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg></div>
+        <div class="ch-info"><div class="ch-name">LINE Official</div><div class="ch-handle">@Drfx · สอบถาม / ซื้อ EA</div></div>
+        <div class="ch-arrow">›</div>
+      </a>
+      <a class="ch ch-openchat" href="https://line.me/ti/g2/FbnSChKlal1l972yAYXpmOf0asXhVLzfZ1-6Uw?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank">
+        <div class="ch-icon"><svg viewBox="0 0 24 24" fill="#06C755" width="18"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg></div>
+        <div class="ch-info"><div class="ch-name">LINE OpenChat</div><div class="ch-handle">รหัส: DRFX · ดาวน์โหลด / ติดตามผลงาน</div></div>
+        <div class="ch-arrow">›</div>
+      </a>
+      <a class="ch ch-fb" href="https://www.facebook.com/drfxtrading/" target="_blank">
+        <div class="ch-icon"><svg viewBox="0 0 24 24" fill="#1877F2" width="18"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+        <div class="ch-info"><div class="ch-name">Facebook</div><div class="ch-handle">drfxtrading · ข่าวสาร / อัปเดต</div></div>
+        <div class="ch-arrow">›</div>
+      </a>
+      <a class="ch ch-tt" href="https://www.tiktok.com/@drfxbotbuilders" target="_blank">
+        <div class="ch-icon"><svg viewBox="0 0 24 24" fill="#fff" width="18"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></div>
+        <div class="ch-info"><div class="ch-name">TikTok</div><div class="ch-handle">@drfxbotbuilders · คลิปผลงาน / รีวิว</div></div>
+        <div class="ch-arrow">›</div>
+      </a>
+      <a class="ch ch-tg" href="https://t.me/DRFXBotBuilders" target="_blank">
+        <div class="ch-icon"><svg viewBox="0 0 24 24" fill="#229ED9" width="18"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></div>
+        <div class="ch-info"><div class="ch-name">Telegram</div><div class="ch-handle">@DRFXBotBuilders · สากล / ต่างชาติ</div></div>
+        <div class="ch-arrow">›</div>
+      </a>
+      <a class="ch ch-yt" href="https://www.youtube.com/@DRFXBotBuilders" target="_blank">
+        <div class="ch-icon"><svg viewBox="0 0 24 24" fill="#FF0000" width="18"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+        <div class="ch-info"><div class="ch-name">YouTube</div><div class="ch-handle">@DRFXBotBuilders · คลิปสอน / ผลงาน EA</div></div>
+        <div class="ch-arrow">›</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="brand">
+    <div class="brand-icon">⚡</div>
+    <div>
+      <div class="brand-name">DRFX Dashboard</div>
+      <div class="brand-time" id="lastUpdate">Connecting...</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="ibtn" id="refreshBtn" onclick="refreshDash()" title="Refresh">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    </button>
+    <div class="toggle">
+      <button class="tbtn on" id="btnCent" onclick="toggleCurr('cent')">¢ Cent</button>
+      <button class="tbtn" id="btnDollar" onclick="toggleCurr('dollar')">$ Dollar</button>
+    </div>
+    <div class="rate-box">
+      <span class="rate-lbl" id="rateLabel">1¢ = ฿</span>
+      <span class="rate-val" id="rateValue">34.50</span>
+      <span class="rate-src" id="rateSource"></span>
+    </div>
+    <button class="contact-btn" onclick="openContact()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      ติดต่อ
+    </button>
+    <span class="chip" id="modeBadge">...</span>
+    <span class="chip chip-admin" id="adminBadge" style="display:none">⚡ ADMIN</span>
+    <button class="login-btn" id="loginBtn" onclick="openModal()" title="Admin Login">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </button>
+    <button class="logout-btn" id="logoutBtn" style="display:none" onclick="doLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+</div>
+
+<!-- ADMIN TOOLS -->
+<div class="admin-panel" id="adminPanel">
+  <h4>⚙ Admin Controls</h4>
+  <div class="admin-tools">
+    <button class="atool" onclick="adminAction('refresh')">🔄 Force Refresh</button>
+    <button class="atool" onclick="adminAction('export')">📥 Export CSV</button>
+    <button class="atool" onclick="adminAction('settings')">⚙ API Settings</button>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary">
+  <div class="scard"><div class="slbl">Total Balance</div><div class="sval" id="totalBalance">...</div></div>
+  <div class="scard"><div class="slbl">Total Equity</div><div class="sval" id="totalEquity">...</div></div>
+  <div class="scard"><div class="slbl">Floating P/L</div><div class="sval" id="totalProfit">...</div></div>
+  <div class="scard"><div class="slbl">Today</div><div class="sval" id="todayProfit">...</div></div>
+  <div class="scard"><div class="slbl">Yesterday</div><div class="sval" id="yesterdayProfit">...</div><div id="yesterdayDate" style="font-size:10px;color:var(--faint);margin-top:2px"></div></div>
+  <div class="scard"><div class="slbl">Weekly</div><div class="sval" id="weeklyProfit">...</div></div>
+  <div class="scard"><div class="slbl">Monthly</div><div class="sval" id="monthlyProfit">...</div></div>
+</div>
+
+<!-- SECTION BAR -->
+<div class="section-bar">
+  <div class="section-lbl"><div class="live-dot"></div> Connected Accounts</div>
+</div>
+
+<!-- CARDS -->
+<div class="cards-grid" id="cardsGrid">
+  <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--dim);font-family:var(--mono);font-size:13px">Connecting...</div>
+</div>
+
+<div class="footer">DRFX BOT BUILDERS · <a href="https://drfxtrading.net" target="_blank">drfxtrading.net</a></div>
+
+<script>
+(function(){
+'use strict';
+const MK='drfx_mode';
+let ws,wsR=0,ld,mode='cent',rate=34.5,rSrc='',rUpd='',isAdmin=false;
+let hiddenPorts=new Set();
+let mfxLinks={};   // login -> myfxbook url (admin sets)
+let ctLinks={};    // login -> copy trade guide url (admin sets)
+let labels={};     // login -> custom label
+
+// ── AUTH ─────────────────────────────────────────────────────────
+async function checkSession(){
+  try{ const r=await fetch('/api/me',{credentials:'same-origin'}); const d=await r.json(); if(d.is_admin) setAdmin(true); }catch(e){}
+}
+function setAdmin(v){
+  isAdmin=v;
+  document.body.classList.toggle('is-admin',v);
+  g('adminBadge').style.display=v?'':'none';
+  g('loginBtn').style.display=v?'none':'';
+  g('logoutBtn').style.display=v?'':'none';
+  g('adminPanel').classList.toggle('show',v);
+  if(ld) renderCards(ld.portfolio?.accounts||[]);
+}
+function openModal(){
+  g('loginModal').classList.add('show');
+  g('adminUser').value=''; g('adminPass').value='';
+  g('loginErr').classList.remove('show');
+  setTimeout(()=>g('adminUser').focus(),200);
+}
+function closeModal(){ g('loginModal').classList.remove('show'); }
+async function doLogin(){
+  const u=g('adminUser').value.trim(), p=g('adminPass').value;
+  if(!u||!p){ g('loginErr').classList.add('show'); return; }
+  try{
+    const r=await fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    if(r.ok){ const d=await r.json(); if(d.ok){ closeModal(); setAdmin(true); await loadHiddenPorts(); await loadMfxLinks(); return; }}
+    g('loginErr').classList.add('show'); g('adminPass').value=''; g('adminPass').focus();
+  }catch(e){ g('loginErr').classList.add('show'); }
+}
+async function doLogout(){
+  try{ await fetch('/api/logout',{method:'POST',credentials:'same-origin'}); }catch(e){}
+  setAdmin(false);
+}
+g('loginModal').addEventListener('click',e=>{ if(e.target===g('loginModal')) closeModal(); });
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&g('loginModal').classList.contains('show')) doLogin();
+  if(e.key==='Escape'){ closeModal(); closeContact(); }
+});
+window.openModal=openModal; window.closeModal=closeModal; window.doLogin=doLogin; window.doLogout=doLogout;
+
+// ── CONTACT POPUP ─────────────────────────────────────────────────
+function openContact(){ g('contactOverlay').classList.add('show'); }
+function closeContact(e){
+  if(!e||e.target===g('contactOverlay')||e.currentTarget?.tagName==='BUTTON')
+    g('contactOverlay').classList.remove('show');
+}
+window.openContact=openContact; window.closeContact=closeContact;
+
+// ── HIDDEN PORTS ─────────────────────────────────────────────────
+async function loadHiddenPorts(){
+  try{ const r=await fetch('/api/hidden-ports',{credentials:'same-origin'}); const d=await r.json(); hiddenPorts=new Set((d.hidden||[]).map(Number)); }catch(e){}
+}
+async function saveHiddenPorts(){
+  if(!isAdmin) return;
+  try{ await fetch('/api/hidden-ports',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({hidden:[...hiddenPorts]})}); }catch(e){}
+}
+window.toggleVisibility=function(login){
+  if(!isAdmin) return;
+  login=Number(login);
+  if(hiddenPorts.has(login)) hiddenPorts.delete(login); else hiddenPorts.add(login);
+  saveHiddenPorts();
+  if(ld&&ld.portfolio?.accounts) renderCards(ld.portfolio.accounts);
+};
+
+// ── MYFXBOOK LINKS (localStorage + API fallback) ──────────────────
+const MFX_KEY='drfx_mfxlinks';
+async function loadMfxLinks(){
+  // Load from localStorage first (instant, survives refresh)
+  try{ const s=localStorage.getItem(MFX_KEY); if(s) mfxLinks=JSON.parse(s); }catch(e){}
+  // Then try API to sync (admin server-side)
+  try{
+    const r=await fetch('/api/mfxlinks',{credentials:'same-origin'});
+    if(r.ok){ const d=await r.json(); if(d.links&&Object.keys(d.links).length){ mfxLinks={...mfxLinks,...d.links}; localStorage.setItem(MFX_KEY,JSON.stringify(mfxLinks)); }}
+  }catch(e){}
+}
+async function saveMfxLinks(){
+  // Save to localStorage immediately (always works)
+  try{ localStorage.setItem(MFX_KEY,JSON.stringify(mfxLinks)); }catch(e){}
+  // Also try API
+  try{ await fetch('/api/mfxlinks',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({links:mfxLinks})}); }catch(e){}
+}
+window.setMfxLink=function(login){
+  if(!isAdmin) return;
+  const cur=mfxLinks[login]||'';
+  const url=prompt('Myfxbook URL สำหรับ '+login+' :\n(เว้นว่างเพื่อลบ)',cur);
+  if(url===null) return;
+  if(url.trim()){ mfxLinks[login]=url.trim(); } else { delete mfxLinks[login]; }
+  saveMfxLinks();
+  if(ld&&ld.portfolio?.accounts) renderCards(ld.portfolio.accounts);
+};
+
+// ── COPY TRADE LINKS ──────────────────────────────────────────────
+const CT_KEY='drfx_ctlinks';
+async function loadCtLinks(){
+  try{ const s=localStorage.getItem(CT_KEY); if(s) ctLinks=JSON.parse(s); }catch(e){}
+  try{
+    const r=await fetch('/api/ctlinks',{credentials:'same-origin'});
+    if(r.ok){ const d=await r.json(); if(d.links&&Object.keys(d.links).length){ ctLinks={...ctLinks,...d.links}; localStorage.setItem(CT_KEY,JSON.stringify(ctLinks)); }}
+  }catch(e){}
+}
+async function saveCtLinks(){
+  try{ localStorage.setItem(CT_KEY,JSON.stringify(ctLinks)); }catch(e){}
+  try{ await fetch('/api/ctlinks',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({links:ctLinks})}); }catch(e){}
+}
+window.setCtLink=function(login){
+  if(!isAdmin) return;
+  const cur=ctLinks[login]||'';
+  const url=prompt('Copy Trade Guide URL สำหรับ '+login+' :\n(เว้นว่างเพื่อลบ)\n\nตัวอย่าง:\nhttps://cashbackallbroker.com/copytrade/guide/...',cur);
+  if(url===null) return;
+  if(url.trim()){ ctLinks[login]=url.trim(); } else { delete ctLinks[login]; }
+  saveCtLinks();
+  if(ld&&ld.portfolio?.accounts) renderCards(ld.portfolio.accounts);
+};
+
+// ── COPY TRADE (เปิดหน้า guide.html) ──────────────────────────────
+window.openCT=function(login,label){
+  const url=ctLinks[login]; if(!url) return;
+  try{
+    localStorage.setItem('drfx_ct_ctx', JSON.stringify({
+      url: url,
+      acct: label||('Login: '+login),
+      login: login,
+      ts: Date.now()
+    }));
+  }catch(e){}
+  const target = location.origin + '/guide.html';
+  const w = window.open(target, '_blank');
+  if(!w) location.href = target;
+};
+
+window.adminAction=function(t){
+  if(!isAdmin) return;
+  if(t==='refresh'){ if(ws&&ws.readyState===1) ws.send('refresh'); else fetchSnap(); }
+  else if(t==='export') alert('Export: ต่อ API backend');
+  else if(t==='settings') alert('Settings: ตั้งค่า API connections');
+};
+window.refreshDash=function(){
+  const btn=g('refreshBtn');
+  if(btn){ btn.classList.add('spin'); setTimeout(()=>btn.classList.remove('spin'),700); }
+  fetchSnap();
+};
+function fetchSnap(){ fetch('/api/snapshot',{credentials:'same-origin'}).then(r=>r.json()).then(d=>{ld=d;renderAll(d);}).catch(()=>{}); }
+
+// ── CURRENCY ─────────────────────────────────────────────────────
+function loadMode(){ try{ if(localStorage.getItem(MK)==='dollar') mode='dollar'; }catch(e){} updateModeUI(); }
+function updateModeUI(){
+  g('btnCent').className='tbtn'+(mode==='cent'?' on':'');
+  g('btnDollar').className='tbtn'+(mode==='dollar'?' on':'');
+  g('rateLabel').textContent=mode==='cent'?'1¢ = ฿':'1$ = ฿';
+}
+function D(v){ return mode==='dollar'?(v||0)/100:(v||0); }
+function T(v){ return (v||0)*rate/100; }
+function S(){ return mode==='dollar'?'$':'¢'; }
+function fm(v){ const d=D(v); return S()+Math.abs(d).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fp(v){ const d=D(v); return(d>=0?'+'+S():'-'+S())+Math.abs(d).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function ft(v){ const t=T(v); return '฿'+Math.abs(t).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fT(v){ const t=T(v); return(t>=0?'+฿':'-฿')+Math.abs(t).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function pct(v,b){ return(b&&b>0)?((v||0)/b*100).toFixed(2)+'%':'0.00%'; }
+function updateRate(){
+  const el=g('rateValue'), src=g('rateSource');
+  if(el){ const dr=mode==='cent'?rate/100:rate; el.textContent=dr.toFixed(4); }
+  if(src&&rSrc){ src.textContent='Live'; src.style.color='var(--green)'; }
+}
+window.toggleCurr=function(m){
+  mode=m; try{ localStorage.setItem(MK,m); }catch(e){} updateModeUI(); updateRate();
+  if(ld) renderAll(ld);
+};
+
+// ── WEBSOCKET ─────────────────────────────────────────────────────
+function connect(){
+  const p=location.protocol==='https:'?'wss':'ws';
+  ws=new WebSocket(p+'://'+location.host+'/ws');
+  ws.onmessage=e=>{ try{ const d=JSON.parse(e.data); ld=d; renderAll(d); }catch(x){} };
+  ws.onclose=()=>{ if(wsR<20){ wsR++; setTimeout(connect,Math.min(1000*Math.pow(1.5,wsR),30000)); } };
+  ws.onopen=()=>{ wsR=0; };
+  ws.onerror=()=>{ ws.close(); };
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────────
+function renderAll(d){
+  if(!d) return;
+  if(d.usdthb&&d.usdthb.rate>0){ rate=d.usdthb.rate; rSrc=d.usdthb.source||''; rUpd=d.usdthb.updated||''; updateRate(); }
+  const p=d.portfolio; if(!p) return;
+
+  // totals — skip hidden for non-admin
+  let totals={ bal:p.total_balance||0, eq:p.total_equity||0, pl:p.total_profit||0, td:p.today_profit||0, yd:p.yesterday_profit||0, wk:p.weekly_profit||0, mo:p.monthly_profit||0 };
+  if(!isAdmin&&hiddenPorts.size>0&&Array.isArray(p.accounts)){
+    const vis=p.accounts.filter(a=>!hiddenPorts.has(a.login));
+    totals={ bal:vis.reduce((s,a)=>s+(a.balance||0),0), eq:vis.reduce((s,a)=>s+(a.equity||0),0), pl:vis.reduce((s,a)=>s+(a.profit||0),0), td:vis.reduce((s,a)=>s+(a.today||0),0), yd:vis.reduce((s,a)=>s+(a.yesterday||0),0), wk:vis.reduce((s,a)=>s+(a.weekly||0),0), mo:vis.reduce((s,a)=>s+(a.monthly||0),0) };
+  }
+
+  setSumCard('totalBalance', totals.bal, false, 0, true);
+  setSumCard('totalEquity',  totals.eq,  false, 0, true);
+  setSumCard('totalProfit',  totals.pl,  true, totals.bal);
+  setSumCard('todayProfit',  totals.td,  true, totals.bal);
+  setSumCard('yesterdayProfit', totals.yd, true, totals.bal);
+  setSumCard('weeklyProfit', totals.wk,  true, totals.bal);
+  setSumCard('monthlyProfit',totals.mo,  true, totals.bal);
+
+  const visList=(!isAdmin&&hiddenPorts.size>0)?(p.accounts||[]).filter(a=>!hiddenPorts.has(a.login)):(p.accounts||[]);
+  const yAcct=visList.find(a=>a.yesterday_date);
+  const ye=g('yesterdayDate'); if(ye) ye.textContent=yAcct?yAcct.yesterday_date:'';
+
+  const tu=g('lastUpdate'); if(tu&&d.timestamp) tu.textContent='Updated: '+new Date(d.timestamp).toLocaleTimeString();
+  const mb=g('modeBadge');
+  if(mb){ if(d.demo_mode){mb.textContent='DEMO';mb.className='chip chip-demo';}else{mb.textContent='LIVE';mb.className='chip chip-live';} }
+
+  renderCards(p.accounts||[]);
+}
+
+function setSumCard(id, val, showPct, bal, white){
+  const el=g(id); if(!el) return;
+  const v=val||0, d=D(v), s=S();
+  const sign=d>=0?(showPct?'+'+s:s):'-'+s;
+  const main=sign+Math.abs(d).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const thb=showPct?fT(v):ft(v);
+  const cls=white?'':showPct?(v>=0?'pos':'neg'):'amber';
+  const pp=showPct&&bal?` <span style="font-size:12px;opacity:.7">(${v>=0?'+':''}${pct(v,bal)})</span>`:'';
+  el.innerHTML=`<span class="${cls}" style="color:${white?'var(--text)':''}">${main}</span>${pp}<div style="font-size:12px;color:${white?'var(--amber)':'var(--amber)'};margin-top:3px">${thb}</div>`;
+}
+
+// ── RENDER CARDS ──────────────────────────────────────────────────
+function renderCards(accts){
+  const grid=g('cardsGrid'); if(!grid) return;
+  const list=sortByOrder(accts);
+  if(!list.length){ grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--dim);font-family:var(--mono);font-size:13px">No accounts connected</div>'; return; }
+
+  grid.innerHTML=list.map(a=>{
+    const isHidden=hiddenPorts.has(a.login);
+    if(isHidden&&!isAdmin) return '';
+    const b=a.balance||0;
+    const mfxUrl=mfxLinks[a.login]||'';
+    const eaColor={'PHANTOM':' #38bdf8','NEMESIS':'#ff2d78','VORTEX':'#f97316','PROTON':'#a855f7','AEGIS':'#22c55e','AETHON':'#facc15','JANUS':'#a855f7','NEMENEXUS':'#00f5ff','NEMENOVA':'#f97316'}[Object.keys({'PHANTOM':1,'NEMESIS':1,'VORTEX':1,'PROTON':1,'AEGIS':1,'AETHON':1,'JANUS':1,'NEMENEXUS':1,'NEMENOVA':1}).find(k=>(a.label||'').toUpperCase().includes(k))||'']||'#38bdf8';
+
+    function metricRow(lbl, val, bal, dd){
+      const v=val||0, d=D(v), s=S();
+      const cls=v>=0?'pos':'neg';
+      const sign=v>=0?'+'+s:'-'+s;
+      const mainStr=sign+Math.abs(d).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+      const thbStr=fT(v);
+      const pctStr=bal?(v>=0?'+':'')+pct(v,bal):'';
+      return `<div class="mrow">
+        <span class="ml">${lbl}</span>
+        <div class="mv">
+          <div class="mv-main ${cls}">${mainStr}</div>
+          <div class="mv-thb">${thbStr}</div>
+          ${pctStr?`<div class="mv-pct ${cls}">${pctStr}</div>`:''}
+        </div>
+      </div>`;
+    }
+    function balRow(lbl, val){
+      const v=val||0; const d=D(v);
+      return `<div class="mrow">
+        <span class="ml">${lbl}</span>
+        <div class="mv">
+          <div class="mv-main" style="color:var(--text)">${S()}${Math.abs(d).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+          <div class="mv-thb">${ft(v)}</div>
+        </div>
+      </div>`;
+    }
+    function ddRow(lbl, val, bal){
+      if(!val||val===0) return `<div class="ddrow"><span class="ddlbl">${lbl}</span><span class="ddval" style="color:var(--faint)">—</span></div>`;
+      const v=val; const d=D(v);
+      return `<div class="ddrow">
+        <span class="ddlbl">${lbl}</span>
+        <span class="ddval">-${S()}${Math.abs(d).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} <span class="ddpct">(${pct(v,bal)})</span></span>
+      </div>`;
+    }
+
+    const ctUrl=ctLinks[a.login]||'';
+    const mfxBtn=mfxUrl
+      ?`<a class="mfxb" href="${mfxUrl}" target="_blank" onclick="event.stopPropagation()">
+          <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect width="24" height="24" rx="4" fill="#ff8c00" opacity=".18"/><circle cx="12" cy="12" r="8" stroke="#ff8c00" stroke-width="1.5" fill="none"/><path d="M8 12l3 3 5-6" stroke="#ff8c00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="mfxb-txt">Myfxbook</span>
+        </a>`
+      :``;
+    const ctBtn=ctUrl
+      ?`<button class="ct-btn" onclick="event.stopPropagation();openCT(${a.login},'${(a.label||'').replace(/'/g,"\\'")}')">
+          <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M8 7h9a3 3 0 0 1 3 3v9" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"/><rect x="4" y="3" width="12" height="12" rx="2" stroke="#a78bfa" stroke-width="1.6" fill="none"/></svg>
+          <span class="ct-txt">Copy Trade</span>
+        </button>`
+      :``;
+    const headBtns=(mfxBtn||ctBtn)?`<div class="card-btns">${ctBtn}${mfxBtn}</div>`:'';
+
+    const adminBar=isAdmin?`
+      <div class="card-admin-bar">
+        <button class="ab ab-vis" onclick="toggleVisibility(${a.login})">${isHidden?'👁 Show':'🙈 Hide'}</button>
+        <button class="ab" onclick="renameAccount(${a.login},'${(a.label||'').replace(/'/g,"\\'")}')">✏ Rename</button>
+        <button class="ab ab-mfx" onclick="setMfxLink(${a.login})">📊 Myfxbook</button>
+        <button class="ab ab-ct" onclick="setCtLink(${a.login})">🔗 CopyTrade</button>
+        <button class="ab ab-del" onclick="deleteAccount(${a.login},'${(a.label||'').replace(/'/g,"\\'")}')">✕ Remove</button>
+      </div>`:'';
+
+    return `<div class="${isHidden?'port-hidden':''}" style="height:100%" data-login="${a.login}">
+      <div class="acard">
+        <div class="ach">
+          <div>
+            <div class="aname"><span class="drag-handle" title="ลาก เพื่อจัดเรียง">⠿</span> ${a.label||a.login}</div>
+            <div class="aid">Login: ${a.login}</div>
+          </div>
+          ${headBtns}
+        </div>
+        <div class="acb">
+          ${balRow('Balance', a.balance)}
+          ${balRow('Equity', a.equity)}
+          ${metricRow('Floating P/L', a.profit, b)}
+          <div class="cdiv"></div>
+          ${metricRow('Today', a.today, b)}
+          ${metricRow('Yesterday', a.yesterday, b)}
+          ${metricRow('Weekly', a.weekly, b)}
+          ${metricRow('Monthly', a.monthly, b)}
+          <div class="cdiv"></div>
+          ${ddRow('Max DD Today', a.max_dd_today, b)}
+          ${ddRow('Max DD Week', a.max_dd_week, b)}
+          ${ddRow('Max DD Month', a.max_dd_month, b)}
+        </div>
+        <div class="acf">
+          <span style="font-size:11px;color:var(--faint);font-family:var(--mono)">© DRFX BOT BUILDERS</span>
+          <span class="${a.connected?'st-on':'st-off'}">${a.connected?'● Online':'● Offline'}</span>
+        </div>
+        ${adminBar}
+      </div>
+    </div>`;
+  }).join('');
+  if(isAdmin) setTimeout(setupDragCards, 0);
+}
+
+// ── DRAG & DROP CARDS ────────────────────────────────────────────
+let dragSrc=null, order=[];
+
+async function loadOrder(){
+  try{ const r=await fetch('/api/order'); const d=await r.json(); order=d.order||[]; }catch(e){}
+}
+async function saveOrder(){
+  try{ await fetch('/api/order',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({order})}); }catch(e){}
+}
+function sortByOrder(accts){
+  if(!order.length) return accts;
+  const m={}; order.forEach((l,i)=>{m[l]=i;});
+  return [...accts].sort((a,b)=>((a.login in m)?m[a.login]:9999)-((b.login in m)?m[b.login]:9999));
+}
+function setupDragCards(){
+  if(!isAdmin) return;
+  const grid=document.getElementById('cardsGrid');
+  if(!grid) return;
+  const wrappers=[...grid.querySelectorAll(':scope > div[data-login]')];
+  if(!wrappers.length) return;
+
+  wrappers.forEach(wrap=>{
+    wrap.setAttribute('draggable','true');
+
+    wrap.addEventListener('dragstart',e=>{
+      dragSrc=Number(wrap.dataset.login);
+      setTimeout(()=>wrap.querySelector('.acard')?.classList.add('dragging'),0);
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain', String(dragSrc));
+    });
+    wrap.addEventListener('dragend',()=>{
+      wrap.querySelector('.acard')?.classList.remove('dragging');
+      grid.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+    });
+    wrap.addEventListener('dragover',e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      if(Number(wrap.dataset.login)!==dragSrc){
+        grid.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+        wrap.querySelector('.acard')?.classList.add('drag-over');
+      }
+    });
+    wrap.addEventListener('dragleave',e=>{
+      if(!wrap.contains(e.relatedTarget))
+        wrap.querySelector('.acard')?.classList.remove('drag-over');
+    });
+    wrap.addEventListener('drop',e=>{
+      e.preventDefault();
+      wrap.querySelector('.acard')?.classList.remove('drag-over');
+      const tgt=Number(wrap.dataset.login);
+      if(!dragSrc||dragSrc===tgt) return;
+      const all=[...grid.querySelectorAll(':scope > div[data-login]')].map(w=>Number(w.dataset.login));
+      const si=all.indexOf(dragSrc); if(si>-1) all.splice(si,1);
+      const ti=all.indexOf(tgt); if(ti>-1) all.splice(ti,0,dragSrc); else all.push(dragSrc);
+      order=all;
+      saveOrder();
+      if(ld?.portfolio?.accounts) renderCards(ld.portfolio.accounts);
+    });
+  });
+}
+
+// ── ADMIN ACCOUNT ACTIONS ─────────────────────────────────────────
+window.renameAccount=async function(l,c){
+  if(!isAdmin) return;
+  const n=prompt('ตั้งชื่อ '+l+':',c); if(n===null) return;
+  const t=n.trim();
+  if(!t){ if(confirm('ลบชื่อ?')){ try{await fetch('/api/labels/'+l,{method:'DELETE',credentials:'same-origin'});}catch(e){}} return; }
+  if(t.length>50){ alert('ชื่อยาวเกิน 50 ตัว'); return; }
+  try{
+    const r=await fetch('/api/labels/'+l,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({label:t})});
+    const d=await r.json();
+    if(d.status==='ok'&&ld?.portfolio?.accounts){ const a=ld.portfolio.accounts.find(x=>x.login===l); if(a) a.label=t; renderCards(ld.portfolio.accounts); }
+  }catch(e){}
+};
+window.deleteAccount=async function(l,lb){
+  if(!isAdmin) return;
+  if(!confirm('ลบ "'+lb+'" ('+l+') ?')) return;
+  try{
+    const r=await fetch('/api/ea/account/'+l,{method:'DELETE',credentials:'same-origin'});
+    const d=await r.json();
+    if(d.status==='ok'&&ld?.portfolio?.accounts){ ld.portfolio.accounts=ld.portfolio.accounts.filter(a=>a.login!==l); renderAll(ld); }
+  }catch(e){}
+};
+
+// ── HELPER ────────────────────────────────────────────────────────
+function g(id){ return document.getElementById(id); }
+
+// ── INIT ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',async()=>{
+  loadMode();
+  await checkSession();
+  await loadHiddenPorts();
+  await loadMfxLinks();
+  await loadCtLinks();
+  await loadOrder();
+  connect();
+  setTimeout(()=>{ if(!ws||ws.readyState!==1) fetchSnap(); },3000);
+});
+})();
+</script>
+</body>
+</html>

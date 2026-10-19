@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DRFX BOT BUILDERS · คาตาล็อก EA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #050510; color: #e2e8f0; font-family: 'Inter', 'Sarabun', system-ui, -apple-system, sans-serif; font-size: 15px; min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  .scanlines { position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px); pointer-events: none; z-index: 0; }
+  .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 0; }
+  .content { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 48px 20px; }
+
+  /* NAVBAR */
+  .navbar { position: sticky; top: 0; z-index: 100; background: #05051088; backdrop-filter: blur(16px); border-bottom: 1px solid #ffffff0d; }
+  .navbar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .navbar-logo { display: flex; align-items: center; gap: 8px; }
+  .navbar-logo-icon { font-size: 20px; }
+  .navbar-logo-text { font-family: 'Inter', 'Sarabun', sans-serif; font-weight: 900; font-size: 18px; color: #00f5ff; text-shadow: 0 0 12px #00f5ff88; letter-spacing: 2px; }
+  .navbar-logo-sub { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 8px; color: #ffffff30; letter-spacing: 3px; margin-top: 2px; display: none; }
+  @media(min-width:500px){ .navbar-logo-sub { display: block; } }
+  .navbar-links { display: flex; align-items: center; gap: 4px; }
+  @media(max-width:640px){ .navbar-links { display: none; } }
+  .nav-link { display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff55; text-decoration: none; border: 1px solid transparent; transition: all 0.2s; background: none; cursor: pointer; }
+  .nav-link:hover { color: #00f5ff; border-color: #00f5ff33; background: #00f5ff08; }
+  .nav-link.active { color: #00f5ff; border-color: #00f5ff55; background: #00f5ff0d; }
+  .nav-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; animation: pulse 1.5s infinite; display: inline-block; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);} }
+  .navbar-hamburger { display: none; background: none; border: 1px solid #ffffff18; color: #ffffff66; padding: 6px 10px; font-size: 16px; cursor: pointer; }
+  @media(max-width:640px){ .navbar-hamburger { display: block; } }
+
+  /* Language switcher */
+  .lang-switcher { position: relative; }
+  .lang-btn { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: transparent; border: 1px solid #ffffff18; color: #ffffff88; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .lang-btn:hover { border-color: #00f5ff55; color: #00f5ff; }
+  .lang-flag { font-size: 14px; line-height: 1; }
+  .lang-arrow { font-size: 9px; opacity: 0.5; margin-left: 2px; }
+  .lang-menu { position: absolute; top: calc(100% + 6px); right: 0; background: #08081e; border: 1px solid #ffffff18; min-width: 140px; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: all 0.2s; z-index: 200; }
+  .lang-menu.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+  .lang-option { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 13px; color: #cbd5e1; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid #ffffff08; }
+  .lang-option:last-child { border-bottom: none; }
+  .lang-option:hover { background: #00f5ff0d; color: #00f5ff; }
+  .lang-option.active { background: #00f5ff10; color: #00f5ff; }
+  .lang-option.active::after { content: '✓'; margin-left: auto; font-weight: 700; }
+  .navbar-mobile { display: none; flex-direction: column; border-top: 1px solid #ffffff0a; background: #08081e; }
+  .navbar-mobile.open { display: flex; }
+  .nav-link-mobile { display: flex; align-items: center; gap: 8px; padding: 14px 24px; font-size: 15px; font-weight: 700; color: #ffffff66; text-decoration: none; border-bottom: 1px solid #ffffff08; transition: all 0.2s; cursor: pointer; }
+  .nav-link-mobile:hover { color: #00f5ff; background: #00f5ff08; }
+
+  /* HEADER */
+  .header { text-align: center; margin-bottom: 40px; }
+  .header-eyebrow { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 11px; letter-spacing: 8px; color: #ffffff25; margin-bottom: 14px; }
+  .header-title { font-family: 'Inter', 'Sarabun', sans-serif; font-weight: 800; font-size: clamp(28px, 5.5vw, 52px); letter-spacing: -0.5px; background: linear-gradient(90deg, #00f5ff, #ff2d78, #a855f7, #00f5ff); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradShift 6s linear infinite; }
+  @keyframes gradShift { 0%{background-position:0% 50%;}100%{background-position:300% 50%;} }
+  .header-sub { font-size: 16px; color: #00f5ff66; margin-top: 10px; }
+
+  /* ===== LIVE STATS SECTION ===== */
+  .live-stats-section { margin: 0 0 32px; }
+  .live-stats-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+  .live-stats-title { font-size: 11px; letter-spacing: 2.5px; color: #ffffff35; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .live-stats-live-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; }
+  .live-stats-refresh { font-size: 11px; color: #ffffff30; font-variant-numeric: tabular-nums; }
+
+  .live-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .live-stat-card { position: relative; background: #0e0e1c; border: 1px solid #ffffff0d; padding: 14px 16px; transition: border-color 0.2s; }
+  .live-stat-card:hover { border-color: #ffffff18; }
+  .live-stat-icon { position: absolute; top: 14px; right: 16px; font-size: 14px; opacity: 0.4; }
+  .live-stat-label { font-size: 10px; letter-spacing: 1.5px; color: #ffffff35; font-weight: 600; margin-bottom: 8px; }
+  .live-stat-value { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 26px; font-weight: 700; color: #e2e8f0; letter-spacing: -0.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .live-stat-value.highlight { color: #22c55e; }
+  .live-stat-unit { font-size: 11px; color: #ffffff40; margin-top: 4px; }
+  .live-stat-value.loading { opacity: 0.3; animation: pulse-load 1.2s infinite; }
+  @keyframes pulse-load { 0%,100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+  /* EA breakdown bar list */
+  .ea-breakdown-card { background: #0e0e1c; border: 1px solid #ffffff0d; padding: 16px 18px; }
+  .ea-breakdown-title { font-size: 11px; letter-spacing: 1.5px; color: #ffffff45; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .ea-breakdown-title-sub { font-size: 11px; color: #ffffff25; font-weight: 400; letter-spacing: 0; }
+  .ea-breakdown-list { display: flex; flex-direction: column; gap: 9px; }
+  .ea-breakdown-item { display: flex; flex-direction: column; gap: 4px; }
+  .ea-breakdown-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .ea-breakdown-name { font-size: 12px; color: #cbd5e1; font-weight: 500; letter-spacing: 0.3px; }
+  .ea-breakdown-count { color: #94a3b8; font-family: 'Inter', 'Sarabun', sans-serif; font-weight: 600; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .ea-breakdown-bar-bg { height: 4px; background: #ffffff08; overflow: hidden; }
+  .ea-breakdown-bar-fill { height: 100%; background: #22c55e; transition: width 0.8s ease-out; }
+  .ea-breakdown-empty { text-align: center; color: #ffffff30; font-size: 13px; padding: 20px; }
+  /* Collapse/expand for extra breakdown items */
+  .ea-breakdown-more { display: flex; flex-direction: column; gap: 9px; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, margin 0.35s ease; margin-top: 0; }
+  .ea-breakdown-more.open { max-height: 2000px; margin-top: 9px; }
+  .ea-breakdown-toggle { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 12px; padding: 8px 12px; background: transparent; border: 1px solid #ffffff10; color: #ffffff55; font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; }
+  .ea-breakdown-toggle:hover { border-color: #ffffff20; color: #ffffff88; background: #ffffff03; }
+  .ea-breakdown-toggle-arrow { font-size: 10px; transition: transform 0.25s; display: inline-block; }
+  .ea-breakdown-toggle-arrow.open { transform: rotate(180deg); }
+
+  /* COMPARE */
+  .compare-section { margin: 0 0 24px; }
+  .compare-title { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; color: #ffffff33; text-align: center; margin-bottom: 16px; }
+  .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .compare-box { background: #0a0a1a; border: 1px solid #ffffff0a; padding: 22px; position: relative; overflow: hidden; }
+  .compare-copy { border-left: 3px solid #a855f7; }
+  .compare-badge-top { position: absolute; top: 0; right: 0; background: #a855f7; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 10px; letter-spacing: 1px; }
+  .compare-box-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .compare-icon { font-size: 30px; }
+  .compare-box-title { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; }
+  .compare-box-sub { font-size: 12px; color: #ffffff40; margin-top: 3px; }
+  .compare-divider { border: none; border-top: 1px solid #ffffff0a; margin: 12px 0; }
+  .compare-pros-label { font-size: 12px; font-weight: 700; color: #22c55e; letter-spacing: 1px; margin-bottom: 8px; }
+  .compare-cons-label { font-size: 12px; font-weight: 700; color: #f97316; letter-spacing: 1px; margin: 12px 0 8px; }
+  .compare-item { font-size: 13px; color: #94a3b8; padding: 4px 0 4px 12px; border-left: 2px solid #22c55e44; margin-bottom: 5px; line-height: 1.5; }
+  .compare-item.cons { border-left-color: #f9731644; }
+  .self-run-box { border: 1px solid #00f5ff22; border-left: 3px solid #00f5ff; background: #0a0a1a; padding: 22px; }
+  .self-run-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .self-run-title { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 15px; font-weight: 700; color: #00f5ff; letter-spacing: 1px; }
+  .self-run-sub { font-size: 12px; color: #ffffff40; margin-top: 3px; }
+  .self-run-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  @media(max-width:480px){ .self-run-options { grid-template-columns: 1fr; } }
+  .option-box { padding: 14px 16px; border: 1px solid #ffffff0a; background: #07071a; }
+  .option-box-buy { border-color: #00f5ff33; }
+  .option-box-ib { border-color: #22c55e33; }
+  .option-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .option-label-buy { color: #00f5ff; }
+  .option-label-ib { color: #22c55e; }
+  .option-price { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+  .option-price-buy { color: #00f5ff; }
+  .option-price-ib { color: #22c55e; }
+  .option-unit { font-size: 11px; color: #ffffff30; margin-bottom: 10px; }
+  .option-detail { font-size: 12px; color: #94a3b8; line-height: 1.6; }
+  .option-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 7px 14px; font-size: 12px; font-weight: 700; font-family: 'Sarabun', sans-serif; border: none; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+  .option-btn-buy { background: #00f5ff22; color: #00f5ff; border: 1px solid #00f5ff44; }
+  .option-btn-buy:hover { background: #00f5ff33; }
+  .option-btn-ib { background: #22c55e22; color: #22c55e; border: 1px solid #22c55e44; }
+  .option-btn-ib:hover { background: #22c55e33; }
+  .self-run-pros-label { font-size: 12px; font-weight: 700; color: #22c55e; letter-spacing: 1px; margin-bottom: 8px; }
+  .self-run-cons-label { font-size: 12px; font-weight: 700; color: #f97316; letter-spacing: 1px; margin: 10px 0 8px; }
+
+  /* TRIAL BANNER */
+  .trial-banner { background: linear-gradient(135deg, #0d0a1a, #150d25); border: 1px solid #a855f744; border-left: 3px solid #a855f7; padding: 16px 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .trial-icon { font-size: 28px; }
+  .trial-text { flex: 1; }
+  .trial-title { font-size: 16px; font-weight: 700; color: #a855f7; margin-bottom: 4px; }
+  .trial-desc { font-size: 14px; color: #94a3b8; line-height: 1.6; }
+  .trial-btn { display: flex; align-items: center; gap: 8px; padding: 10px 20px; background: #a855f7; color: #fff; font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .trial-btn:hover { background: #9333ea; transform: translateY(-1px); box-shadow: 0 4px 20px #a855f755; }
+
+  /* CONTACT BAR */
+  .contact-bar { display: flex; gap: 12px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+  .contact-btn-main { display: flex; align-items: center; gap: 8px; padding: 12px 28px; font-family: 'Sarabun', sans-serif; font-size: 15px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; transition: all 0.2s; background: linear-gradient(135deg, #00f5ff22, #a855f722); border: 1px solid #00f5ff44; color: #00f5ff; }
+  .contact-btn-main:hover { background: linear-gradient(135deg, #00f5ff33, #a855f733); transform: translateY(-2px); box-shadow: 0 4px 20px #00f5ff22; }
+
+  /* STATS (เดิม — คงไว้) */
+  .stats { display: flex; gap: 12px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+  .stat-box { background: #ffffff04; border: 1px solid #ffffff0a; padding: 12px 24px; text-align: center; min-width: 90px; }
+  .stat-num { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 22px; font-weight: 700; color: #00f5ff; font-variant-numeric: tabular-nums; }
+  .stat-lbl { font-size: 13px; color: #ffffff35; margin-top: 4px; }
+
+  /* FILTER */
+  .filter-row { display: flex; gap: 8px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
+  .filter-label { font-size: 14px; color: #ffffff30; margin-right: 4px; }
+  .filter-btn { font-family: 'Sarabun', sans-serif; font-size: 14px; padding: 7px 16px; border: 1px solid #ffffff18; background: transparent; color: #ffffff55; cursor: pointer; transition: all 0.2s; }
+  .filter-btn:hover { border-color: #00f5ff55; color: #00f5ff; }
+  .filter-btn.active { border-color: #00f5ff; color: #00f5ff; background: #00f5ff0d; box-shadow: 0 0 12px #00f5ff22; }
+
+  /* CARDS — Design 3: Premium Spotlight */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+  .card { position: relative; background: #0e0e1c; border: 1px solid #ffffff0d; cursor: pointer; transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease; overflow: hidden; animation: fadeUp 0.3s ease both; }
+  .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c) 40%, transparent); box-shadow: 0 8px 32px color-mix(in srgb, var(--c) 12%, transparent); }
+  /* Hero area — image or spotlight+emoji fallback */
+  .ea-hero { height: 170px; position: relative; overflow: hidden; background: radial-gradient(ellipse at center, color-mix(in srgb, var(--c) 15%, transparent) 0%, transparent 65%), #0a0a1a; }
+  .ea-hero-dots { position: absolute; inset: 0; background-image: radial-gradient(color-mix(in srgb, var(--c) 25%, transparent) 1px, transparent 1px); background-size: 16px 16px; opacity: 0.5; }
+  .ea-hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+  .ea-hero-center { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ea-hero-icon { font-size: 60px; margin-bottom: 8px; filter: drop-shadow(0 0 24px color-mix(in srgb, var(--c) 60%, transparent)); }
+  .ea-hero-tag { font-size: 9px; letter-spacing: 3px; color: color-mix(in srgb, var(--c) 60%, transparent); font-weight: 700; }
+  .ea-hero-line { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--c), transparent); z-index: 3; }
+  .badge { position: absolute; top: 14px; left: 14px; font-size: 9px; font-weight: 700; padding: 3px 7px; background: var(--c); color: #050510; letter-spacing: 1px; z-index: 4; }
+  .badge-pink { color: #fff; }
+  .free-badge { position: absolute; top: 14px; right: 14px; font-size: 10px; font-weight: 600; padding: 3px 8px; background: #22c55e15; border: 1px solid #22c55e33; color: #22c55e; letter-spacing: 0.5px; z-index: 4; }
+  /* Body */
+  .card-body { padding: 18px 20px; }
+  .card-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .card-name { font-size: 17px; font-weight: 700; color: #e2e8f0; letter-spacing: 0.3px; }
+  .card-ver-tag { font-size: 10px; color: #ffffff35; font-variant-numeric: tabular-nums; background: #ffffff05; padding: 2px 6px; }
+  .card-desc { font-size: 13px; color: #94a3b8; line-height: 1.55; margin-bottom: 14px; }
+  .card-features { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+  .card-feat { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #cbd5e1; }
+  .card-check { color: var(--c); font-weight: 700; flex-shrink: 0; }
+  /* Price box */
+  .card-price-box { background: #ffffff03; border: 1px solid #ffffff08; padding: 12px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: baseline; }
+  .card-price-lbl { font-size: 10px; color: #ffffff35; letter-spacing: 1px; margin-bottom: 2px; }
+  .card-price-val { font-size: 18px; font-weight: 700; color: #e2e8f0; font-variant-numeric: tabular-nums; line-height: 1; }
+  .card-price-ib { font-size: 14px; font-weight: 700; color: #22c55e; line-height: 1; }
+  /* Buttons */
+  .card-btns { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+  .card-btn-primary { padding: 11px 14px; background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 70%, black)); color: #050510; border: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .card-btn-primary.text-white { color: #fff; }
+  .card-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px color-mix(in srgb, var(--c) 40%, transparent); }
+  .card-btn-secondary { padding: 11px 12px; background: transparent; color: #ffffff70; border: 1px solid #ffffff18; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .card-btn-secondary:hover { color: #fff; border-color: #ffffff35; }
+
+  /* CARDS — Design B additions (Structured Info) */
+  .card-subtitle-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .card-subtitle-tag { font-size: 10px; letter-spacing: 2px; color: color-mix(in srgb, var(--c) 80%, transparent); font-weight: 700; }
+  .card-subtitle-dot { color: #ffffff20; font-size: 10px; }
+  .card-subtitle-type { font-size: 11px; color: #94a3b8; }
+  .card-section { border-left: 2px solid var(--sc, var(--c)); padding: 5px 10px; margin-bottom: 10px; }
+  .card-section-lbl { font-size: 10px; color: var(--sc, var(--c)); letter-spacing: 1.5px; font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+  .card-section-body { font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+  .card-section.sec-strategy { --sc: var(--c); }
+  .card-section.sec-strength { --sc: #22c55e; }
+  .card-section.sec-limit    { --sc: #f97316; }
+  .card-cap-box { background: color-mix(in srgb, var(--c) 6%, transparent); border: 1px solid color-mix(in srgb, var(--c) 22%, transparent); padding: 11px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .card-cap-lbl-wrap { display: flex; flex-direction: column; gap: 2px; }
+  .card-cap-lbl { font-size: 10px; color: #94a3b8; letter-spacing: 1.5px; font-weight: 700; }
+  .card-cap-lbl-en { font-size: 10px; color: #64748b; }
+  .card-cap-val-wrap { text-align: right; line-height: 1; }
+  .card-cap-val { font-size: 22px; font-weight: 700; color: var(--c); font-variant-numeric: tabular-nums; letter-spacing: 0.3px; }
+  .card-cap-unit { font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-top: 3px; }
+  .card-risk-warn { font-size: 10px; color: #64748b; margin-bottom: 12px; padding: 8px 10px; background: #ffffff03; border-left: 2px solid #ffffff10; line-height: 1.4; }
+  .card-risk-warn-icon { color: #94a3b8; margin-right: 3px; }
+
+  /* EA DETAIL POPUP */
+  .modal-summary-block { padding: 0 22px; margin-bottom: 20px; }
+  .modal-summary-block .card-section { margin-bottom: 10px; }
+  .modal-summary-block .card-cap-box { margin-bottom: 4px; }
+  .overlay { position: fixed; inset: 0; background: #000000dd; backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  .overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: #0a0a1a; border: 1px solid var(--mc); max-width: 640px; width: 100%; position: relative; transform: scale(0.96); transition: transform 0.25s; height: 92vh; height: 92dvh; overflow: hidden; }
+  .overlay.open .modal { transform: scale(1); }
+  .modal-close { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); border: 1px solid #ffffff18; color: #ffffff88; width: 32px; height: 32px; cursor: pointer; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(4px); }
+  .modal-close:hover { border-color: #ff2d78; color: #ff2d78; background: rgba(255,45,120,0.1); }
+
+  /* Scrollable content area — fills modal, leaves space for sticky footer via padding-bottom */
+  .modal-scroll { position: absolute; top: 0; left: 0; right: 0; bottom: 74px; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #ffffff20 transparent; }
+  .modal-scroll::-webkit-scrollbar { width: 6px; }
+  .modal-scroll::-webkit-scrollbar-thumb { background: #ffffff15; }
+  .modal-scroll::-webkit-scrollbar-thumb:hover { background: #ffffff25; }
+
+  /* Hero image / spotlight */
+  .modal-hero { height: 220px; position: relative; overflow: hidden; background: radial-gradient(ellipse at center, color-mix(in srgb, var(--mc) 18%, transparent) 0%, transparent 65%), #0a0a1a; }
+  .modal-hero-dots { position: absolute; inset: 0; background-image: radial-gradient(color-mix(in srgb, var(--mc) 25%, transparent) 1px, transparent 1px); background-size: 18px 18px; opacity: 0.4; }
+  .modal-hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+  .modal-hero-center { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .modal-hero-icon { font-size: 72px; margin-bottom: 8px; filter: drop-shadow(0 0 28px color-mix(in srgb, var(--mc) 60%, transparent)); }
+  .modal-hero-tag { font-size: 10px; letter-spacing: 3px; color: color-mix(in srgb, var(--mc) 60%, transparent); font-weight: 700; }
+  .modal-hero-line { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--mc), transparent); z-index: 3; }
+
+  /* Title area */
+  .modal-title-area { padding: 20px 24px 8px; border-bottom: 1px solid #ffffff08; }
+  .modal-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 12px; flex-wrap: wrap; }
+  .modal-title { font-size: 22px; font-weight: 700; color: #e2e8f0; letter-spacing: 0.3px; }
+  .modal-ver-tag { font-size: 11px; color: #ffffff45; font-variant-numeric: tabular-nums; background: #ffffff05; padding: 3px 8px; letter-spacing: 0.5px; }
+  .modal-subtag { font-size: 11px; color: var(--mc); letter-spacing: 2px; font-weight: 600; margin-bottom: 10px; }
+  .modal-short-desc { font-size: 14px; color: #cbd5e1; line-height: 1.65; margin-bottom: 12px; }
+
+  /* Meta info grid (Platform, Market, Risk, MinDeposit) */
+  .modal-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 16px 24px; background: #ffffff02; border-bottom: 1px solid #ffffff08; }
+  @media (max-width: 480px) { .modal-meta-grid { grid-template-columns: 1fr; } }
+  .modal-meta-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #ffffff03; border: 1px solid #ffffff08; }
+  .modal-meta-icon { font-size: 18px; opacity: 0.7; flex-shrink: 0; }
+  .modal-meta-content { flex: 1; min-width: 0; }
+  .modal-meta-label { font-size: 10px; color: #ffffff40; letter-spacing: 1px; margin-bottom: 2px; }
+  .modal-meta-value { font-size: 13px; color: #e2e8f0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .modal-meta-value.risk-high { color: #ff2d78; }
+  .modal-meta-value.risk-medium { color: #eab308; }
+  .modal-meta-value.risk-low { color: #22c55e; }
+
+  /* Sections */
+  .modal-section { padding: 20px 24px; border-bottom: 1px solid #ffffff08; }
+  .modal-section:last-child { border-bottom: none; padding-bottom: 24px; }
+  .modal-section-title { display: flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: 2px; color: #ffffff55; font-weight: 700; margin-bottom: 12px; }
+  .modal-section-icon { font-size: 14px; }
+  .modal-section-body { font-size: 13.5px; color: #cbd5e1; line-height: 1.75; }
+  .modal-section-body p { margin-bottom: 8px; }
+  .modal-section-body p:last-child { margin-bottom: 0; }
+
+  /* Highlights list */
+  .modal-highlights { display: flex; flex-direction: column; gap: 8px; }
+  .modal-highlight-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #cbd5e1; line-height: 1.65; }
+  .modal-highlight-check { color: var(--mc); font-weight: 700; margin-top: 3px; flex-shrink: 0; font-size: 12px; }
+
+  /* Price row inside section */
+  .modal-price-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .modal-price-row { grid-template-columns: 1fr; } }
+  .modal-price-cell { background: #ffffff03; border: 1px solid #ffffff0a; padding: 12px 14px; }
+  .modal-price-cell.buy { border-color: color-mix(in srgb, var(--mc) 25%, transparent); }
+  .modal-price-cell.ib { border-color: #22c55e33; }
+  .modal-price-cell-lbl { font-size: 10px; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 6px; }
+  .modal-price-cell-val { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 4px; }
+  .modal-price-cell-unit { font-size: 11px; color: #ffffff35; }
+
+  /* Sticky footer with CTAs — pinned to bottom of modal via absolute positioning */
+  .modal-sticky-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 74px; box-sizing: border-box; padding: 14px 20px; background: #050510; border-top: 1px solid #ffffff10; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; z-index: 5; }
+  @media (max-width: 500px) {
+    .modal-sticky-footer { grid-template-columns: 1fr; gap: 6px; height: 166px; padding: 12px 16px; }
+    .modal-scroll { bottom: 166px; }
+  }
+  @media (max-width: 500px) { .modal-sticky-footer .modal-cta-btn { padding: 10px 12px; } }
+  .modal-cta-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 14px; font-family: inherit; font-size: 13px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; transition: all 0.2s; text-align: center; white-space: nowrap; }
+  .modal-cta-trial { background: #a855f7; color: #fff; }
+  .modal-cta-trial:hover { background: #9333ea; transform: translateY(-1px); box-shadow: 0 4px 14px #a855f755; }
+  .modal-cta-buy { background: linear-gradient(135deg, var(--mc), color-mix(in srgb, var(--mc) 70%, black)); color: #050510; }
+  .modal-cta-buy.text-white { color: #fff; }
+  .modal-cta-buy:hover { transform: translateY(-1px); box-shadow: 0 4px 14px color-mix(in srgb, var(--mc) 40%, transparent); }
+  .modal-cta-contact { background: transparent; color: #e2e8f0; border: 1px solid #ffffff20; }
+  .modal-cta-contact:hover { border-color: #ffffff45; background: #ffffff05; }
+
+  /* CONTACT POPUP */
+  .contact-overlay { position: fixed; inset: 0; background: #000000dd; backdrop-filter: blur(8px); z-index: 400; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  .contact-overlay.open { opacity: 1; pointer-events: all; }
+  .contact-popup { background: #07071a; border: 1px solid #00f5ff44; box-shadow: 0 0 60px #00f5ff18; max-width: 420px; width: 100%; padding: 36px 28px 28px; position: relative; transform: scale(0.94); transition: transform 0.25s; }
+  .contact-overlay.open .contact-popup { transform: scale(1); }
+  .contact-popup-close { position: absolute; top: 12px; right: 12px; background: none; border: 1px solid #ffffff18; color: #ffffff44; width: 28px; height: 28px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .contact-popup-close:hover { border-color: #ff2d78; color: #ff2d78; }
+  .contact-popup-logo { text-align: center; margin-bottom: 6px; font-size: 28px; }
+  .contact-popup-title { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 16px; font-weight: 700; color: #00f5ff; text-align: center; letter-spacing: 1px; margin-bottom: 4px; }
+  .contact-popup-sub { font-size: 13px; color: #ffffff40; text-align: center; letter-spacing: 1px; margin-bottom: 24px; }
+  .contact-channels { display: flex; flex-direction: column; gap: 10px; }
+  .contact-channel { display: flex; align-items: center; gap: 14px; padding: 14px 18px; text-decoration: none; border: 1px solid #ffffff0a; background: #0a0a1a; transition: all 0.2s; }
+  .contact-channel:hover { transform: translateX(4px); }
+  .channel-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
+  .channel-info { flex: 1; }
+  .channel-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .channel-handle { font-size: 12px; opacity: 0.5; }
+  .channel-arrow { font-size: 14px; opacity: 0.3; }
+  /* Channel colors */
+  .ch-lineoa { border-color: #06C75533; }
+  .ch-lineoa:hover { border-color: #06C755; background: #06C75510; box-shadow: 0 0 16px #06C75522; }
+  .ch-lineoa .channel-icon { background: #06C75522; }
+  .ch-lineoa .channel-name { color: #06C755; }
+  .ch-openchat { border-color: #06C75533; }
+  .ch-openchat:hover { border-color: #06C755; background: #06C75510; box-shadow: 0 0 16px #06C75522; }
+  .ch-openchat .channel-icon { background: #06C75522; }
+  .ch-openchat .channel-name { color: #06C755; }
+  .ch-facebook { border-color: #1877F233; }
+  .ch-facebook:hover { border-color: #1877F2; background: #1877F210; box-shadow: 0 0 16px #1877F222; }
+  .ch-facebook .channel-icon { background: #1877F222; }
+  .ch-facebook .channel-name { color: #1877F2; }
+  .ch-tiktok { border-color: #ffffff22; }
+  .ch-tiktok:hover { border-color: #ffffff; background: #ffffff08; box-shadow: 0 0 16px #ffffff11; }
+  .ch-tiktok .channel-icon { background: #ffffff0a; }
+  .ch-tiktok .channel-name { color: #ffffff; }
+  .ch-telegram { border-color: #229ED933; }
+  .ch-telegram:hover { border-color: #229ED9; background: #229ED910; box-shadow: 0 0 16px #229ED922; }
+  .ch-telegram .channel-icon { background: #229ED922; }
+  .ch-telegram .channel-name { color: #229ED9; }
+  .ch-youtube { border-color: #FF000033; }
+  .ch-youtube:hover { border-color: #FF0000; background: #FF000010; box-shadow: 0 0 16px #FF000022; }
+  .ch-youtube .channel-icon { background: #FF000022; }
+  .ch-youtube .channel-name { color: #FF0000; }
+  .channel-handle { font-size: 12px; color: #ffffffbb; }
+
+  /* TRIAL POPUP */
+  .trial-overlay { position: fixed; inset: 0; background: #000000e0; backdrop-filter: blur(8px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  .trial-overlay.open { opacity: 1; pointer-events: all; }
+  .trial-popup { background: #08081e; border: 1px solid #a855f7; box-shadow: 0 0 60px #a855f733; max-width: 440px; width: 100%; padding: 40px 32px 32px; position: relative; transform: scale(0.94); transition: transform 0.25s; text-align: center; }
+  .trial-overlay.open .trial-popup { transform: scale(1); }
+  .trial-popup-close { position: absolute; top: 12px; right: 12px; background: none; border: 1px solid #ffffff18; color: #ffffff44; width: 28px; height: 28px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .trial-popup-close:hover { border-color: #ff2d78; color: #ff2d78; }
+  .trial-popup-icon { font-size: 52px; margin-bottom: 12px; }
+  .trial-popup-title { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 18px; font-weight: 700; color: #a855f7; letter-spacing: 1px; margin-bottom: 8px; }
+  .trial-popup-sub { font-size: 15px; color: #94a3b8; margin-bottom: 20px; line-height: 1.7; }
+  .trial-popup-steps { background: #ffffff05; border: 1px solid #ffffff0a; padding: 18px 20px; margin-bottom: 20px; text-align: left; }
+  .trial-popup-step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .trial-popup-step:last-child { margin-bottom: 0; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: #a855f7; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .step-text { font-size: 14px; color: #e2e8f0; line-height: 1.7; }
+  .step-text strong { color: #a855f7; }
+  .trial-code-box { background: #1a0d2e; border: 1px solid #a855f755; padding: 10px 16px; margin: 12px 0; display: inline-block; }
+  .trial-code { font-family: 'Inter', 'Sarabun', sans-serif; font-size: 22px; font-weight: 700; color: #a855f7; letter-spacing: 4px; }
+  .trial-ok-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: #06C755; color: #fff; font-family: 'Sarabun', sans-serif; font-size: 16px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center; }
+  .trial-ok-btn:hover { background: #05b34d; transform: translateY(-1px); box-shadow: 0 4px 24px #06C75566; }
+  .trial-ok-btn svg { width: 20px; height: 20px; }
+  .trial-note { font-size: 12px; color: #ffffff30; margin-top: 12px; }
+
+  .footer { text-align: center; margin-top: 56px; font-size: 11px; letter-spacing: 2px; color: #ffffff10; }
+  /* ===== Mechanics (step-by-step how-it-works) ===== */
+  .modal-mechanics { display: flex; flex-direction: column; gap: 12px; }
+  .modal-mechanic-item { display: flex; gap: 14px; align-items: flex-start; }
+  .modal-mechanic-num { flex-shrink: 0; width: 34px; height: 34px; background: color-mix(in srgb, var(--mc) 12%, transparent); border: 1px solid color-mix(in srgb, var(--mc) 30%, transparent); color: var(--mc); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; letter-spacing: 0.5px; }
+  .modal-mechanic-content { flex: 1; padding-top: 3px; }
+  .modal-mechanic-title { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 3px; }
+  .modal-mechanic-desc { font-size: 12.5px; color: #94a3b8; line-height: 1.55; }
+
+  /* ===== Capital Sizing Guide (3 tiers) ===== */
+  .modal-capital-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  @media (max-width: 560px) { .modal-capital-grid { grid-template-columns: 1fr; } }
+  .modal-capital-cell { background: #ffffff03; border: 1px solid #ffffff08; padding: 12px 14px; position: relative; }
+  .modal-capital-cell.aggressive { border-color: rgba(255,45,120,0.25); }
+  .modal-capital-cell.balanced { border-color: rgba(234,179,8,0.25); }
+  .modal-capital-cell.conservative { border-color: rgba(34,197,94,0.25); }
+  .modal-capital-tier { display: inline-block; font-size: 10px; letter-spacing: 1px; font-weight: 700; padding: 2px 6px; margin-bottom: 8px; }
+  .modal-capital-cell.aggressive .modal-capital-tier { background: rgba(255,45,120,0.1); color: #ff2d78; }
+  .modal-capital-cell.balanced .modal-capital-tier { background: rgba(234,179,8,0.1); color: #eab308; }
+  .modal-capital-cell.conservative .modal-capital-tier { background: rgba(34,197,94,0.1); color: #22c55e; }
+  .modal-capital-amount { font-size: 22px; font-weight: 700; color: #e2e8f0; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 6px; }
+  .modal-capital-desc { font-size: 11.5px; color: #94a3b8; line-height: 1.5; }
+
+  /* ===== Pricing Tiers (4 cards) ===== */
+  .modal-tiers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  @media (max-width: 560px) { .modal-tiers-grid { grid-template-columns: 1fr; } }
+  .modal-tier-card { background: #ffffff03; border: 1px solid #ffffff0a; padding: 14px 16px; position: relative; display: flex; flex-direction: column; transition: all 0.2s; }
+  .modal-tier-card.recommended { border-color: color-mix(in srgb, var(--tc, #a855f7) 40%, transparent); }
+  .modal-tier-badge { position: absolute; top: -8px; right: 12px; background: var(--tc, #a855f7); color: #fff; font-size: 9px; font-weight: 700; padding: 2px 8px; letter-spacing: 1px; }
+  .modal-tier-name { font-size: 11px; letter-spacing: 1.5px; font-weight: 700; color: var(--tc, #a855f7); margin-bottom: 8px; }
+  .modal-tier-price { font-size: 24px; font-weight: 700; color: #e2e8f0; font-variant-numeric: tabular-nums; line-height: 1; }
+  .modal-tier-unit { font-size: 11px; color: #ffffff45; margin-top: 3px; margin-bottom: 10px; }
+  .modal-tier-meta { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; padding: 8px 0; border-top: 1px solid #ffffff08; border-bottom: 1px solid #ffffff08; }
+  .modal-tier-meta-row { display: flex; justify-content: space-between; font-size: 11.5px; }
+  .modal-tier-meta-label { color: #ffffff45; }
+  .modal-tier-meta-value { color: #cbd5e1; font-weight: 500; }
+  .modal-tier-features { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; flex: 1; }
+  .modal-tier-feat { display: flex; align-items: flex-start; gap: 6px; font-size: 11.5px; color: #cbd5e1; line-height: 1.45; }
+  .modal-tier-check { color: var(--tc, #a855f7); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .modal-tier-cta { padding: 9px 12px; background: transparent; color: var(--tc, #a855f7); border: 1px solid color-mix(in srgb, var(--tc, #a855f7) 40%, transparent); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-decoration: none; text-align: center; }
+  .modal-tier-cta:hover { background: color-mix(in srgb, var(--tc, #a855f7) 12%, transparent); border-color: var(--tc, #a855f7); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+  @keyframes drawLine { from{stroke-dashoffset:400;}to{stroke-dashoffset:0;} }
+  .chart-line { stroke-dasharray: 400; animation: drawLine 2s ease forwards; }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="grid-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="navbar-logo">
+      <span class="navbar-logo-icon">⚡</span>
+      <span class="navbar-logo-text">DRFX</span>
+      <span class="navbar-logo-sub">BOT BUILDERS</span>
+    </div>
+    <div class="navbar-links">
+      <a class="nav-link active" href="#catalog"><span data-i18n="nav.catalog">🤖 EA Catalog</span></a>
+      <a class="nav-link" href="https://dashboard.drfxtrading.net/" target="_blank"><span data-i18n="nav.dashboard">📊 Live Dashboard</span> <span class="nav-live-dot"></span></a>
+      <a class="nav-link" onclick="openContactPopup()"><span data-i18n="nav.contact">📞 ติดต่อ</span></a>
+      <div class="lang-switcher">
+        <button class="lang-btn" onclick="toggleLangMenu(event)">
+          <span class="lang-flag" id="currentLangFlag">🇹🇭</span>
+          <span id="currentLangName">ไทย</span>
+          <span class="lang-arrow">▼</span>
+        </button>
+        <div class="lang-menu" id="langMenu">
+          <div class="lang-option" data-lang="th" onclick="setLanguage('th')"><span class="lang-flag">🇹🇭</span> ไทย</div>
+          <div class="lang-option" data-lang="en" onclick="setLanguage('en')"><span class="lang-flag">🇬🇧</span> English</div>
+        </div>
+      </div>
+    </div>
+    <button class="navbar-hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('open')">☰</button>
+  </div>
+  <div class="navbar-mobile" id="mobileMenu">
+    <a class="nav-link-mobile" href="#catalog" onclick="document.getElementById('mobileMenu').classList.remove('open')"><span data-i18n="nav.catalog">🤖 EA Catalog</span></a>
+    <a class="nav-link-mobile" href="https://dashboard.drfxtrading.net/" target="_blank"><span data-i18n="nav.dashboard">📊 Live Dashboard</span> <span class="nav-live-dot"></span></a>
+    <a class="nav-link-mobile" onclick="document.getElementById('mobileMenu').classList.remove('open');openContactPopup()"><span data-i18n="nav.contact">📞 ติดต่อ</span></a>
+    <a class="nav-link-mobile" onclick="setLanguage(currentLang==='th'?'en':'th')"><span id="mobileLangFlag">🇬🇧</span> <span id="mobileLangName">English</span></a>
+  </div>
+</nav>
+
+<div class="content" id="catalog">
+  <div class="header">
+    <div class="header-eyebrow">▸▸ DRFX BOT BUILDERS ◂◂</div>
+    <div class="header-title" data-i18n="header.title">EA CATALOG</div>
+    <div class="header-sub" data-i18n="header.sub">Expert Advisors สำหรับ MetaTrader 5</div>
+  </div>
+
+  <!-- ===== LIVE STATS SECTION ===== -->
+  <div class="live-stats-section">
+    <div class="live-stats-header">
+      <div class="live-stats-title">
+        <span data-i18n="stats.title">LIVE STATISTICS</span>
+        <span class="live-stats-live-badge"><span class="nav-live-dot"></span> LIVE</span>
+      </div>
+      <div class="live-stats-refresh" id="liveStatsRefresh"><span data-i18n="stats.updated">อัปเดต</span>: —</div>
+    </div>
+
+    <div class="live-stats-grid">
+      <div class="live-stat-card">
+        <div class="live-stat-icon">👥</div>
+        <div class="live-stat-label" data-i18n="stats.activeUsers">ACTIVE USERS</div>
+        <div class="live-stat-value loading" id="statActiveUsers">—</div>
+        <div class="live-stat-unit" data-i18n="stats.activeUsersUnit">ผู้ใช้งาน</div>
+      </div>
+      <div class="live-stat-card">
+        <div class="live-stat-icon">🤖</div>
+        <div class="live-stat-label" data-i18n="stats.tradingBots">TRADING BOTS</div>
+        <div class="live-stat-value loading" id="statTotalEAs">—</div>
+        <div class="live-stat-unit" data-i18n="stats.tradingBotsUnit">EA รุ่น</div>
+      </div>
+      <div class="live-stat-card">
+        <div class="live-stat-icon">💰</div>
+        <div class="live-stat-label" data-i18n="stats.totalBalance">TOTAL BALANCE</div>
+        <div class="live-stat-value highlight loading" id="statTotalBalance">—</div>
+        <div class="live-stat-unit" data-i18n="stats.totalBalanceUnit">USD ภายใต้การดูแล</div>
+      </div>
+      <div class="live-stat-card">
+        <div class="live-stat-icon">🏦</div>
+        <div class="live-stat-label" data-i18n="stats.brokers">BROKERS</div>
+        <div class="live-stat-value loading" id="statTotalBrokers">—</div>
+        <div class="live-stat-unit" data-i18n="stats.brokersUnit">โบรกเกอร์ที่รองรับ</div>
+      </div>
+    </div>
+
+    <div class="ea-breakdown-card">
+      <div class="ea-breakdown-title">
+        <span data-i18n="stats.breakdownTitle">ACTIVE BOTS BY MODEL</span>
+        <span class="ea-breakdown-title-sub" data-i18n="stats.breakdownSub">การกระจายตัวของ EA</span>
+      </div>
+      <div class="ea-breakdown-list" id="eaBreakdownList">
+        <div class="ea-breakdown-empty" data-i18n="stats.loading">กำลังโหลดข้อมูล...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="compare-section">
+    <div class="compare-title" data-i18n="compare.title">◈ เลือกแบบไหนที่ใช่สำหรับคุณ ◈</div>
+    <div class="compare-grid">
+      <div class="self-run-box">
+        <div class="self-run-header">
+          <div class="compare-icon">🤖</div>
+          <div>
+            <div class="self-run-title" data-i18n="compare.selfRun">รัน EA เอง</div>
+            <div class="self-run-sub" data-i18n="compare.selfRunSub">ติดตั้ง EA บนบัญชี MT5 ตัวเอง · เลือกได้ 2 แบบ</div>
+          </div>
+        </div>
+        <div class="self-run-options">
+          <div class="option-box option-box-buy">
+            <div class="option-label option-label-buy" data-i18n="compare.buyLicense">💳 ซื้อ License</div>
+            <div class="option-price option-price-buy">$399</div>
+            <div class="option-unit" data-i18n="compare.licenseUnit">/ License / EA</div>
+            <div class="option-detail" data-i18n="compare.licenseDetail">ใช้งานได้ทันที ไม่มีเงื่อนไข รองรับทุก Broker</div>
+            <a class="option-btn option-btn-buy" onclick="openContactPopup()" data-i18n="compare.inquire">สอบถามข้อมูล</a>
+          </div>
+          <div class="option-box option-box-ib">
+            <div class="option-label option-label-ib" data-i18n="compare.ibPartner">🤝 IB Partner</div>
+            <div class="option-price option-price-ib" data-i18n="compare.free">ฟรี</div>
+            <div class="option-unit" data-i18n="compare.ibUnit">/ ตลอดชีพ / ทุก EA</div>
+            <div class="option-detail" data-i18n="compare.ibDetail">เปิดบัญชีผ่าน IB Partner DRFX รับสิทธิ์ทันที</div>
+            <a class="option-btn option-btn-ib" onclick="openContactPopup()" data-i18n="compare.openAccount">เปิดบัญชีเทรด</a>
+          </div>
+        </div>
+        <div class="self-run-pros-label" data-i18n="compare.pros">✅ ข้อดี</div>
+        <div class="compare-item" data-i18n="compare.selfRunPro1">ควบคุมทุกอย่างได้เอง 100%</div>
+        <div class="compare-item" data-i18n="compare.selfRunPro2">ปรับแต่ง parameter ได้ตามใจ</div>
+        <div class="compare-item" data-i18n="compare.selfRunPro3">ไม่ขึ้นกับ latency ของ server กลาง</div>
+        <div class="self-run-cons-label" data-i18n="compare.cons">⚠️ ข้อเสีย</div>
+        <div class="compare-item cons" data-i18n="compare.selfRunCon1">ต้องมี VPS รัน MT5 ตลอด 24 ชม.</div>
+        <div class="compare-item cons" data-i18n="compare.selfRunCon2">ต้องตั้งค่าและติดตั้งเอง</div>
+      </div>
+      <div class="compare-box compare-copy">
+        <div class="compare-badge-top" data-i18n="compare.beginnerBadge">แนะนำสำหรับมือใหม่</div>
+        <div class="compare-box-header">
+          <div class="compare-icon">📡</div>
+          <div>
+            <div class="compare-box-title" style="color:#a855f7;">Copy Trade</div>
+            <div class="compare-box-sub" data-i18n="compare.copyTradeSub">รับสัญญาณจาก Master DRFX · IB Partner เท่านั้น</div>
+          </div>
+        </div>
+        <div class="compare-divider" style="border-color:#a855f722;"></div>
+        <div style="background:#1a0d2e;border:1px solid #a855f733;padding:12px 16px;margin-bottom:14px;">
+          <div style="font-family:'Inter','Sarabun',sans-serif;font-size:16px;font-weight:700;color:#a855f7;">Copy Trade</div>
+          <div style="font-size:12px;color:#a855f788;margin:2px 0 4px;" data-i18n="compare.profitShare">Profit Sharing 20%</div>
+          <div style="font-size:11px;color:#ffffff30;margin-bottom:6px;" data-i18n="compare.forIbOnly">สำหรับ IB Partner DRFX</div>
+          <div style="font-size:12px;color:#94a3b8;line-height:1.6;" data-i18n="compare.copyTradeDesc">เปิดบัญชีผ่าน IB Partner DRFX รับสิทธิ์ Copy Trade ทันที</div>
+          <a class="option-btn option-btn-ib" onclick="openContactPopup()" style="margin-top:10px;" data-i18n="compare.applyIb">สมัคร IB</a>
+        </div>
+        <div class="compare-pros-label" style="color:#a855f7;" data-i18n="compare.pros">✅ ข้อดี</div>
+        <div class="compare-item" style="border-left-color:#a855f744;" data-i18n="compare.copyPro1">ไม่ต้องติดตั้ง EA เอง</div>
+        <div class="compare-item" style="border-left-color:#a855f744;" data-i18n="compare.copyPro2">ไม่ต้องมี VPS</div>
+        <div class="compare-item" style="border-left-color:#a855f744;" data-i18n="compare.copyPro3">Copy order จาก Master แบบ realtime</div>
+        <div class="compare-item" style="border-left-color:#a855f744;" data-i18n="compare.copyPro4">เหมาะกับคนไม่มีเวลาดูแล</div>
+        <div class="compare-cons-label" data-i18n="compare.cons">⚠️ ข้อเสีย</div>
+        <div class="compare-item cons" data-i18n="compare.copyCon1">ปรับ parameter เองไม่ได้</div>
+        <div class="compare-item cons" data-i18n="compare.copyCon2">ต้องเปิดบัญชีผ่าน IB Partner ของ DRFX</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREE TRIAL -->
+  <div class="trial-banner">
+    <div class="trial-icon">🎁</div>
+    <div class="trial-text">
+      <div class="trial-title" data-i18n="trial.title">ทดลองใช้งานตัวเต็มฟรี 7 วัน</div>
+      <div class="trial-desc" data-i18n="trial.desc">ไม่ต้องต่อ IB · ไม่มีเงื่อนไข · เข้ากลุ่ม Line OpenChat เพื่อดาวน์โหลดและติดตามผลงาน</div>
+    </div>
+    <button class="trial-btn" onclick="openTrialPopup()" data-i18n="trial.btn">🎁 ขอทดลองใช้ฟรี 7 วัน</button>
+  </div>
+
+  <!-- CONTACT BTN -->
+  <div class="contact-bar">
+    <a class="contact-btn-main" onclick="openContactPopup()" data-i18n="contact.allChannels">
+      📞 ช่องทางการติดต่อทั้งหมด
+    </a>
+  </div>
+
+  <!-- STATS (เดิม) -->
+  <div class="stats">
+    <div class="stat-box"><div class="stat-num">12</div><div class="stat-lbl" data-i18n="staticStats.products">ผลิตภัณฑ์</div></div>
+    <div class="stat-box"><div class="stat-num">MT5</div><div class="stat-lbl" data-i18n="staticStats.platform">แพลตฟอร์ม</div></div>
+    <div class="stat-box"><div class="stat-num">7</div><div class="stat-lbl" data-i18n="staticStats.trialDays">วันทดลองฟรี</div></div>
+    <div class="stat-box"><div class="stat-num">IB</div><div class="stat-lbl" data-i18n="staticStats.ibFree">ใช้ฟรีตลอด</div></div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-row">
+    <span class="filter-label" data-i18n="filter.label">กรอง:</span>
+    <button class="filter-btn active" data-type="All" onclick="setFilter(this)" data-i18n="filter.all">ทั้งหมด</button>
+    <button class="filter-btn" data-type="Grid" onclick="setFilter(this)" data-i18n="type.Grid">Grid</button>
+    <button class="filter-btn" data-type="Hybrid" onclick="setFilter(this)" data-i18n="type.Hybrid">Hybrid</button>
+    <button class="filter-btn" data-type="Multi-Signal" onclick="setFilter(this)" data-i18n="type.Multi-Signal">Multi-Signal</button>
+    <button class="filter-btn" data-type="Semi-Auto" onclick="setFilter(this)" data-i18n="type.Semi-Auto">Semi-Auto</button>
+    <button class="filter-btn" data-type="Pending" onclick="setFilter(this)" data-i18n="type.Pending">Pending</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div id="contact" class="footer" data-i18n="footer">© DRFX BOT BUILDERS · ระบบทำงานปกติ · MQL5</div>
+</div>
+
+<!-- EA DETAIL POPUP -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal" style="--mc:#00f5ff;">
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- CONTACT POPUP -->
+<div class="contact-overlay" id="contactOverlay" onclick="closeContactPopup(event)">
+  <div class="contact-popup">
+    <button class="contact-popup-close" onclick="closeContactPopup()">✕</button>
+    <div class="contact-popup-logo">⚡</div>
+    <div class="contact-popup-title">DRFX BOT BUILDERS</div>
+    <div class="contact-popup-sub" data-i18n="contactPopup.sub">ช่องทางการติดต่อ</div>
+    <div class="contact-channels">
+      <a class="contact-channel ch-lineoa" href="https://line.me/ti/p/@Drfx" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24" fill="#06C755" width="22" height="22"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        </div>
+        <div class="channel-info">
+          <div class="channel-name">LINE Official</div>
+          <div class="channel-handle" data-i18n="contactPopup.lineOa">@Drfx · สอบถาม / ซื้อ EA</div>
+        </div>
+        <div class="channel-arrow">›</div>
+      </a>
+      <a class="contact-channel ch-openchat" href="https://line.me/ti/g2/FbnSChKlal1l972yAYXpmOf0asXhVLzfZ1-6Uw?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24" fill="#06C755" width="22" height="22"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.070 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        </div>
+        <div class="channel-info">
+          <div class="channel-name">LINE OpenChat</div>
+          <div class="channel-handle" data-i18n="contactPopup.openChat">รหัส: DRFX · ดาวน์โหลด / ติดตามผลงาน</div>
+        </div>
+        <div class="channel-arrow">›</div>
+      </a>
+      <a class="contact-channel ch-facebook" href="https://www.facebook.com/drfxtrading/" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24" fill="#1877F2" width="22" height="22"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </div>
+        <div class="channel-info">
+          <div class="channel-name">Facebook</div>
+          <div class="channel-handle" data-i18n="contactPopup.facebook">drfxtrading · ข่าวสาร / อัปเดต</div>
+        </div>
+        <div class="channel-arrow">›</div>
+      </a>
+      <a class="contact-channel ch-tiktok" href="https://www.tiktok.com/@drfxbotbuilders" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24" fill="#ffffff" width="22" height="22"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        </div>
+        <div class="channel-info">
+          <div class="channel-name">TikTok</div>
+          <div class="channel-handle" data-i18n="contactPopup.tiktok">@drfxbotbuilders · คลิปผลงาน / รีวิว</div>
+        </div>
+        <div class="channel-arrow">›</div>
+      </a>
+      <a class="contact-channel ch-telegram" href="https://t.me/DRFXBotBuilders" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24" fill="#229ED9" width="22" height="22"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </div>
+        <div class="channel-info">
+          <div class="channel-name">Telegram</div>
+          <div class="channel-handle" data-i18n="contactPopup.telegram">@DRFXBotBuilders · สากล / ต่างชาติ</div>
+        </div>
+        <div class="channel-arrow">›</div>
+      </a>
+      <a class="contact-channel ch-youtube" href="https://www.youtube.com/@DRFXBotBuilders" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24" fill="#FF0000" width="22" height="22"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </div>
+        <div class="channel-info">
+          <div class="channel-name">YouTube</div>
+          <div class="channel-handle" data-i18n="contactPopup.youtube">@DRFXBotBuilders · คลิปสอน / ผลงาน EA</div>
+        </div>
+        <div class="channel-arrow">›</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- TRIAL POPUP -->
+<div class="trial-overlay" id="trialOverlay" onclick="closeTrialPopup(event)">
+  <div class="trial-popup">
+    <button class="trial-popup-close" onclick="closeTrialPopup()">✕</button>
+    <div class="trial-popup-icon">🎁</div>
+    <div class="trial-popup-title" data-i18n="trialPopup.title">ทดลองใช้ฟรี 7 วัน</div>
+    <div class="trial-popup-sub" data-i18n="trialPopup.sub">เข้ากลุ่ม Line OpenChat เพื่อดาวน์โหลด EA และติดตามผลงานได้เลย ไม่มีเงื่อนไข</div>
+    <div class="trial-popup-steps">
+      <div class="trial-popup-step"><div class="step-num">1</div><div class="step-text" data-i18n-html="trialPopup.step1">กดปุ่ม <strong>เข้ากลุ่ม Line OpenChat</strong> ด้านล่าง</div></div>
+      <div class="trial-popup-step"><div class="step-num">2</div><div class="step-text" data-i18n="trialPopup.step2">ใส่รหัสเข้ากลุ่ม</div></div>
+      <div style="text-align:center;margin:8px 0 12px;"><div class="trial-code-box"><div class="trial-code">DRFX</div></div></div>
+      <div class="trial-popup-step"><div class="step-num">3</div><div class="step-text" data-i18n="trialPopup.step3">ดาวน์โหลด EA · ติดตามผลงาน · รับอัปเดตก่อนใคร 🚀</div></div>
+    </div>
+    <a class="trial-ok-btn" href="https://line.me/ti/g2/FbnSChKlal1l972yAYXpmOf0asXhVLzfZ1-6Uw?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2C6.48 2 2 6.04 2 11c0 3.16 1.68 5.94 4.24 7.65L5.5 22l3.07-1.6C9.6 20.77 10.78 21 12 21c5.52 0 10-4.04 10-9S17.52 2 12 2z"/></svg>
+      <span data-i18n="trialPopup.joinBtn">เข้ากลุ่ม Line OpenChat</span>
+    </a>
+    <div class="trial-note" data-i18n="trialPopup.note">* กลุ่มสำหรับดาวน์โหลด EA และติดตามผลงาน DRFX BOT BUILDERS</div>
+  </div>
+</div>
+
+<script>
+// ===== LIVE STATS CONFIG =====
+// ⚠️ ใส่ URL Apps Script deployment ของพี่ตรงนี้
+// ============================================================
+// i18n — Internationalization system
+// ============================================================
+// เพิ่มภาษาใหม่: เพิ่ม key ใน I18N.<lang> + ปุ่มเลือกภาษาใน navbar
+const I18N = {
+  th: {
+    // Navbar
+    "nav.catalog": "🤖 EA Catalog",
+    "nav.dashboard": "📊 Live Dashboard",
+    "nav.contact": "📞 ติดต่อ",
+    // Header
+    "header.title": "EA CATALOG",
+    "header.sub": "Expert Advisors สำหรับ MetaTrader 5",
+    // Live stats
+    "stats.title": "LIVE STATISTICS",
+    "stats.updated": "อัปเดต",
+    "stats.activeUsers": "ACTIVE USERS",
+    "stats.activeUsersUnit": "ผู้ใช้งาน",
+    "stats.tradingBots": "TRADING BOTS",
+    "stats.tradingBotsUnit": "EA รุ่น",
+    "stats.totalBalance": "TOTAL BALANCE",
+    "stats.totalBalanceUnit": "USD ภายใต้การดูแล",
+    "stats.brokers": "BROKERS",
+    "stats.brokersUnit": "โบรกเกอร์ที่รองรับ",
+    "stats.breakdownTitle": "ACTIVE BOTS BY MODEL",
+    "stats.breakdownSub": "การกระจายตัวของ EA",
+    "stats.loading": "กำลังโหลดข้อมูล...",
+    "stats.empty": "ยังไม่มีข้อมูล EA ที่ใช้งาน",
+    "stats.showAll": "แสดงทั้งหมด ({n})",
+    "stats.showLess": "ย่อลง",
+    // Compare
+    "compare.title": "◈ เลือกแบบไหนที่ใช่สำหรับคุณ ◈",
+    "compare.selfRun": "รัน EA เอง",
+    "compare.selfRunSub": "ติดตั้ง EA บนบัญชี MT5 ตัวเอง · เลือกได้ 2 แบบ",
+    "compare.buyLicense": "💳 ซื้อ License",
+    "compare.licenseUnit": "/ License / EA",
+    "compare.licenseDetail": "ใช้งานได้ทันที ไม่มีเงื่อนไข รองรับทุก Broker",
+    "compare.inquire": "สอบถามข้อมูล",
+    "compare.ibPartner": "🤝 IB Partner",
+    "compare.free": "ฟรี",
+    "compare.ibUnit": "/ ตลอดชีพ / ทุก EA",
+    "compare.ibDetail": "เปิดบัญชีผ่าน IB Partner DRFX รับสิทธิ์ทันที",
+    "compare.openAccount": "เปิดบัญชีเทรด",
+    "compare.pros": "✅ ข้อดี",
+    "compare.cons": "⚠️ ข้อเสีย",
+    "compare.selfRunPro1": "ควบคุมทุกอย่างได้เอง 100%",
+    "compare.selfRunPro2": "ปรับแต่ง parameter ได้ตามใจ",
+    "compare.selfRunPro3": "ไม่ขึ้นกับ latency ของ server กลาง",
+    "compare.selfRunCon1": "ต้องมี VPS รัน MT5 ตลอด 24 ชม.",
+    "compare.selfRunCon2": "ต้องตั้งค่าและติดตั้งเอง",
+    "compare.beginnerBadge": "แนะนำสำหรับมือใหม่",
+    "compare.copyTradeSub": "รับสัญญาณจาก Master DRFX · IB Partner เท่านั้น",
+    "compare.profitShare": "Profit Sharing 20%",
+    "compare.forIbOnly": "สำหรับ IB Partner DRFX",
+    "compare.copyTradeDesc": "เปิดบัญชีผ่าน IB Partner DRFX รับสิทธิ์ Copy Trade ทันที",
+    "compare.applyIb": "สมัคร IB",
+    "compare.copyPro1": "ไม่ต้องติดตั้ง EA เอง",
+    "compare.copyPro2": "ไม่ต้องมี VPS",
+    "compare.copyPro3": "Copy order จาก Master แบบ realtime",
+    "compare.copyPro4": "เหมาะกับคนไม่มีเวลาดูแล",
+    "compare.copyCon1": "ปรับ parameter เองไม่ได้",
+    "compare.copyCon2": "ต้องเปิดบัญชีผ่าน IB Partner ของ DRFX",
+    // Trial banner
+    "trial.title": "ทดลองใช้งานตัวเต็มฟรี 7 วัน",
+    "trial.desc": "ไม่ต้องต่อ IB · ไม่มีเงื่อนไข · เข้ากลุ่ม Line OpenChat เพื่อดาวน์โหลดและติดตามผลงาน",
+    "trial.btn": "🎁 ขอทดลองใช้ฟรี 7 วัน",
+    // Contact bar
+    "contact.allChannels": "📞 ช่องทางการติดต่อทั้งหมด",
+    // Static stats
+    "staticStats.products": "ผลิตภัณฑ์",
+    "staticStats.platform": "แพลตฟอร์ม",
+    "staticStats.trialDays": "วันทดลองฟรี",
+    "staticStats.ibFree": "ใช้ฟรีตลอด",
+    // Filter
+    "filter.label": "กรอง:",
+    "filter.all": "ทั้งหมด",
+    // Trial popup
+    "trialPopup.title": "ทดลองใช้ฟรี 7 วัน",
+    "trialPopup.sub": "เข้ากลุ่ม Line OpenChat เพื่อดาวน์โหลด EA และติดตามผลงานได้เลย ไม่มีเงื่อนไข",
+    "trialPopup.step1": "กดปุ่ม <strong>เข้ากลุ่ม Line OpenChat</strong> ด้านล่าง",
+    "trialPopup.step2": "ใส่รหัสเข้ากลุ่ม",
+    "trialPopup.step3": "ดาวน์โหลด EA · ติดตามผลงาน · รับอัปเดตก่อนใคร 🚀",
+    "trialPopup.joinBtn": "เข้ากลุ่ม Line OpenChat",
+    "trialPopup.note": "* กลุ่มสำหรับดาวน์โหลด EA และติดตามผลงาน DRFX BOT BUILDERS",
+    // Contact popup
+    "contactPopup.sub": "ช่องทางการติดต่อ",
+    "contactPopup.lineOa": "@Drfx · สอบถาม / ซื้อ EA",
+    "contactPopup.openChat": "รหัส: DRFX · ดาวน์โหลด / ติดตามผลงาน",
+    "contactPopup.facebook": "drfxtrading · ข่าวสาร / อัปเดต",
+    "contactPopup.tiktok": "@drfxbotbuilders · คลิปผลงาน / รีวิว",
+    "contactPopup.telegram": "@DRFXBotBuilders · สากล / ต่างชาติ",
+    "contactPopup.youtube": "@DRFXBotBuilders · คลิปสอน / ผลงาน EA",
+    // Footer
+    "footer": "© DRFX BOT BUILDERS · ระบบทำงานปกติ · MQL5",
+    // Card
+    "card.details": "ดูรายละเอียด EA →",
+    "card.contact": "ติดต่อ",
+    "card.priceLbl": "LICENSE",
+    "card.ibPartner": "IB PARTNER",
+    "card.ibFreeLifetime": "ฟรีตลอดชีพ",
+    "card.ibFreeBadge": "IB ฟรี",
+    "card.subtypeStrategy": "Strategy",
+    "card.secStrategy": "STRATEGY",
+    "card.secStrength": "จุดเด่น",
+    "card.secLimit": "ข้อจำกัด",
+    "card.secCapital": "ทุนแนะนำ",
+    "card.secCapitalEn": "Recommended Capital",
+    "card.limitFallback": "โปรดศึกษาข้อมูลตลาดก่อนใช้งาน — ทุกกลยุทธ์มีจุดที่ควรระวัง",
+    "card.riskWarn": "การลงทุนมีความเสี่ยงสูง ผู้ลงทุนควรศึกษาข้อมูลก่อนตัดสินใจลงทุน",
+    // Modal / detail popup
+    "modal.platform": "PLATFORM",
+    "modal.market": "MARKET",
+    "modal.risk": "RISK LEVEL",
+    "modal.minDeposit": "MIN DEPOSIT",
+    "modal.riskLow": "ต่ำ (Low)",
+    "modal.riskMedium": "ปานกลาง (Medium)",
+    "modal.riskHigh": "สูง (High)",
+    "modal.section.desc": "📝 รายละเอียดการทำงาน",
+    "modal.section.mechanics": "🔁 วิธี EA ทำงาน",
+    "modal.section.highlights": "⭐ จุดเด่น",
+    "modal.section.capital": "💵 ทุนแนะนำ (Capital Sizing)",
+    "modal.section.pricing": "💳 ราคาและสิทธิ์การใช้งาน",
+    "modal.noData": "รอข้อมูลเพิ่มเติม",
+    "modal.trialBtn": "🎁 ทดลองใช้ฟรี",
+    "modal.buyBtn": "💳 ซื้อ License",
+    "modal.contactBtn": "📞 สอบถาม",
+    "modal.accounts": "Accounts",
+    "modal.updates": "Updates",
+    "modal.duration": "ระยะเวลา",
+    // Filter types (แปลชื่อประเภท EA)
+    "type.Grid": "Grid",
+    "type.Hybrid": "Hybrid",
+    "type.Multi-Signal": "Multi-Signal",
+    "type.Semi-Auto": "Semi-Auto",
+    "type.Pending": "Pending",
+  },
+  en: {
+    "nav.catalog": "🤖 EA Catalog",
+    "nav.dashboard": "📊 Live Dashboard",
+    "nav.contact": "📞 Contact",
+    "header.title": "EA CATALOG",
+    "header.sub": "Expert Advisors for MetaTrader 5",
+    "stats.title": "LIVE STATISTICS",
+    "stats.updated": "Updated",
+    "stats.activeUsers": "ACTIVE USERS",
+    "stats.activeUsersUnit": "users",
+    "stats.tradingBots": "TRADING BOTS",
+    "stats.tradingBotsUnit": "EA models",
+    "stats.totalBalance": "TOTAL BALANCE",
+    "stats.totalBalanceUnit": "USD under management",
+    "stats.brokers": "BROKERS",
+    "stats.brokersUnit": "supported brokers",
+    "stats.breakdownTitle": "ACTIVE BOTS BY MODEL",
+    "stats.breakdownSub": "EA distribution",
+    "stats.loading": "Loading data...",
+    "stats.empty": "No active EA data yet",
+    "stats.showAll": "Show all ({n})",
+    "stats.showLess": "Show less",
+    "compare.title": "◈ Choose what's right for you ◈",
+    "compare.selfRun": "Self-Run EA",
+    "compare.selfRunSub": "Install EA on your own MT5 account · 2 options",
+    "compare.buyLicense": "💳 Buy License",
+    "compare.licenseUnit": "/ License / EA",
+    "compare.licenseDetail": "Instant use · no conditions · works with any broker",
+    "compare.inquire": "Get info",
+    "compare.ibPartner": "🤝 IB Partner",
+    "compare.free": "FREE",
+    "compare.ibUnit": "/ lifetime / all EAs",
+    "compare.ibDetail": "Open account via DRFX IB Partner and get instant access",
+    "compare.openAccount": "Open Account",
+    "compare.pros": "✅ Pros",
+    "compare.cons": "⚠️ Cons",
+    "compare.selfRunPro1": "100% control over everything",
+    "compare.selfRunPro2": "Fully customizable parameters",
+    "compare.selfRunPro3": "No dependency on central server latency",
+    "compare.selfRunCon1": "Need VPS running MT5 24/7",
+    "compare.selfRunCon2": "Must configure and install yourself",
+    "compare.beginnerBadge": "Recommended for beginners",
+    "compare.copyTradeSub": "Signal from Master DRFX · IB Partner only",
+    "compare.profitShare": "Profit Sharing 20%",
+    "compare.forIbOnly": "For DRFX IB Partners only",
+    "compare.copyTradeDesc": "Open account via DRFX IB Partner and get Copy Trade access instantly",
+    "compare.applyIb": "Apply for IB",
+    "compare.copyPro1": "No need to install EA yourself",
+    "compare.copyPro2": "No VPS required",
+    "compare.copyPro3": "Copy orders from Master in real-time",
+    "compare.copyPro4": "Ideal for those with no time to manage",
+    "compare.copyCon1": "Cannot customize parameters",
+    "compare.copyCon2": "Must open account via DRFX IB Partner",
+    "trial.title": "Try full version FREE for 7 days",
+    "trial.desc": "No IB required · No conditions · Join LINE OpenChat to download and track performance",
+    "trial.btn": "🎁 Get FREE 7-day trial",
+    "contact.allChannels": "📞 All contact channels",
+    "staticStats.products": "Products",
+    "staticStats.platform": "Platform",
+    "staticStats.trialDays": "Free trial days",
+    "staticStats.ibFree": "Free lifetime",
+    "filter.label": "Filter:",
+    "filter.all": "All",
+    "trialPopup.title": "Free 7-Day Trial",
+    "trialPopup.sub": "Join LINE OpenChat to download EA and track performance — no conditions",
+    "trialPopup.step1": "Click <strong>Join LINE OpenChat</strong> button below",
+    "trialPopup.step2": "Enter group code",
+    "trialPopup.step3": "Download EA · Track performance · Get updates first 🚀",
+    "trialPopup.joinBtn": "Join LINE OpenChat",
+    "trialPopup.note": "* Group for downloading EA and tracking DRFX BOT BUILDERS performance",
+    "contactPopup.sub": "Contact channels",
+    "contactPopup.lineOa": "@Drfx · Inquiry / Buy EA",
+    "contactPopup.openChat": "Code: DRFX · Download / Track performance",
+    "contactPopup.facebook": "drfxtrading · News / Updates",
+    "contactPopup.tiktok": "@drfxbotbuilders · Performance clips / Reviews",
+    "contactPopup.telegram": "@DRFXBotBuilders · International",
+    "contactPopup.youtube": "@DRFXBotBuilders · Tutorials / EA performance",
+    "footer": "© DRFX BOT BUILDERS · Systems operational · MQL5",
+    "card.details": "View EA Details →",
+    "card.contact": "Contact",
+    "card.priceLbl": "LICENSE",
+    "card.ibPartner": "IB PARTNER",
+    "card.ibFreeLifetime": "Free lifetime",
+    "card.ibFreeBadge": "IB Free",
+    "card.subtypeStrategy": "Strategy",
+    "card.secStrategy": "STRATEGY",
+    "card.secStrength": "STRENGTH",
+    "card.secLimit": "LIMITATION",
+    "card.secCapital": "RECOMMENDED CAPITAL",
+    "card.secCapitalEn": "Suggested starting balance",
+    "card.limitFallback": "Study the market carefully before use — every strategy has trade-offs.",
+    "card.riskWarn": "Trading involves high risk. Study carefully before investing.",
+    "modal.platform": "PLATFORM",
+    "modal.market": "MARKET",
+    "modal.risk": "RISK LEVEL",
+    "modal.minDeposit": "MIN DEPOSIT",
+    "modal.riskLow": "Low",
+    "modal.riskMedium": "Medium",
+    "modal.riskHigh": "High",
+    "modal.section.desc": "📝 How it works",
+    "modal.section.mechanics": "🔁 EA Mechanics",
+    "modal.section.highlights": "⭐ Highlights",
+    "modal.section.capital": "💵 Capital Sizing Guide",
+    "modal.section.pricing": "💳 Pricing & Licensing",
+    "modal.noData": "More data coming soon",
+    "modal.trialBtn": "🎁 Try Free",
+    "modal.buyBtn": "💳 Buy License",
+    "modal.contactBtn": "📞 Contact",
+    "modal.accounts": "Accounts",
+    "modal.updates": "Updates",
+    "modal.duration": "Duration",
+    "type.Grid": "Grid",
+    "type.Hybrid": "Hybrid",
+    "type.Multi-Signal": "Multi-Signal",
+    "type.Semi-Auto": "Semi-Auto",
+    "type.Pending": "Pending",
+  }
+};
+
+const LANG_META = {
+  th: { flag: "🇹🇭", name: "ไทย" },
+  en: { flag: "🇬🇧", name: "English" }
+};
+
+let currentLang = localStorage.getItem('drfx_lang') || 'th';
+
+function t(key) {
+  return (I18N[currentLang] && I18N[currentLang][key]) || (I18N.th && I18N.th[key]) || key;
+}
+
+// Get bilingual field: if value is {th, en} → return current lang; else → return value as-is
+function ti(value) {
+  if (value && typeof value === 'object' && ('th' in value || 'en' in value)) {
+    return value[currentLang] || value.th || value.en || '';
+  }
+  return value || '';
+}
+
+function toggleLangMenu(e) {
+  e && e.stopPropagation();
+  document.getElementById('langMenu').classList.toggle('open');
+}
+
+// Close lang menu when clicking outside
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('langMenu');
+  const btn = e.target.closest('.lang-btn');
+  if (menu && !btn && !menu.contains(e.target)) menu.classList.remove('open');
+});
+
+function setLanguage(lang) {
+  if (!I18N[lang]) return;
+  currentLang = lang;
+  localStorage.setItem('drfx_lang', lang);
+  applyLanguage();
+  document.getElementById('langMenu')?.classList.remove('open');
+  // Re-render dynamic content
+  if (typeof render === 'function') render();
+  if (typeof renderStats === 'function' && window._lastStatsData) renderStats(window._lastStatsData);
+}
+
+function applyLanguage() {
+  // Update all elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  // Update elements with data-i18n-html (allows <strong> etc.)
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    el.innerHTML = t(key);
+  });
+  // Update language switcher UI
+  const meta = LANG_META[currentLang];
+  if (meta) {
+    const flag = document.getElementById('currentLangFlag');
+    const name = document.getElementById('currentLangName');
+    if (flag) flag.textContent = meta.flag;
+    if (name) name.textContent = meta.name;
+    // Mobile: show "opposite" language as the toggle option
+    const otherLang = currentLang === 'th' ? 'en' : 'th';
+    const otherMeta = LANG_META[otherLang];
+    const mFlag = document.getElementById('mobileLangFlag');
+    const mName = document.getElementById('mobileLangName');
+    if (mFlag && otherMeta) mFlag.textContent = otherMeta.flag;
+    if (mName && otherMeta) mName.textContent = otherMeta.name;
+  }
+  // Mark active language in menu
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.lang === currentLang);
+  });
+  // Update <html lang="...">
+  document.documentElement.lang = currentLang;
+}
+
+
+// ============================================================
+// LIVE STATS
+// ============================================================
+const LICENSE_API_URL = "https://script.google.com/macros/s/AKfycbya5YD9JmueMzpUsjdSNd1-V4AvscKkzmqt3qVIQCgznkG74MCkA_MlARuJWbN-Ahky/exec";
+const STATS_REFRESH_MS = 60000;   // refresh ทุก 60 วินาที
+
+// Format helpers
+function formatNumber(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return Math.round(n).toLocaleString();
+}
+function formatBalance(n) {
+  if (n >= 1e6) return '$' + (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M';
+  if (n >= 1e3) return '$' + (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return '$' + Math.round(n).toLocaleString();
+}
+function formatTime(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+
+async function loadLiveStats() {
+  try {
+    const res = await fetch(LICENSE_API_URL + '?action=stats', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    renderStats(data);
+  } catch (err) {
+    console.error('Live stats fetch failed:', err);
+    // Fallback: keep placeholder — user won't see error, just dashes
+    document.getElementById('statActiveUsers').textContent = '—';
+    document.getElementById('statTotalEAs').textContent = '—';
+    document.getElementById('statTotalBalance').textContent = '—';
+    document.getElementById('statTotalBrokers').textContent = '—';
+    ['statActiveUsers','statTotalEAs','statTotalBalance','statTotalBrokers'].forEach(id => {
+      document.getElementById(id).classList.remove('loading');
+    });
+  }
+}
+
+function renderStats(data) {
+  window._lastStatsData = data;   // cache for language re-render
+  // Numbers
+  const users = document.getElementById('statActiveUsers');
+  const eas = document.getElementById('statTotalEAs');
+  const bal = document.getElementById('statTotalBalance');
+  const brk = document.getElementById('statTotalBrokers');
+
+  users.textContent = formatNumber(data.activeUsers || 0);
+  eas.textContent = formatNumber(data.totalEAs || 0);
+  bal.textContent = formatBalance(data.totalBalance || 0);
+  brk.textContent = formatNumber(data.totalBrokers || 0);
+
+  [users, eas, bal, brk].forEach(el => el.classList.remove('loading'));
+
+  // Refresh timestamp
+  document.getElementById('liveStatsRefresh').textContent = t('stats.updated') + ': ' + formatTime(new Date());
+
+  // EA breakdown bar list — default โชว์ top 3, ที่เหลือซ่อนไว้กด "แสดงทั้งหมด"
+  const listEl = document.getElementById('eaBreakdownList');
+  const breakdown = data.eaBreakdown || [];
+  if (breakdown.length === 0) {
+    listEl.innerHTML = `<div class="ea-breakdown-empty">${t('stats.empty')}</div>`;
+    return;
+  }
+  const TOP_N = 3;
+  const maxCount = Math.max(...breakdown.map(x => x.count));
+  const renderItem = (ea) => {
+    const pct = maxCount > 0 ? Math.round((ea.count / maxCount) * 100) : 0;
+    const display = ea.name.replace(/^DRFX[_ ]/i, '').trim() || ea.name;
+    return `
+      <div class="ea-breakdown-item">
+        <div class="ea-breakdown-row">
+          <div class="ea-breakdown-name">${escapeHtml(display)}</div>
+          <div class="ea-breakdown-count">${ea.count}</div>
+        </div>
+        <div class="ea-breakdown-bar-bg">
+          <div class="ea-breakdown-bar-fill" style="width:${pct}%;"></div>
+        </div>
+      </div>`;
+  };
+
+  const top = breakdown.slice(0, TOP_N).map(renderItem).join('');
+  const hidden = breakdown.slice(TOP_N);
+
+  if (hidden.length === 0) {
+    listEl.innerHTML = top;
+    return;
+  }
+
+  // Wrap hidden items + toggle button (state persisted per render call)
+  const rest = hidden.map(renderItem).join('');
+  const isOpen = window._breakdownExpanded === true;
+  const btnLabelKey = isOpen ? 'stats.showLess' : 'stats.showAll';
+  listEl.innerHTML = `
+    ${top}
+    <div class="ea-breakdown-more ${isOpen ? 'open' : ''}" id="eaBreakdownMore">${rest}</div>
+    <button class="ea-breakdown-toggle" onclick="toggleBreakdown()">
+      <span id="eaBreakdownToggleLabel">${t(btnLabelKey).replace('{n}', breakdown.length)}</span>
+      <span class="ea-breakdown-toggle-arrow ${isOpen ? 'open' : ''}">▾</span>
+    </button>`;
+}
+
+// Toggle breakdown expansion (state persisted across re-renders)
+function toggleBreakdown() {
+  window._breakdownExpanded = !window._breakdownExpanded;
+  const more = document.getElementById('eaBreakdownMore');
+  const arrow = document.querySelector('.ea-breakdown-toggle-arrow');
+  const label = document.getElementById('eaBreakdownToggleLabel');
+  if (!more || !arrow || !label) return;
+  const isOpen = window._breakdownExpanded;
+  more.classList.toggle('open', isOpen);
+  arrow.classList.toggle('open', isOpen);
+  const total = (window._lastStatsData?.eaBreakdown || []).length;
+  label.textContent = t(isOpen ? 'stats.showLess' : 'stats.showAll').replace('{n}', total);
+}
+
+// ===== EXISTING EA CATALOG CODE =====
+const LINE_URL = "https://line.me/ti/p/@Drfx";
+const TELE_URL = "https://t.me/DRFXBotBuilders";
+const LINE_SVG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.04 2 11c0 3.16 1.68 5.94 4.24 7.65L5.5 22l3.07-1.6C9.6 20.77 10.78 21 12 21c5.52 0 10-4.04 10-9S17.52 2 12 2z"/></svg>`;
+const TELE_SVG = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.48.7-.96.44l-2.64-1.96-1.28 1.24c-.14.14-.26.26-.52.26l.18-2.68 4.76-4.32c.2-.18-.04-.28-.32-.1L7.6 14.4 5 13.6c-.56-.18-.58-.56.12-.82l8.96-3.46c.46-.16.88.12.56.48z"/></svg>`;
+
+// ============================================================
+// GLOBAL PRICING TIERS — ใช้ราคาเดียวกันทุก EA
+// ============================================================
+// แก้ราคา/รายละเอียดที่นี่ทีเดียว = อัปเดตทั้ง 10 EA ทันที
+// Fetched from API when possible — declared as `let` so it can be replaced at runtime
+let PRICING_TIERS = [
+  {
+    name: "IB Partner",
+    price: "ฟรี",
+    priceUnit: "ตลอดชีพ / ทุก EA",
+    accounts: "Unlimited",
+    updates: "อัปเดตทุกเวอร์ชั่นฟรี",
+    highlight: "ยอดนิยม",   // badge บน tier (ตั้ง null = ไม่โชว์)
+    features: [
+      "เปิดบัญชีผ่าน IB Partner DRFX",
+      "ใช้ได้ทุก EA ในตระกูล DRFX",
+      "รับ update ทุกเวอร์ชั่นฟรี",
+      "Community support ผ่าน LINE OpenChat"
+    ],
+    ctaLabel: "สมัคร IB",
+    ctaAction: "contact",   // "contact" = เปิด contact popup, "trial" = เปิด trial popup, "url" = ใช้ ctaUrl
+    color: "#22c55e"
+  },
+  {
+    name: "Standard",
+    price: "$99",
+    priceUnit: "ครั้งเดียว",
+    accounts: "1 Account",
+    updates: "อัปเดต 1 ปี",
+    highlight: null,
+    features: [
+      "License 1 บัญชี MT5",
+      "ใช้ได้ทุก Broker",
+      "อัปเดต 1 ปีแรกฟรี",
+      "ไม่ต้องเปิด IB"
+    ],
+    ctaLabel: "ซื้อ Standard",
+    ctaAction: "contact",
+    color: "#00f5ff"
+  },
+  {
+    name: "Pro",
+    price: "$299",
+    priceUnit: "ครั้งเดียว",
+    accounts: "3 Accounts",
+    updates: "อัปเดตตลอดชีพ",
+    highlight: "แนะนำ",
+    features: [
+      "License 3 บัญชี MT5",
+      "ใช้ได้ทุก Broker",
+      "Update ตลอดชีพ",
+      "Set files แนะนำ 3 ชุด",
+      "Priority support"
+    ],
+    ctaLabel: "ซื้อ Pro",
+    ctaAction: "contact",
+    color: "#a855f7"
+  },
+  {
+    name: "Ultimate",
+    price: "$499",
+    priceUnit: "ครั้งเดียว",
+    accounts: "Unlimited",
+    updates: "อัปเดตตลอดชีพ",
+    highlight: null,
+    features: [
+      "License บัญชีไม่จำกัด",
+      "ใช้ได้ทุก Broker",
+      "Update ตลอดชีพ",
+      "Set files ทั้งหมด",
+      "Priority support 24/7",
+      "Early access เวอร์ชั่นใหม่"
+    ],
+    ctaLabel: "ซื้อ Ultimate",
+    ctaAction: "contact",
+    color: "#ff2d78"
+  }
+];
+
+// EA schema v4:
+//   ADDED fields (fill in later):
+//     image       — path รูปกล่อง EA เช่น "images/aegis-x.png" (ว่าง = fallback emoji)
+//     detailedDesc — คำอธิบายยาวสำหรับ popup (รองรับ multi-paragraph ด้วย \n\n)
+//     highlights   — จุดเด่นสำหรับ popup (แยกจาก features 4-6 ตัวในการ์ด)
+//     platform     — เช่น "MetaTrader 5"
+//     markets      — array คู่เงินที่รองรับ ["XAUUSD", "BTCUSD"]
+//     risk         — "Low" / "Medium" / "High"
+//     minDeposit   — เงินทุนขั้นต่ำแนะนำ (USD)
+//     trialUrl     — ลิ้งค์ทดลองใช้/ดาวน์โหลดแยกต่อ EA (Google Drive ฯลฯ)
+//   NEW in v4:
+//     mechanics    — array {step, title, desc} วิธี EA ทำงาน 4-6 ขั้นตอน
+//     capital      — array {tier, risk, amount, desc} ทุนแนะนำ 3 ระดับ
+// Fetched from API when possible — declared as `let` so it can be replaced at runtime
+let EAS = [
+  { name:"AEGIS-X", ver:"SEMI v3.3", tag:"SMART TRADING ASSISTANT", color:"#22c55e", icon:"🛡️", image:"images/aegis-x.png", type:"Semi-Auto", desc:"เครื่องมืออัจฉริยะช่วยเทรดเดอร์ทุกระดับ แก้ไม้ + ตั้ง TP/SL อัตโนมัติ", features:["แก้ไม้ Recovery อัตโนมัติ","ตั้ง TP / SL อัจฉริยะ","Trailing Stop ในตัว","ปิดกำไรอัตโนมัติ","10 สัญญาณเสริม Entry","Auto Lot ตาม Balance"], badge:"v3.3", chart:[35,48,40,60,50,70,58,75,62,80,68,85,72,88],
+    detailedDesc:"AEGIS-X คือผู้ช่วยเทรดเดอร์อัจฉริยะที่ทำงานควบคู่กับการเทรดของคุณ — คุณเป็นคนตัดสินใจเข้า Buy หรือ Sell เอง แล้วปล่อยให้ AEGIS-X ดูแลออเดอร์ต่อจนจบ\n\nระบบจะจัดการแก้ไม้อัตโนมัติเมื่อออเดอร์เข้าสวน, ตั้ง TP/SL อัจฉริยะปรับตาม volatility, และเปิด Trailing Stop เมื่อได้กำไร ทำงานร่วมกับ 10 สัญญาณเสริมช่วยกรอง Entry ให้แม่นยำขึ้น",
+    highlights:["ทำงานควบคู่กับเทรดเดอร์ — ไม่ต้อง fully automated","10 สัญญาณเสริมช่วยกรอง Entry (RSI, ADX, BB, EMA, MA Cross ฯลฯ)","Auto Lot ปรับตามยอด balance ปัจจุบัน","Recovery mode แก้ไม้อัตโนมัติเมื่อผิดทาง","รองรับทุกคู่เงิน + XAUUSD"],
+    platform:"MetaTrader 5", markets:["XAUUSD","EURUSD","GBPUSD"], risk:"Medium", minDeposit:500,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_AEGIS/view",
+    mechanics:[{step:"01",title:"เทรดเดอร์กด Buy/Sell",desc:"ผู้ใช้เปิดออเดอร์เอง AEGIS-X รับหน้าที่ดูแลต่อ"},{step:"02",title:"ตั้ง TP / SL อัตโนมัติ",desc:"ปรับ TP/SL ตาม volatility ปัจจุบัน"},{step:"03",title:"Recovery ถ้าผิดทาง",desc:"เปิด Grid Recovery เมื่อราคาสวน"},{step:"04",title:"Trailing Stop",desc:"ตาม trend เมื่อได้กำไร ล็อกกำไรอัตโนมัติ"},{step:"05",title:"ปิดเมื่อถึงเป้า",desc:"ปิดออเดอร์ทั้ง basket เมื่อถึง TP รวม"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$300",desc:"เร่งการเติบโต · absorb DD น้อย · lot สูง"},{tier:"Balanced",risk:"Medium",amount:"$500",desc:"cushion recovery เหมาะสม · lot สมดุล"},{tier:"Conservative",risk:"Low",amount:"$1,000",desc:"ทน volatility ยาว · lot ต่ำ ปลอดภัย"}]},
+  { name:"AETHON-X", ver:"SEMI v1.20", tag:"SMART TRADING ASSISTANT", color:"#facc15", icon:"🔥", image:"images/aethon-x.png", type:"Semi-Auto", desc:"ผู้ช่วยเทรดเดอร์ที่เน้นจับจังหวะ False Breakout พร้อม BB+ADX กรอง Entry", features:["แก้ไม้ Grid Recovery","ตั้ง TP / SL อัตโนมัติ","Trailing Stop","ปิดกำไรอัตโนมัติ","BB + ADX สัญญาณเสริม","จับ False Breakout"], badge:null, chart:[50,42,62,55,70,62,78,68,74,80,72,85,78,88],
+    detailedDesc:"AETHON-X ออกแบบมาสำหรับเทรดเดอร์ที่ชอบจับจังหวะ False Breakout — คุณกด Buy/Sell เองในจังหวะที่คิดว่าราคาจะกลับตัว แล้ว AETHON-X จะจัดการต่อทั้งหมด\n\nพร้อม Bollinger Bands + ADX filter ในตัว ช่วยยืนยันสัญญาณ False Breakout ให้แม่นยำขึ้น ระบบจะเปิด Grid Recovery ถ้าราคาไปผิดทาง และปิดกำไรอัตโนมัติเมื่อถึงเป้า",
+    highlights:["จับ False Breakout เชี่ยวชาญที่สุด","BB + ADX filter ยืนยันสัญญาณ","Grid Recovery เมื่อผิดทาง","Trailing + Break-even auto","เหมาะกับ swing/scalp"],
+    platform:"MetaTrader 5", markets:["XAUUSD","EURUSD"], risk:"Medium", minDeposit:500,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_AETHON/view",
+    mechanics:[{step:"01",title:"เทรดเดอร์กด Buy/Sell",desc:"ผู้ใช้จับจังหวะ False Breakout เอง"},{step:"02",title:"BB + ADX ยืนยัน",desc:"ระบบยืนยันสัญญาณ False Breakout"},{step:"03",title:"ตั้ง TP / SL",desc:"ตั้งตาม volatility อัตโนมัติ"},{step:"04",title:"Grid Recovery",desc:"เปิด Grid เมื่อราคาไปผิดทาง"},{step:"05",title:"Trailing + ปิดกำไร",desc:"ตาม trend และปิดเมื่อถึงเป้า"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$300",desc:"เหมาะกับผู้จับ False Breakout แม่นยำ"},{tier:"Balanced",risk:"Medium",amount:"$500",desc:"cushion สำหรับ Recovery เมื่อจับพลาด"},{tier:"Conservative",risk:"Low",amount:"$1,000",desc:"เหมาะกับผู้เริ่มต้น ปลอดภัย"}]},
+  { name:"JANUS-X", ver:"v1.00", tag:"DUAL PENDING RECOVERY", color:"#a855f7", icon:"⚖️", image:"images/janus-x.png", type:"Pending", desc:"ระบบ Pending Order Dual-Mode เลือกได้ Averaging หรือ Flip Recovery", features:["Averaging / Flip Mode","Pending Stop & Limit","Auto ATR Distance","Trailing Stop","Recovery System","Time Filter"], badge:"NEW", chart:[30,45,38,55,42,65,50,72,58,78,64,82,70,86],
+    detailedDesc:"JANUS-X เป็นระบบ Pending Order ที่ให้คุณเลือกโหมด Recovery ได้ 2 แบบ — Averaging (ถัวเฉลี่ยราคา) หรือ Flip (สลับทิศเมื่อผิดทาง)\n\nรองรับทั้ง Buy/Sell Stop และ Buy/Sell Limit พร้อม Auto ATR Distance ช่วยคำนวณระยะห่างของ Pending อัตโนมัติตาม volatility ตลาด และ Time Filter ป้องกันการเข้าออเดอร์นอกช่วงเวลาที่กำหนด",
+    highlights:["Dual-Mode Recovery: Averaging + Flip","ATR-based Distance อัตโนมัติ","Time Filter กันเทรดนอกเวลา","Trailing Stop ในตัว","Support Pending 4 แบบ"],
+    platform:"MetaTrader 5", markets:["XAUUSD","EURUSD","GBPUSD"], risk:"Medium", minDeposit:500,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_JANUS/view",
+    mechanics:[{step:"01",title:"วางคู่ Pending",desc:"BuyStop + SellStop หรือ Limit ตามโหมด"},{step:"02",title:"ฝั่งใดฝั่งหนึ่ง trigger",desc:"อีกฝั่งถูกยกเลิกอัตโนมัติ"},{step:"03",title:"เลือก Recovery Mode",desc:"Averaging (ถัวเฉลี่ย) หรือ Flip (สลับทิศ)"},{step:"04",title:"Auto ATR Distance",desc:"ระบบคำนวณระยะห่าง Pending ตาม volatility"},{step:"05",title:"Trailing + ปิดเมื่อถึงเป้า",desc:"ตาม trend และปิด basket"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$300",desc:"lot สูง · เร่งการเติบโตด้วย Pending"},{tier:"Balanced",risk:"Medium",amount:"$500",desc:"cushion recovery เหมาะสม"},{tier:"Conservative",risk:"Low",amount:"$1,000",desc:"ทน DD ยาว · lot ต่ำ"}]},
+  { name:"NEMENEXUS HIGH", ver:"v1.10", tag:"3-LAYER GRID ENGINE", color:"#00f5ff", icon:"🧬", image:"images/nemenexus-high.png", type:"Grid", desc:"Grid 3 ชั้น (Main + Follow + Soft Hedge) พร้อม Rolling Best-5 Carry", features:["3-Layer Entry System","Main + Follow Grid","Soft Hedge Layer","Rolling Best-5 Carry","Dynamic TP","Carry SL Lock"], badge:"HIGH", chart:[20,35,28,50,40,62,52,72,60,80,68,85,74,90],
+    detailedDesc:"NEMENEXUS HIGH เป็นเวอร์ชัน High-Risk ของตระกูล NEMENEXUS — ใช้ระบบ Grid 3 ชั้นทำงานพร้อมกัน:\n\n• Layer 1: Main Grid — เข้าไม้หลักตามทิศทาง\n• Layer 2: Follow Grid — ตามทิศทางใหม่ที่ตลาดปรับ\n• Layer 3: Soft Hedge — เปิด hedge บางส่วนกัน DD\n\nพร้อม Rolling Best-5 Carry ระบบเลือกไม้ที่ดีที่สุด 5 ตัวไปปิดกำไรก่อน และ Dynamic TP ปรับ TP อัตโนมัติตามสภาพตลาด",
+    highlights:["3-Layer System — เข้าได้ทุกจังหวะตลาด","Rolling Best-5 Carry — ปิดไม้ดีที่สุดก่อน","Dynamic TP ปรับตาม volatility","Soft Hedge Layer ลด DD","Carry SL Lock ล็อกกำไรอัตโนมัติ"],
+    platform:"MetaTrader 5", markets:["XAUUSD"], risk:"High", minDeposit:2000,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_NEMENEXUS_H/view",
+    mechanics:[{step:"01",title:"Layer 1: Main Grid",desc:"เข้าไม้หลักตามทิศทางเทรน"},{step:"02",title:"Layer 2: Follow Grid",desc:"ตามทิศทางใหม่เมื่อตลาดปรับ"},{step:"03",title:"Layer 3: Soft Hedge",desc:"เปิด hedge บางส่วนกัน DD"},{step:"04",title:"Rolling Best-5 Carry",desc:"เลือก 5 ไม้ที่ดีที่สุดปิดกำไรก่อน"},{step:"05",title:"Dynamic TP",desc:"ปรับ TP อัตโนมัติตาม volatility"},{step:"06",title:"Carry SL Lock",desc:"ล็อกกำไรอัตโนมัติเมื่อถึงจุดกำหนด"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$1,000",desc:"เร่งการเติบโต · absorb DD จำกัด"},{tier:"Balanced",risk:"Medium",amount:"$2,000",desc:"cushion recovery พอเพียง"},{tier:"Conservative",risk:"Low",amount:"$5,000",desc:"เหมาะขับ 3-Layer เต็มระบบ ปลอดภัย"}]},
+  { name:"NEMENEXUS MID", ver:"v1.10", tag:"HEDGE GRID SYSTEM", color:"#38bdf8", icon:"🔷", image:"images/nemenexus-mid.png", type:"Grid", desc:"Grid BUY+SELL คู่ พร้อม Auto Hedge 30% และ Rolling Best-5 Carry", features:["BUY+SELL Pair Entry","Auto Hedge 30%","Soft Hedge (optional)","Rolling Best-5 Carry","Dynamic TP","DD% CloseAll Trigger"], badge:"MID", chart:[25,38,30,48,38,58,48,68,55,75,62,80,68,85],
+    detailedDesc:"NEMENEXUS MID เป็นเวอร์ชัน Medium-Risk ของตระกูล NEMENEXUS — เปิด Grid ทั้ง BUY และ SELL พร้อมกัน กันได้ทั้ง 2 ทิศทาง\n\nระบบจะ Auto Hedge 30% เมื่อ DD ถึงระดับกำหนด ช่วยชะลอ drawdown และ Rolling Best-5 Carry เลือกไม้ดีที่สุดปิดก่อน มี DD% CloseAll Trigger ปิดทุกออเดอร์อัตโนมัติเมื่อถึงจุดตัดขาดทุน",
+    highlights:["BUY+SELL คู่ กันได้ 2 ทิศ","Auto Hedge 30% ที่ระดับ DD","Rolling Best-5 Carry ปิดไม้ดีก่อน","DD% CloseAll Trigger ป้องกันหายนะ","Risk ต่ำกว่ารุ่น HIGH"],
+    platform:"MetaTrader 5", markets:["XAUUSD"], risk:"Medium", minDeposit:1000,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_NEMENEXUS_M/view",
+    mechanics:[{step:"01",title:"BUY + SELL Pair Entry",desc:"เปิดออเดอร์ทั้ง 2 ทิศพร้อมกัน"},{step:"02",title:"Auto Hedge 30%",desc:"เปิด hedge บางส่วนเมื่อ DD ถึงระดับ"},{step:"03",title:"Rolling Best-5 Carry",desc:"เลือกไม้ดีที่สุดปิดก่อน"},{step:"04",title:"Dynamic TP",desc:"ปรับ TP ตามสภาพตลาด"},{step:"05",title:"DD% CloseAll Trigger",desc:"ปิดทุกออเดอร์เมื่อ DD เกินกำหนด"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$500",desc:"lot สูง · เร่งการเติบโต"},{tier:"Balanced",risk:"Medium",amount:"$1,000",desc:"cushion เหมาะกับ Hedge Grid"},{tier:"Conservative",risk:"Low",amount:"$2,500",desc:"ทนตลาดสวนได้ยาว"}]},
+  { name:"NEMENOVA-X", ver:"v1.20", tag:"BASKET GRID", color:"#f97316", icon:"🌐", image:"images/nemenova-x.png", type:"Grid", desc:"Grid พร้อม EMA Signal + Basket Trailing TP + Reversal Lock Profit", features:["EMA Signal Filter","Basket Trailing TP","Side TP System","Reversal Lock Profit","DD Protection","Neon Dashboard"], badge:null, chart:[28,42,35,55,44,65,52,72,58,78,65,82,70,86],
+    detailedDesc:"NEMENOVA-X ใช้ EMA Signal เป็น filter หลัก + Basket Trailing TP ทำให้ระบบปิดกำไรแบบยืดหยุ่นตาม trend จริง\n\nมี Side TP System แยก TP ของแต่ละฝั่ง (Buy/Sell) ทำให้ปิดกำไรได้เร็วกว่า Basket TP ทั่วไป พร้อม Reversal Lock Profit ล็อกกำไรเมื่อ trend กลับตัว และ DD Protection ปิดออเดอร์อัตโนมัติเมื่อ drawdown เกินกำหนด",
+    highlights:["EMA Signal Filter ยืนยัน trend","Basket Trailing TP ยืดหยุ่น","Side TP System แยก Buy/Sell","Reversal Lock Profit ล็อกกำไร","Neon Dashboard บนกราฟ"],
+    platform:"MetaTrader 5", markets:["XAUUSD","EURUSD"], risk:"High", minDeposit:1500,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_NEMENOVA/view",
+    mechanics:[{step:"01",title:"EMA Signal Filter",desc:"ยืนยัน trend ก่อนเปิด Grid"},{step:"02",title:"เปิด Basket Grid",desc:"เปิดชุดออเดอร์ตามทิศทาง"},{step:"03",title:"Side TP System",desc:"แยก TP ของฝั่ง Buy/Sell คนละอัน"},{step:"04",title:"Basket Trailing TP",desc:"ปรับ TP ตาม trend ยืดหยุ่น"},{step:"05",title:"Reversal Lock Profit",desc:"ล็อกกำไรเมื่อ trend กลับตัว"},{step:"06",title:"DD Protection",desc:"ปิดออเดอร์เมื่อ drawdown เกิน"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$800",desc:"lot สูง · Basket ใหญ่"},{tier:"Balanced",risk:"Medium",amount:"$1,500",desc:"cushion เหมาะกับ Basket Grid"},{tier:"Conservative",risk:"Low",amount:"$3,000",desc:"รอเทรน + ปลอดภัยระยะยาว"}]},
+  { name:"NEMESISALGO-X", ver:"v3.20", tag:"3-GROUP DI FILTER", color:"#ff2d78", icon:"⚔️", image:"images/nemesisalgo-x.png", type:"Grid", desc:"Grid 3 กลุ่ม + Filter 5 โหมด (ADX+DI, EMA+BB, RSI+MA, Multi-TF, Fast EMA)", features:["3-Group Grid","ADX+DI Filter","EMA+BB / RSI+MA","Multi-TF Filter","Lock SL Profit","ATR Distance Group3"], badge:"v3.2", chart:[22,36,30,50,40,62,50,70,58,76,64,82,70,87],
+    detailedDesc:"NEMESISALGO-X มีจุดเด่นที่ระบบ Grid 3 กลุ่มแยกกันทำงาน + Filter 5 โหมดให้เลือก:\n\n• ADX+DI: ตามเทรนแรง\n• EMA+BB: จับ breakout\n• RSI+MA: swing zone\n• Multi-TF: ยืนยันหลาย timeframe\n• Fast EMA: scalp signal\n\nแต่ละกลุ่มมี ATR Distance ปรับตาม volatility เอง Lock SL Profit ล็อกกำไรเมื่อถึงจุดที่กำหนด",
+    highlights:["3-Group Grid ทำงานแยกกัน","Filter 5 โหมด เลือกได้ตาม style","ATR Distance ปรับ auto per group","Lock SL Profit ป้องกันกำไรหาย","เวอร์ชัน 3.2 พัฒนาต่อเนื่อง"],
+    platform:"MetaTrader 5", markets:["XAUUSD","EURUSD","GBPUSD"], risk:"High", minDeposit:1500,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_NEMESISALGO/view",
+    mechanics:[{step:"01",title:"เลือก Filter Mode",desc:"ADX+DI, EMA+BB, RSI+MA, Multi-TF, Fast EMA"},{step:"02",title:"Group 1: Trend Group",desc:"เข้าไม้ตามเทรนหลัก"},{step:"03",title:"Group 2: Balance Group",desc:"เข้าไม้กลาง cushion"},{step:"04",title:"Group 3: ATR Distance",desc:"เข้าไม้กลุ่ม 3 ตาม volatility"},{step:"05",title:"Lock SL Profit",desc:"ล็อกกำไรอัตโนมัติเมื่อถึงจุด"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$800",desc:"3-Group Grid ทำงานเต็มระบบ"},{tier:"Balanced",risk:"Medium",amount:"$1,500",desc:"cushion เหมาะกับ Filter หลายโหมด"},{tier:"Conservative",risk:"Low",amount:"$3,000",desc:"ทน volatility ยาว"}]},
+  { name:"NEMESIS-X26", ver:"v2.20", tag:"HEDGE DUAL SNOWBALL", color:"#e879f9", icon:"❄️", image:"images/nemesis-x26.png", type:"Grid", desc:"Hedge Grid Dual Direction + Martingale + SnowBall + 3 Signal Mode", features:["Martingale + SnowBall","Dual Direction Grid","MA / RSI+Stoch / Pending","DD Cut Auto","Basket Trailing TP","Scale Mode ATR/DD%"], badge:null, chart:[25,40,32,52,42,62,50,70,56,75,62,80,68,84],
+    detailedDesc:"NEMESIS-X26 ผสม Martingale + SnowBall เข้าด้วยกัน + Hedge Grid ทั้ง 2 ทิศทาง — เป็นระบบที่ agressive แต่มีระบบป้องกันครบ\n\n3 Signal Modes: MA (เรียบง่าย), RSI+Stoch (สวนตลาด), หรือ Pending (dry-run entry) พร้อม DD Cut Auto ตัด DD อัตโนมัติเมื่อเกิน threshold และ Scale Mode เลือกได้ ATR-based หรือ DD%-based",
+    highlights:["Martingale + SnowBall ผสม","Dual Direction Hedge","3 Signal Modes ปรับได้","DD Cut Auto ป้องกันหายนะ","Scale Mode 2 แบบ (ATR/DD%)"],
+    platform:"MetaTrader 5", markets:["XAUUSD"], risk:"High", minDeposit:2000,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_NEMESIS26/view",
+    mechanics:[{step:"01",title:"เลือก Signal Mode",desc:"MA / RSI+Stoch / Pending"},{step:"02",title:"Dual Direction Entry",desc:"เปิด Grid ทั้ง 2 ทิศทาง"},{step:"03",title:"Martingale + SnowBall",desc:"ผสม scale lot 2 แบบ"},{step:"04",title:"Scale Mode",desc:"เลือก ATR-based หรือ DD%-based"},{step:"05",title:"Basket Trailing TP",desc:"ปรับ TP รวมตาม trend"},{step:"06",title:"DD Cut Auto",desc:"ตัดออเดอร์อัตโนมัติเมื่อ DD เกิน"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$1,000",desc:"Martingale + SnowBall ต้องทุนหนา"},{tier:"Balanced",risk:"Medium",amount:"$2,000",desc:"cushion เหมาะกับ Dual Direction"},{tier:"Conservative",risk:"Low",amount:"$5,000",desc:"ปลอดภัยกับ scale mode"}]},
+  { name:"PROTON-X", ver:"v1.40", tag:"HYBRID SMART GRID", color:"#a855f7", icon:"⚡", image:"images/proton-x.png", type:"Hybrid", desc:"Grid อัจฉริยะ + Hybrid TP Mode + Strong Trend TP 4 โหมด", features:["Hybrid TP Mode","Strong Trend TP x4","ATR Distance Auto","Trade Direction Filter","Lot Plus System","MA Slope Filter"], badge:null, chart:[40,35,52,45,62,55,72,65,76,80,74,85,78,90],
+    detailedDesc:"PROTON-X เป็น Hybrid Grid System ที่ปรับ TP mode อัตโนมัติตามสภาพตลาด — เมื่อตลาดเป็น sideways จะใช้ Fixed TP เมื่อเจอ strong trend จะเปลี่ยนไปใช้ Strong Trend TP 4 โหมดต่างกัน\n\nพร้อม Trade Direction Filter กรองทิศทางจาก MA Slope, Lot Plus System เพิ่ม lot อัตโนมัติเมื่อทุนโต และ ATR Distance ปรับระยะห่าง Grid ตาม volatility",
+    highlights:["Hybrid TP Mode สลับตามตลาด","Strong Trend TP 4 โหมด","Trade Direction Filter จาก MA","Lot Plus ตามยอดเงิน","ATR Distance auto"],
+    platform:"MetaTrader 5", markets:["XAUUSD","EURUSD"], risk:"Medium", minDeposit:1000,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_PROTON/view",
+    mechanics:[{step:"01",title:"MA Slope Filter",desc:"กรองทิศทาง trend จาก MA"},{step:"02",title:"เปิด Grid ตามทิศ",desc:"Direction Filter เข้าตามเทรน"},{step:"03",title:"ATR Distance Auto",desc:"ปรับระยะห่าง Grid ตาม volatility"},{step:"04",title:"Hybrid TP Mode",desc:"สลับ Fixed TP ↔ Strong Trend TP"},{step:"05",title:"Strong Trend TP x4",desc:"4 โหมด TP สำหรับ trend แรง"},{step:"06",title:"Lot Plus System",desc:"เพิ่ม lot อัตโนมัติเมื่อทุนโต"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$500",desc:"lot สูง · เร่งการเติบโต"},{tier:"Balanced",risk:"Medium",amount:"$1,000",desc:"cushion เหมาะกับ Hybrid TP"},{tier:"Conservative",risk:"Low",amount:"$2,500",desc:"ทน volatility · lot ต่ำ"}]},
+  { name:"VORTEX-X", ver:"v5.20", tag:"13 SIGNAL ENGINE", color:"#fb923c", icon:"🌀", image:"images/vortex-x.png", type:"Multi-Signal", desc:"Grid สัญญาณครบ 13 โหมด + Auto Regime + Progressive Martingale", features:["13 Signal Modes","EMA / RSI / MA+BB","Scalping Mode","Auto Regime (ADX)","Progressive Martingale","5 Distance Modes"], badge:"v5.2", chart:[25,40,32,55,45,68,52,75,60,82,70,87,75,92],
+    detailedDesc:"VORTEX-X คือ EA ที่มีสัญญาณครบที่สุดในตระกูล DRFX — 13 Signal Modes ให้เลือกใช้ตามสภาพตลาด:\n\nEMA Crossover, Multi-TF, COMBO, Scalping, RSI, MA+BB, และอื่นๆ พร้อม Auto Regime ใช้ ADX ตรวจว่าตลาดเป็น trend หรือ range แล้วเลือก mode เอง + Progressive Martingale เพิ่ม lot แบบก้าวหน้าเมื่อผิดทาง",
+    highlights:["13 Signal Modes ครบทุกสไตล์","Auto Regime — ระบบเลือก mode เอง","Progressive Martingale ควบคุมได้","5 Distance Modes เลือก grid gap","เหมาะ scalp/swing/trend ครบ"],
+    platform:"MetaTrader 5", markets:["XAUUSD","EURUSD","GBPUSD"], risk:"High", minDeposit:1500,
+    trialUrl:"https://drive.google.com/file/d/PLACEHOLDER_VORTEX/view",
+    mechanics:[{step:"01",title:"Auto Regime (ADX)",desc:"ตรวจตลาดเป็น trend หรือ range"},{step:"02",title:"เลือก Signal Mode",desc:"1 จาก 13 โหมด: EMA/RSI/MA+BB/Scalping..."},{step:"03",title:"เปิดออเดอร์",desc:"เข้าตามสัญญาณของโหมดที่เลือก"},{step:"04",title:"5 Distance Modes",desc:"เลือก Grid gap ได้ 5 แบบ"},{step:"05",title:"Progressive Martingale",desc:"เพิ่ม lot แบบก้าวหน้าเมื่อผิดทาง"},{step:"06",title:"ปิด Basket ตามเป้า",desc:"ปิดทุกออเดอร์เมื่อถึง TP รวม"}],
+    capital:[{tier:"Aggressive",risk:"High",amount:"$800",desc:"13 Signal + Martingale ต้องทุนหนา"},{tier:"Balanced",risk:"Medium",amount:"$1,500",desc:"cushion เหมาะกับ Auto Regime"},{tier:"Conservative",risk:"Low",amount:"$3,000",desc:"ปลอดภัย · เลือก mode ต่ำ risk"}]},
+];
+
+let currentFilter = "All";
+
+function makeChart(data,color) {
+  const w=320,h=70,min=Math.min(...data),max=Math.max(...data);
+  const pts=data.map((v,i)=>{const x=(i/(data.length-1))*w;const y=h-((v-min)/(max-min))*(h-8)-4;return `${x},${y}`;}).join(' ');
+  const id="g"+color.replace('#','');
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.25"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <polygon points="0,${h} ${pts} ${w},${h}" fill="url(#${id})"/>
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="chart-line"/>
+  </svg>`;
+}
+
+// Detect light-vs-dark color for CTA button text
+function isLightColor(hex) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+  // Perceived brightness (ITU-R BT.601)
+  return (r*299 + g*587 + b*114) / 1000 > 155;
+}
+
+// Auto-derive badge for card: manual badge → ver → clean version tag
+// Ensures every card shows a badge (fixes visual inconsistency)
+function getBadge(ea) {
+  if (ea.badge) return ea.badge;   // manual override wins
+  if (!ea.ver) return '';
+  // Extract version cleanly: "SEMI v3.3" → "v3.3", "v1.40" → "v1.40", "v5.20" → "v5.2"
+  const ver = String(ea.ver).trim();
+  const match = ver.match(/v?(\d+(?:\.\d+)?)/i);
+  if (!match) return ver;
+  const num = match[1];
+  // Trim trailing zero for cleaner look: 5.20 → 5.2, 1.40 → 1.4
+  const clean = parseFloat(num).toString();
+  return 'v' + clean;
+}
+
+function cardHTML(ea,i) {
+  const stop = `onclick="event.stopPropagation()"`;
+  const eaJson = JSON.stringify(ea).replace(/'/g,"&#39;");
+  const btnTextClass = isLightColor(ea.color) ? '' : 'text-white';
+  const badgePinkClass = isLightColor(ea.color) ? '' : 'badge-pink';
+  const eaTag = ti(ea.tag);
+  const badgeText = getBadge(ea);   // auto-fallback: badge → ver
+
+  // Hero: image if provided, fallback to emoji + spotlight
+  const hero = ea.image
+    ? `<img class="ea-hero-image" src="${ea.image}" alt="${escapeHtml(ea.name)}" onerror="this.style.display='none'"/>
+       <div class="ea-hero-dots"></div>
+       <div class="ea-hero-center" style="opacity:0;">${ea.icon}</div>`
+    : `<div class="ea-hero-dots"></div>
+       <div class="ea-hero-center">
+         <div class="ea-hero-icon">${ea.icon}</div>
+         <div class="ea-hero-tag">${escapeHtml(eaTag)}</div>
+       </div>`;
+
+  // Design B — content mapping with fallbacks
+  const strategyText  = ti(ea.strategy) || ti(ea.desc) || '—';
+  const strengthText  = ti(ea.strength) || ti((ea.highlights || [])[0]) || '—';
+  const limitText     = ti(ea.limitation) || t('card.limitFallback');
+  const capitalText   = ti(ea.recommendedCapital)
+                       || (ea.capital && ea.capital[1] && ea.capital[1].amount)
+                       || (ea.minDeposit ? '$' + Number(ea.minDeposit).toLocaleString() : '—');
+  const typeSubtitle  = ea.type ? escapeHtml(ea.type) + ' ' + t('card.subtypeStrategy') : '';
+
+  return `
+    <div class="card" style="--c:${ea.color};animation-delay:${i*40}ms;" onclick='openModal(${eaJson})'>
+      <div class="ea-hero">
+        ${hero}
+        <div class="ea-hero-line"></div>
+        ${badgeText?`<div class="badge ${badgePinkClass}">${escapeHtml(badgeText)}</div>`:""}
+        <div class="free-badge">${t('card.ibFreeBadge')}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title-row">
+          <div class="card-name">${ea.name}</div>
+          <div class="card-ver-tag">${ea.ver}</div>
+        </div>
+        <div class="card-subtitle-row">
+          <span class="card-subtitle-tag">${escapeHtml(eaTag)}</span>
+          ${typeSubtitle?`<span class="card-subtitle-dot">·</span><span class="card-subtitle-type">${typeSubtitle}</span>`:""}
+        </div>
+
+        <div class="card-section sec-strategy">
+          <div class="card-section-lbl">${t('card.secStrategy')}</div>
+          <div class="card-section-body">${escapeHtml(strategyText)}</div>
+        </div>
+
+        <div class="card-section sec-strength">
+          <div class="card-section-lbl">✓ ${t('card.secStrength')}</div>
+          <div class="card-section-body">${escapeHtml(strengthText)}</div>
+        </div>
+
+        <div class="card-section sec-limit">
+          <div class="card-section-lbl">⚠ ${t('card.secLimit')}</div>
+          <div class="card-section-body">${escapeHtml(limitText)}</div>
+        </div>
+
+        <div class="card-cap-box">
+          <div class="card-cap-lbl-wrap">
+            <span class="card-cap-lbl">${t('card.secCapital')}</span>
+            <span class="card-cap-lbl-en">${t('card.secCapitalEn')}</span>
+          </div>
+          <div class="card-cap-val-wrap">
+            <div class="card-cap-val">${escapeHtml(capitalText)}</div>
+          </div>
+        </div>
+
+        <div class="card-risk-warn">
+          <span class="card-risk-warn-icon">⚠</span>${t('card.riskWarn')}
+        </div>
+
+        <div class="card-btns">
+          <button class="card-btn-primary ${btnTextClass}">${t('card.details')}</button>
+          <button class="card-btn-secondary" ${stop} onclick="openContactPopup()" title="${t('card.contact')}">💬</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function render() {
+  const list=currentFilter==="All"?EAS:EAS.filter(e=>e.type===currentFilter);
+  document.getElementById("grid").innerHTML=list.map((ea,i)=>cardHTML(ea,i)).join("");
+}
+
+function setFilter(btn) {
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  currentFilter=btn.dataset.type;
+  render();
+}
+
+// Format risk level with appropriate class + i18n label
+function formatRisk(risk) {
+  const r = String(risk || '').toLowerCase();
+  if (r === 'low') return { cls: 'risk-low', label: t('modal.riskLow') };
+  if (r === 'medium') return { cls: 'risk-medium', label: t('modal.riskMedium') };
+  if (r === 'high') return { cls: 'risk-high', label: t('modal.riskHigh') };
+  return { cls: '', label: risk || '-' };
+}
+
+// Escape HTML entities for safe rendering of user-facing text
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openModal(ea) {
+  const modal = document.getElementById("modal");
+  modal.style.setProperty("--mc", ea.color);
+  const risk = formatRisk(ea.risk);
+  const btnTextClass = isLightColor(ea.color) ? '' : 'text-white';
+  const eaTag = ti(ea.tag);
+  const eaDesc = ti(ea.desc);
+  const eaDetailedDesc = ti(ea.detailedDesc) || eaDesc;
+
+  // Hero: image if provided, else emoji + spotlight
+  const hero = ea.image
+    ? `<img class="modal-hero-image" src="${ea.image}" alt="${escapeHtml(ea.name)}" onerror="this.style.display='none'"/>
+       <div class="modal-hero-dots"></div>`
+    : `<div class="modal-hero-dots"></div>
+       <div class="modal-hero-center">
+         <div class="modal-hero-icon">${ea.icon}</div>
+         <div class="modal-hero-tag">${escapeHtml(eaTag)}</div>
+       </div>`;
+
+  // Detailed description with paragraph support
+  const detailedParas = eaDetailedDesc
+    .split('\n\n')
+    .map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
+    .join('');
+
+  // Highlights
+  const highlights = (ea.highlights && ea.highlights.length)
+    ? ea.highlights.map(h => `<div class="modal-highlight-item"><span class="modal-highlight-check">✓</span> ${escapeHtml(ti(h))}</div>`).join('')
+    : `<div style="font-size:13px;color:#ffffff35;">${t('modal.noData')}</div>`;
+
+  // Markets
+  const marketList = (ea.markets && ea.markets.length) ? ea.markets.join(', ') : '-';
+
+  // ── Mechanics (how-it-works step-by-step)
+  const mechanicsHtml = (ea.mechanics && ea.mechanics.length)
+    ? `<div class="modal-section">
+         <div class="modal-section-title">${t('modal.section.mechanics')}</div>
+         <div class="modal-mechanics">
+           ${ea.mechanics.map(m => `
+             <div class="modal-mechanic-item">
+               <div class="modal-mechanic-num">${escapeHtml(m.step)}</div>
+               <div class="modal-mechanic-content">
+                 <div class="modal-mechanic-title">${escapeHtml(ti(m.title))}</div>
+                 <div class="modal-mechanic-desc">${escapeHtml(ti(m.desc))}</div>
+               </div>
+             </div>`).join('')}
+         </div>
+       </div>`
+    : '';
+
+  // ── Capital Sizing (3 tiers)
+  const capitalHtml = (ea.capital && ea.capital.length)
+    ? `<div class="modal-section">
+         <div class="modal-section-title">${t('modal.section.capital')}</div>
+         <div class="modal-capital-grid">
+           ${ea.capital.map(c => {
+             const cls = String(c.risk || '').toLowerCase() === 'high' ? 'aggressive'
+                       : String(c.risk || '').toLowerCase() === 'medium' ? 'balanced'
+                       : 'conservative';
+             return `<div class="modal-capital-cell ${cls}">
+               <div class="modal-capital-tier">${escapeHtml(ti(c.tier))}</div>
+               <div class="modal-capital-amount">${escapeHtml(c.amount)}</div>
+               <div class="modal-capital-desc">${escapeHtml(ti(c.desc))}</div>
+             </div>`;
+           }).join('')}
+         </div>
+       </div>`
+    : '';
+
+  // ── Pricing Tiers (global PRICING_TIERS) — renamed 'tier' to avoid shadowing t()
+  const tiersHtml = (typeof PRICING_TIERS !== 'undefined' && PRICING_TIERS.length)
+    ? `<div class="modal-section">
+         <div class="modal-section-title">${t('modal.section.pricing')}</div>
+         <div class="modal-tiers-grid">
+           ${PRICING_TIERS.map(tier => {
+             const recClass = tier.highlight ? 'recommended' : '';
+             const badgeHtml = tier.highlight
+               ? `<div class="modal-tier-badge" style="background:${tier.color};">${escapeHtml(ti(tier.highlight))}</div>`
+               : '';
+             const featsHtml = (tier.features || []).map(f =>
+               `<div class="modal-tier-feat"><span class="modal-tier-check">✓</span>${escapeHtml(ti(f))}</div>`
+             ).join('');
+             return `<div class="modal-tier-card ${recClass}" style="--tc:${tier.color};">
+               ${badgeHtml}
+               <div class="modal-tier-name">${escapeHtml(ti(tier.name))}</div>
+               <div class="modal-tier-price">${escapeHtml(ti(tier.price))}</div>
+               <div class="modal-tier-unit">${escapeHtml(ti(tier.priceUnit))}</div>
+               <div class="modal-tier-meta">
+                 <div class="modal-tier-meta-row"><span class="modal-tier-meta-label">${t('modal.accounts')}</span><span class="modal-tier-meta-value">${escapeHtml(ti(tier.accounts))}</span></div>
+                 <div class="modal-tier-meta-row"><span class="modal-tier-meta-label">${t('modal.updates')}</span><span class="modal-tier-meta-value">${escapeHtml(ti(tier.updates))}</span></div>
+                 <div class="modal-tier-meta-row"><span class="modal-tier-meta-label">${t('modal.duration')}</span><span class="modal-tier-meta-value">${escapeHtml(ti(tier.duration))}</span></div>
+               </div>
+               <div class="modal-tier-features">${featsHtml}</div>
+               <button class="modal-tier-cta" onclick="closeModal();openContactPopup();">${escapeHtml(ti(tier.ctaLabel))} →</button>
+             </div>`;
+           }).join('')}
+         </div>
+       </div>`
+    : '';
+
+  document.getElementById("modal-body").innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-scroll">
+      <div class="modal-hero">
+        ${hero}
+        <div class="modal-hero-line"></div>
+      </div>
+
+      <div class="modal-title-area">
+        <div class="modal-title-row">
+          <div class="modal-title">${escapeHtml(ea.name)}</div>
+          <div class="modal-ver-tag">${escapeHtml(ea.ver)}</div>
+        </div>
+        <div class="modal-subtag">${escapeHtml(eaTag)}</div>
+        <div class="modal-short-desc">${escapeHtml(eaDesc)}</div>
+      </div>
+
+      <div class="modal-summary-block">
+        <div class="card-section sec-strategy">
+          <div class="card-section-lbl">${t('card.secStrategy')}</div>
+          <div class="card-section-body">${escapeHtml(ti(ea.strategy) || eaDesc || '—')}</div>
+        </div>
+        <div class="card-section sec-strength">
+          <div class="card-section-lbl">✓ ${t('card.secStrength')}</div>
+          <div class="card-section-body">${escapeHtml(ti(ea.strength) || ti((ea.highlights||[])[0]) || '—')}</div>
+        </div>
+        <div class="card-section sec-limit">
+          <div class="card-section-lbl">⚠ ${t('card.secLimit')}</div>
+          <div class="card-section-body">${escapeHtml(ti(ea.limitation) || t('card.limitFallback'))}</div>
+        </div>
+        <div class="card-cap-box" style="--c: ${ea.color};">
+          <div class="card-cap-lbl-wrap">
+            <span class="card-cap-lbl">${t('card.secCapital')}</span>
+            <span class="card-cap-lbl-en">${t('card.secCapitalEn')}</span>
+          </div>
+          <div class="card-cap-val-wrap">
+            <div class="card-cap-val">${escapeHtml(ti(ea.recommendedCapital) || (ea.capital && ea.capital[1] && ea.capital[1].amount) || '—')}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-meta-grid">
+        <div class="modal-meta-item">
+          <div class="modal-meta-icon">💻</div>
+          <div class="modal-meta-content">
+            <div class="modal-meta-label">${t('modal.platform')}</div>
+            <div class="modal-meta-value">${escapeHtml(ea.platform || 'MetaTrader 5')}</div>
+          </div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-icon">📊</div>
+          <div class="modal-meta-content">
+            <div class="modal-meta-label">${t('modal.market')}</div>
+            <div class="modal-meta-value">${escapeHtml(marketList)}</div>
+          </div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-icon">⚠️</div>
+          <div class="modal-meta-content">
+            <div class="modal-meta-label">${t('modal.risk')}</div>
+            <div class="modal-meta-value ${risk.cls}">${risk.label}</div>
+          </div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-icon">💰</div>
+          <div class="modal-meta-content">
+            <div class="modal-meta-label">${t('modal.minDeposit')}</div>
+            <div class="modal-meta-value">$${(ea.minDeposit || 0).toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">${t('modal.section.desc')}</div>
+        <div class="modal-section-body">${detailedParas}</div>
+      </div>
+
+      ${mechanicsHtml}
+
+      <div class="modal-section">
+        <div class="modal-section-title">${t('modal.section.highlights')}</div>
+        <div class="modal-highlights">${highlights}</div>
+      </div>
+
+      ${capitalHtml}
+
+      ${tiersHtml}
+    </div>
+
+    <div class="modal-sticky-footer">
+      <a class="modal-cta-btn modal-cta-trial" href="${ea.trialUrl || '#'}" target="_blank" rel="noopener">
+        ${t('modal.trialBtn')}
+      </a>
+      <button class="modal-cta-btn modal-cta-buy ${btnTextClass}" onclick="closeModal();openContactPopup();">
+        ${t('modal.buyBtn')}
+      </button>
+      <button class="modal-cta-btn modal-cta-contact" onclick="closeModal();openContactPopup();">
+        ${t('modal.contactBtn')}
+      </button>
+    </div>`;
+  document.getElementById("overlay").classList.add("open");
+}
+
+function closeModal(e) {
+  if(!e||e.target===document.getElementById("overlay")||e.currentTarget.tagName==="BUTTON")
+    document.getElementById("overlay").classList.remove("open");
+}
+
+function openContactPopup() { document.getElementById("contactOverlay").classList.add("open"); }
+function closeContactPopup(e) {
+  if(!e||e.target===document.getElementById("contactOverlay")||e.currentTarget.tagName==="BUTTON")
+    document.getElementById("contactOverlay").classList.remove("open");
+}
+
+function openTrialPopup() { document.getElementById("trialOverlay").classList.add("open"); }
+function closeTrialPopup(e) {
+  if(!e||e.target===document.getElementById("trialOverlay")||e.currentTarget.tagName==="BUTTON")
+    document.getElementById("trialOverlay").classList.remove("open");
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    document.getElementById("overlay").classList.remove("open");
+    document.getElementById("contactOverlay").classList.remove("open");
+    document.getElementById("trialOverlay").classList.remove("open");
+  }
+});
+
+// ============================================================
+// CATALOG DATA — Fetch from admin backend
+// ============================================================
+// URL ของ EA catalog API (เปลี่ยนที่นี่ถ้า backend ย้าย domain)
+const CATALOG_API_URL = 'https://dashboard.drfxtrading.net/api/catalog/config';
+const CATALOG_CACHE_KEY = 'drfx_catalog_cache_v2';   // bumped v1→v2 to invalidate old caches
+const CATALOG_CACHE_TTL = 60 * 1000;                 // 1 นาที (safety net — SWR ทำงานทุกครั้งที่โหลดหน้า)
+
+async function loadCatalogFromAPI() {
+  let cachedData = null;
+
+  // 1. Try cache first — instant render (SWR pattern)
+  try {
+    const cached = localStorage.getItem(CATALOG_CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed.data && Array.isArray(parsed.data.eas) && parsed.data.eas.length > 0) {
+        cachedData = parsed.data;
+        EAS = cachedData.eas;
+        if (Array.isArray(cachedData.pricing_tiers) && cachedData.pricing_tiers.length > 0) {
+          PRICING_TIERS = cachedData.pricing_tiers;
+        }
+      }
+    }
+  } catch (e) { /* cache invalid — ignore */ }
+
+  // 2. Always fetch fresh — silently update UI if server has newer data
+  const fetchPromise = fetch(CATALOG_API_URL, { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+    .then(fresh => {
+      if (!Array.isArray(fresh.eas) || fresh.eas.length === 0) return;
+
+      // Compare updated_at from server vs cached — only update if actually changed
+      const cachedVer = cachedData ? cachedData.updated_at : null;
+      const isChanged = !cachedVer || fresh.updated_at !== cachedVer;
+
+      // Always save fresh to cache (so next visit is fast + correct)
+      localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify({
+        data: fresh, expires: Date.now() + CATALOG_CACHE_TTL,
+      }));
+
+      // Silent UI update if data actually changed since cache
+      if (isChanged) {
+        EAS = fresh.eas;
+        if (Array.isArray(fresh.pricing_tiers) && fresh.pricing_tiers.length > 0) {
+          PRICING_TIERS = fresh.pricing_tiers;
+        }
+        // Only re-render if we already rendered from cache (avoid double-render on first load)
+        if (cachedData && typeof render === 'function') {
+          render();
+        }
+      }
+    })
+    .catch(e => console.warn('Catalog fetch failed:', e.message));
+
+  // If we have cache — return immediately (SWR: show stale, revalidate in background)
+  // If no cache — must wait for fresh fetch (first-time visitor)
+  if (!cachedData) {
+    await fetchPromise;
+  }
+
+  return true;
+}
+
+// Init: fetch API → apply language → render
+(async () => {
+  await loadCatalogFromAPI();
+  applyLanguage();
+  render();
+})();
+
+// Load stats immediately + auto-refresh
+loadLiveStats();
+setInterval(loadLiveStats, STATS_REFRESH_MS);
+</script>
+</body>
+</html>

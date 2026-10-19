@@ -1,0 +1,12 @@
+1. ลง py python-3.12.0-amd64
+
+2.cd trading-dashboard
+py -3.12 -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+pip install numpy==1.26.4
+cd backend
+python main.py
+
+3.พิมใน cmd เพื่อให้ vps เชื่อมกัน
+"netsh advfirewall firewall add rule name="DRFX Dashboard" dir=in action=allow protocol=tcp localport=8000"

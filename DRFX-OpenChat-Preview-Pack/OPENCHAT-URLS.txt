@@ -1,0 +1,13 @@
+PROTON-X: https://drfxtrading.net/ea/proton-x/
+AETHON-X: https://drfxtrading.net/ea/aethon-x/
+JANUS-X: https://drfxtrading.net/ea/janus-x/
+NEMENEXUS: https://drfxtrading.net/ea/nemenexus/
+NEMENOVA-X: https://drfxtrading.net/ea/nemenova-x/
+NEMEALGO-X: https://drfxtrading.net/ea/nemealgo-x/
+NEMESIS-X26: https://drfxtrading.net/ea/nemesis-x26/
+VORTEX-X: https://drfxtrading.net/ea/vortex-x/
+PHANTOM-X: https://drfxtrading.net/ea/phantom-x/
+CHOCH_FIB618: https://drfxtrading.net/ea/choch-fib618/
+FIBOM: https://drfxtrading.net/ea/fibom/
+GRIDONLY: https://drfxtrading.net/ea/gridonly/
+BREAK HUNTER: https://drfxtrading.net/ea/break-hunter/

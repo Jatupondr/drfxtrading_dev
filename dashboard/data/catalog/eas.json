@@ -1,0 +1,618 @@
+[
+  {
+    "name": "PROTON-X",
+    "ver": "v1.4",
+    "tag": "HYBRID SMART GRID",
+    "color": "#a855f7",
+    "icon": "⚡",
+    "image": "images/proton-x.png",
+    "type": "Hybrid",
+    "desc": "Grid อัจฉริยะ + Hybrid TP Mode + Hedge Recovery System",
+    "features": [
+      "Grid แก้ไม้เมื่อผิดทาง",
+      "Hedge Lot ช่วยลดขาดทุนตอนกราฟลาก"
+    ],
+    "badge": null,
+    "detailedDesc": "PROTON-X เป็น Hybrid Grid System ที่ปรับ TP mode อัตโนมัติตามสภาพตลาด — sideways ใช้ Fixed TP, strong trend เปลี่ยนเป็น Strong Trend TP 4 โหมด\n\nพร้อม Trade Direction Filter จาก MA Slope, Lot Plus System เพิ่ม lot อัตโนมัติ เมื่อทุนโต และ ATR Distance ปรับระยะห่าง Grid ตาม volatility",
+    "highlights": [
+      "เหมาะกับตลาด Sideway กรอบใหญ่ ทนกราฟลากได้ดี"
+    ],
+    "strategy": "Grid แก้ไม้เมื่อผิดทาง + Hedge Lot ช่วยลดขาดทุนตอนกราฟลาก",
+    "strength": "เหมาะกับตลาด Sideway กรอบใหญ่ ทนกราฟลากได้ดี",
+    "limitation": "ระวังตลาดกลับตัวแรงกะทันหัน",
+    "recommendedCapital": "50,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "High",
+    "minDeposit": 500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "25,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "50,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "100,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "AETHON-X",
+    "ver": "v1.2",
+    "tag": "HYBRID AUTO SYSTEM",
+    "color": "#facc15",
+    "icon": "🔥",
+    "image": "images/aethon-x.png",
+    "type": "Semi-Auto",
+    "desc": "ระบบเทรดอัตโนมัติแบบ Hybrid ผสม signal filter หลายชั้น + Auto TP/SL",
+    "features": [
+      "Auto TP/SL)"
+    ],
+    "badge": null,
+    "detailedDesc": "AETHON-X เป็นระบบเทรดอัตโนมัติเต็มระบบ ผสม signal filter (BB + ADX) เพื่อกรองการเข้าออเดอร์ให้แม่นยำ + จัดการ TP/SL อัตโนมัติ\nรองรับการเปิดออเดอร์เองจากผู้ใช้งานระบบจะจัดการแก้ไม้อัตโนมัติ\nพร้อม Grid Recovery Mode เมื่อออเดอร์ผิดทาง และ Trailing Stop รักษากำไร",
+    "highlights": [
+      "ทำงาน Auto เต็มระบบ หรือ Semi-Auto เทรดคู่กับเทรดเดอร์ก็ได้ — เหมาะกับคนชอบเปิดออเดอร์เองแต่ไม่มีเวลาเฝ้ากราฟ"
+    ],
+    "strategy": "เข้าออเดอร์อัตโนมัติจาก Signal Filter หรือเปิดเอง แล้วให้ EA จัดการต่อ (Recovery + Auto TP/SL)",
+    "strength": "ทำงาน Auto เต็มระบบ หรือ Semi-Auto เทรดคู่กับเทรดเดอร์ก็ได้ — เหมาะกับคนชอบเปิดออเดอร์เองแต่ไม่มีเวลาเฝ้ากราฟ",
+    "limitation": "ต้องตั้งระยะห่างและ Lot Multiplier ให้เหมาะสม อย่า Overlot",
+    "recommendedCapital": "10,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "Medium",
+    "minDeposit": 500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "5,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "10,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "20,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "JANUS-X",
+    "ver": "v1.0",
+    "tag": "DUAL PENDING RECOVERY",
+    "color": "#a855f7",
+    "icon": "⚖️",
+    "image": "images/janus-x.png",
+    "type": "Pending",
+    "desc": "ระบบ Pending Order Dual-Mode เลือกได้ Averaging หรือ Flip Recovery",
+    "features": [
+      "วาง Pending Stop/Limit ทั้ง 2 ฝั่ง",
+      "เลือก Recovery ได้ 2 แบบ (ถัวเฉลี่ย / Flip กลับทิศ)"
+    ],
+    "badge": null,
+    "detailedDesc": "JANUS-X เป็นระบบ Pending Order ที่ให้คุณเลือกโหมด Recovery ได้ 2 แบบ — Averaging (ถัวเฉลี่ยราคา) หรือ Flip (สลับทิศเมื่อผิดทาง)\n\nรองรับทั้ง Buy/Sell Stop และ Buy/Sell Limit พร้อม Auto ATR Distance คำนวณระยะห่างของ Pending อัตโนมัติตาม volatility และ Time Filter ป้องกัน การเข้าออเดอร์นอกช่วงเวลาที่กำหนด",
+    "highlights": [
+      "Pending Stop เหมาะช่วงข่าวแรง · Pending Limit เหมาะช่วงตลาดเงียบ"
+    ],
+    "strategy": "วาง Pending Stop/Limit ทั้ง 2 ฝั่ง + เลือก Recovery ได้ 2 แบบ (ถัวเฉลี่ย / Flip กลับทิศ)",
+    "strength": "Pending Stop เหมาะช่วงข่าวแรง · Pending Limit เหมาะช่วงตลาดเงียบ",
+    "limitation": "อาจไม่ทันจับเทรนด์แรงถ้าราคาไม่แตะจุด Pending",
+    "recommendedCapital": "10,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "Medium",
+    "minDeposit": 500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "5,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "10,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "20,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "NEMENEXUS",
+    "ver": "v1.1",
+    "tag": "HEDGE GRID SYSTEM",
+    "color": "#38bdf8",
+    "icon": "🔷",
+    "image": "images/nemenexus-mid.png",
+    "type": "Grid",
+    "desc": "Grid BUY+SELL คู่ พร้อม Auto Hedge และ Rolling Best-5 Carry",
+    "features": [
+      "เปิด Grid 2 ฝั่ง (Buy",
+      "Sell)",
+      "Auto Hedge เมื่อ DD ถึงจุด",
+      "เลือกปิดไม้กำไรดีที่สุดก่อน"
+    ],
+    "badge": null,
+    "detailedDesc": "NEMENEXUS เป็น Hedge Grid System — เปิด Grid ทั้ง BUY และ SELL พร้อมกัน กันได้ทั้ง 2 ทิศทาง\n\nระบบจะ Auto Hedge เมื่อ DD ถึงระดับกำหนด ช่วยชะลอ drawdown และ Rolling Best-5 Carry เลือกไม้ดีที่สุดปิดก่อน + DD% CloseAll Trigger ป้องกันหายนะ",
+    "highlights": [
+      "ทน Trend วิ่งทางเดียวได้อึด + เก็บกำไรจาก Sideway กรอบใหญ่ได้ดี"
+    ],
+    "strategy": "เปิด Grid 2 ฝั่ง (Buy+Sell) + Auto Hedge เมื่อ DD ถึงจุด + เลือกปิดไม้กำไรดีที่สุดก่อน",
+    "strength": "ทน Trend วิ่งทางเดียวได้อึด + เก็บกำไรจาก Sideway กรอบใหญ่ได้ดี",
+    "limitation": "ระวัง Trend แรงต่อเนื่องนาน ๆ",
+    "recommendedCapital": "50,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "High",
+    "minDeposit": 1000,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "25,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "50,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "100,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "NEMENOVA-X",
+    "ver": "v1.2",
+    "tag": "GRID TREND FOLLOWING",
+    "color": "#f97316",
+    "icon": "🌐",
+    "image": "images/nemenova-x.png",
+    "type": "Grid",
+    "desc": "Grid ตาม trend + EMA Signal Filter + Basket Trailing TP",
+    "features": [
+      "EMA Signal ยืนยันเทรนด์ → เปิด Grid ตามทิศ",
+      "Trailing TP",
+      "Lock กำไรเมื่อเทรนด์กลับตัว"
+    ],
+    "badge": null,
+    "detailedDesc": "NEMENOVA-X ใช้ EMA Signal เป็น filter หลักในการเดินตาม trend + Basket Trailing TP ทำให้ระบบปิดกำไรแบบยืดหยุ่นตาม trend จริง\n\nพร้อม Reversal Lock Profit ล็อกกำไรเมื่อ trend กลับตัว และ DD Protection ปิดออเดอร์อัตโนมัติเมื่อ drawdown เกินกำหนด",
+    "highlights": [
+      "ทำงานได้ดีกับตลาด Trend ยาวทางเดียว"
+    ],
+    "strategy": "EMA Signal ยืนยันเทรนด์ → เปิด Grid ตามทิศ + Trailing TP + Lock กำไรเมื่อเทรนด์กลับตัว",
+    "strength": "ทำงานได้ดีกับตลาด Trend ยาวทางเดียว",
+    "limitation": "ผลไม่ดีในตลาด Sideway ที่ไม่มีเทรนด์ชัดเจน , มีการถือออเดอร์ค้างเยอะ",
+    "recommendedCapital": "10,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "Medium",
+    "minDeposit": 500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "5,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "10,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "20,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "NEMEALGO-X",
+    "ver": "v3.2",
+    "tag": "HEDGE GRID RECOVERY",
+    "color": "#ff2d78",
+    "icon": "⚔️",
+    "image": "images/nemesisalgo-x.png",
+    "type": "Grid",
+    "desc": "Hedge Grid ระบบ Recovery พร้อม Filter Mode หลายแบบ",
+    "features": [
+      "เปิดไม้ตามทิศแล้วรอ ถ้าผิดทางเกินเงื่อนไข ค่อยเปิด Hedge ฝั่งตรงข้ามช่วย Recovery"
+    ],
+    "badge": null,
+    "detailedDesc": "NEMEALGO-X เป็นระบบ Hedge Grid Recovery — เปิดออเดอร์แนวทิศทางหลัก และเมื่อผิดทางจะเปิด Hedge ฝั่งตรงข้ามช่วย Recovery\n\nมี Filter Mode หลายแบบให้เลือกตามสภาพตลาด + Lock SL Profit ล็อกกำไรอัตโนมัติ",
+    "highlights": [
+      "ไม่ Martingale ทันที รอเงื่อนไขก่อน — ทน Trend วิ่งทางเดียวได้ค่อนข้างดี"
+    ],
+    "strategy": "เปิดไม้ตามทิศแล้วรอ ถ้าผิดทางเกินเงื่อนไข ค่อยเปิด Hedge ฝั่งตรงข้ามช่วย Recovery",
+    "strength": "ไม่ Martingale ทันที รอเงื่อนไขก่อน — ทน Trend วิ่งทางเดียวได้ค่อนข้างดี",
+    "limitation": "ระวัง Trend แรงต่อเนื่องนาน ๆ",
+    "recommendedCapital": "50,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "High",
+    "minDeposit": 1000,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "25,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "50,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "100,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "NEMESIS-X26",
+    "ver": "v2.2",
+    "tag": "HEDGE GRID DUAL SNOWBALL × RSISTO",
+    "color": "#e879f9",
+    "icon": "❄️",
+    "image": "images/nemesis-x26.png",
+    "type": "Multi-Signal",
+    "desc": "Hedge Grid Dual Direction + Martingale + SnowBall + RSI/Stochastic Signal",
+    "features": [
+      "จับสัญญาณจาก RSI",
+      "Stochastic → เปิด Hedge Grid 2 ฝั่ง",
+      "Martingale",
+      "SnowBall"
+    ],
+    "badge": null,
+    "detailedDesc": "NEMESIS-X26 ผสม Martingale + SnowBall เข้าด้วยกัน + Hedge Grid ทั้ง 2 ทิศทาง — เป็นระบบที่ aggressive แต่มีระบบป้องกันครบ\n\nSignal Mode ใช้ RSI+Stochastic ช่วยจับสัญญาณ Overbought/Oversold + DD Cut Auto ตัดออเดอร์อัตโนมัติเมื่อเกิน threshold + Scale Mode เลือกได้ ATR-based หรือ DD%-based",
+    "highlights": [
+      "ครอบคลุมทั้ง 2 ฝั่ง + Martingale/SnowBall + ตัดขาดทุนอัตโนมัติเมื่อถึงเพดาน"
+    ],
+    "strategy": "จับสัญญาณจาก RSI + Stochastic → เปิด Hedge Grid 2 ฝั่ง + Martingale + SnowBall",
+    "strength": "ครอบคลุมทั้ง 2 ฝั่ง + Martingale/SnowBall + ตัดขาดทุนอัตโนมัติเมื่อถึงเพดาน",
+    "limitation": "Martingale เสี่ยงเมื่อ Trend ต่อเนื่องนาน — ต้องใช้ทุนสูง",
+    "recommendedCapital": "50,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "High",
+    "minDeposit": 2000,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "25,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "50,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "100,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "VORTEX-X",
+    "ver": "v5.2",
+    "tag": "FULL GRID 13 SIGNAL ENGINE",
+    "color": "#fb923c",
+    "icon": "🌀",
+    "image": "images/vortex-x.png",
+    "type": "Multi-Signal",
+    "desc": "Grid สัญญาณครบ 13 โหมด + Auto Regime (ADX) + Progressive Martingale",
+    "features": [
+      "Grid",
+      "Progressive Martingale"
+    ],
+    "badge": null,
+    "detailedDesc": "VORTEX-X มีสัญญาณครบที่สุดในตระกูล DRFX — 13 Signal Modes ให้เลือกใช้ ตามสภาพตลาด (EMA / RSI / MA+BB / Scalping / Multi-TF ฯลฯ)\n\nพร้อม Auto Regime ใช้ ADX ตรวจว่าตลาดเป็น trend หรือ range แล้วเลือก mode อัตโนมัติ + Progressive Martingale เพิ่ม lot แบบก้าวหน้าเมื่อผิดทาง + 5 Distance Modes เลือก grid gap",
+    "highlights": [
+      "13 Signal Modes ครอบคลุมทุกสไตล์ + มีระบบจัดการออเดอร์หลายฟังก์ชัน"
+    ],
+    "strategy": "ระบบเช็คสภาพตลาดอัตโนมัติ (ADX) → เลือก 1 ใน 13 Signal Modes + Grid + Progressive Martingale",
+    "strength": "13 Signal Modes ครอบคลุมทุกสไตล์ + มีระบบจัดการออเดอร์หลายฟังก์ชัน",
+    "limitation": "Martingale เสี่ยงเมื่อ Trend ต่อเนื่องนาน — ต้องใช้ทุนสูง",
+    "recommendedCapital": "50,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "High",
+    "minDeposit": 1500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "25,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "50,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "100,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "PHANTOM-X",
+    "ver": "v1.41",
+    "tag": "NEWS STRIKE SYSTEM",
+    "color": "#7c3aed",
+    "icon": "👻",
+    "image": "images/phantom-x.png",
+    "type": "Pending",
+    "desc": "ระบบ Pre-News Pending Breakout — วาง BuyStop/SellStop ก่อนข่าว + Grid Martingale + Auto Lot",
+    "features": [
+      "Auto Lot ตาม Balance"
+    ],
+    "badge": null,
+    "detailedDesc": "PHANTOM-X เป็นระบบ Smart Pre-News Pending Breakout — วาง Pending BuyStop/SellStop ล่วงหน้าตามเวลาที่กำหนด (เช่น 15:29:50 ก่อนข่าว NFP) เพื่อจับ breakout ทันทีเมื่อข่าวออก\n\nรองรับ Semi-Auto + Auto Mode พร้อม Grid Martingale (Lot Multiplier 2.0 default), Auto Lot ปรับตาม Balance ($1,000 ต่อ 0.01 lot), G2 Preemptive Grid วางล่วงหน้า ก่อน trigger, Pair Count Protection ป้องกัน over-martingale + Trailing Stop",
+    "highlights": [
+      "จับข่าวได้ทันทีอัตโนมัติ + สลับฝั่งแก้ไม้เมื่อกราฟยังไม่ชัด + Trailing ล็อคกำไร"
+    ],
+    "strategy": "วาง Pending BuyStop/SellStop ก่อนเวลาข่าว → Breakout → Grid Martingale + Auto Lot ตาม Balance",
+    "strength": "จับข่าวได้ทันทีอัตโนมัติ + สลับฝั่งแก้ไม้เมื่อกราฟยังไม่ชัด + Trailing ล็อคกำไร",
+    "limitation": "ต้องใช้ช่วงกราฟผันผวนสูง — ตลาด Volume ต่ำที่กราฟไม่เลือกทางเสี่ยงดองไม้/ล้างพอร์ต",
+    "recommendedCapital": "10,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "High",
+    "minDeposit": 500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "5,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "10,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "20,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "CHOCH_FIB618",
+    "ver": "v1.01",
+    "tag": "PENDING ZONE ENTRY",
+    "color": "#eab308",
+    "icon": "📐",
+    "image": "images/choch-fib618.png",
+    "type": "Pending",
+    "desc": "2 Swing + Change of Character → วาง Pending Limit ที่ Fibonacci 61.8% (No Repaint)",
+    "features": [
+      "SL/TP ชัดเจน"
+    ],
+    "badge": null,
+    "detailedDesc": "CHOCH_FIB618 ใช้ Price Action หา 2 Swing structure (L1 → H1 → LH → L2) + Change of Character (CHoCH) Confirmation เมื่อราคาปิดทะลุ structure\n\nจากนั้นคำนวณ Fibonacci retracement (L2 → CHoCH Close) วาง Pending BUY LIMIT ที่ระดับ 61.8% พร้อม SL 78.6% และ TP ที่ Swing High เดิม (mirror สำหรับ SELL)\n\nNo Repaint — Swing ยืนยันด้วย SwingRightBars, CHoCH ใช้แท่งปิดเท่านั้น + รองรับ Swing Source (Fractal/ZigZag) และ Lot Mode (Fixed/Risk %)",
+    "highlights": [
+      "No Repaint + เข้าตาม Price Action แม่นยำ + R:R ชัดเจน + ไม่ Martingale"
+    ],
+    "strategy": "รอสัญญาณ CHoCH (เปลี่ยนแนวโน้ม) → วาง Pending Limit ที่ Fibonacci 61.8% + SL/TP ชัดเจน",
+    "strength": "No Repaint + เข้าตาม Price Action แม่นยำ + R:R ชัดเจน + ไม่ Martingale",
+    "limitation": "บางครั้งราคาไม่ Pullback ถึงจุด Pending = พลาดโอกาส · ออกออเดอร์น้อย",
+    "recommendedCapital": "10,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "Low",
+    "minDeposit": 500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "5,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "10,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "20,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "FIBOM",
+    "ver": "v1.10",
+    "tag": "ZONE 127.2 + TRENDLINE",
+    "color": "#14b8a6",
+    "icon": "🧭",
+    "image": "images/fibom.png",
+    "type": "Grid",
+    "desc": "Hybrid Fib Zone (1.272 extension) + Trendline Breakout — 3 EntryMode + 3 SwingMode",
+    "features": [
+      "หา Fibonacci Zone",
+      "Trendline Breakout → เปิด Grid ตามโซน",
+      "All Basket ปิดรวบเมื่อกำไร"
+    ],
+    "badge": null,
+    "detailedDesc": "FIBOM ผสม 2 หลักการเข้า — Fibonacci Extension Zone (default 1.272) + Trendline Breakout พร้อม EntryMode 3 แบบให้เลือก:\n• FIBO_ONLY — อยู่ใน zone ก็เปิด (ไม่สน TL)\n• TL_ONLY — TL breakout ล้วน + Gap Recovery แบบ OMNICAST\n• HYBRID — zone + TL (สูตรเดิม)\n\nSwingMode 3 ระดับ (FAST/MEDIUM/STABLE) ใช้ ZigZag pivot ที่ต่างกัน + Side Mode สลับ Breakout(BUYล่าง/SELLบน) / Reversal + Fib TP 0.382 / SL 1.614 + ATR Zone ปรับกรอบ arm อัตโนมัติ + Recovery Gap เปิดไม้แก้เมื่อระยะเกินกำหนด",
+    "highlights": [
+      "3 EntryMode ให้เลือก (Fib / Trendline / Hybrid) + Swing 3 ระดับ + ปรับกรอบตาม ATR"
+    ],
+    "strategy": "หา Fibonacci Zone + Trendline Breakout → เปิด Grid ตามโซน + All Basket ปิดรวบเมื่อกำไร",
+    "strength": "3 EntryMode ให้เลือก (Fib / Trendline / Hybrid) + Swing 3 ระดับ + ปรับกรอบตาม ATR",
+    "limitation": "ต้องเลือก Mode ให้เข้ากับสภาพตลาด — ผิด Mode อาจให้ผลไม่ดี",
+    "recommendedCapital": "10,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "Medium",
+    "minDeposit": 500,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "5,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "10,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "20,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  },
+  {
+    "name": "GRIDONLY",
+    "ver": "v1.6",
+    "tag": "GRID + EMA9 M1 + CANDLE FILTER",
+    "color": "#10b981",
+    "icon": "🧱",
+    "image": "images/gridonly.png",
+    "type": "Grid",
+    "desc": "Pure Grid — dist 150 / multi 1.5 / TP 20 + M1 Candle Guard + EMA Filter + Daily Target",
+    "features": [
+      "Grid Buy",
+      "Sell แยกฝั่ง",
+      "Martingale x1.5",
+      "M1 Candle Guard"
+    ],
+    "badge": null,
+    "detailedDesc": "GRIDONLY เป็นระบบ Grid ล้วน ไม่มี signal filter ซับซ้อน — dist 150 pts / multi 1.5 / TP 20 pts / รวบปิดแล้วเปิดใหม่\n\nBUY + SELL แยกฝั่งใครฝั่งมัน (Hedging) + M1 Candle Guard เปิดได้ 1 ไม้ต่อ 1 แท่ง M1 ต่อฝั่ง กันเปิดไม้ถี่เกิน + EMA14 M1 Filter ปิดการเปิดออเดอร์ เมื่อราคาห่างเส้นเกิน 500 pts (กันตลาด extreme)\n\nพร้อม Daily Target % (default +1% ปิดหมด+หยุดวัน) + Daily Loss cap (default 50%) + Trade Time Filter (03:00-20:59 server) + Recovery mode (มาติงเกลเฉพาะเมื่อผิดทาง)",
+    "highlights": [
+      "Grid ล้วน ไม่พึ่ง Signal + Daily Target/Loss cap + Trade Time Filter , เก็บสั้นได้ดี เหมาะตลาดวอลุ่มน้อยสวิงไปมา"
+    ],
+    "strategy": "Grid Buy+Sell แยกฝั่ง + Martingale x1.5 + M1 Candle Guard + EMA Filter",
+    "strength": "Grid ล้วน ไม่พึ่ง Signal + Daily Target/Loss cap + Trade Time Filter , เก็บสั้นได้ดี เหมาะตลาดวอลุ่มน้อยสวิงไปมา",
+    "limitation": "Martingale เสี่ยงเมื่อ Trend ต่อเนื่องนาน ๆ",
+    "recommendedCapital": "100,000 USC",
+    "platform": "MetaTrader 5",
+    "markets": [
+      "XAUUSD"
+    ],
+    "risk": "High",
+    "minDeposit": 1000,
+    "trialUrl": "",
+    "mechanics": [],
+    "capital": [
+      {
+        "tier": "Aggressive",
+        "risk": "High",
+        "amount": "50,000 USC",
+        "desc": "ทุนน้อย เสี่ยงสูง — ระวัง Margin Call"
+      },
+      {
+        "tier": "Balanced",
+        "risk": "Medium",
+        "amount": "100,000 USC",
+        "desc": "ทุนแนะนำ ความเสี่ยงปานกลาง — เหมาะที่สุด"
+      },
+      {
+        "tier": "Conservative",
+        "risk": "Low",
+        "amount": "200,000 USC",
+        "desc": "ทุนสูง เสี่ยงต่ำ — ทนไม้ได้ยาว"
+      }
+    ]
+  }
+]
